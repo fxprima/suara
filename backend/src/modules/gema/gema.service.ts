@@ -5,7 +5,18 @@ import { PrismaService } from 'prisma/prisma.service';
 export class GemaService {
     constructor(private prisma: PrismaService) {}
 
-    getAllGemas() {
-        return this.prisma.gemas.findMany();
+    async getAllGemas() {
+        return {
+            data: await this.prisma.gemas.findMany(),
+            error: null,
+            loading: false,
+        }
+    }
+    sayHello() {
+        return {
+            data: 'Hello World!',
+            error: null,
+            loading: false,
+        }
     }
 }

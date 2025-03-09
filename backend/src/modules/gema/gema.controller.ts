@@ -5,12 +5,13 @@ import { GemaService } from './gema.service';
 export class GemaController {
     constructor(private readonly gemasService: GemaService) {}
 
-    @Get()
+    @Get('hello')
+    async sayHello() {
+        return await this.gemasService.sayHello();
+    }
+    
+    @Get('all')
     async getAllGemas() {
-        return {
-            data: await this.gemasService.getAllGemas(),
-            message: 'Successfully fetched all gemas',
-            success: true,
-        }
+        return await this.gemasService.getAllGemas();
     }
 }
