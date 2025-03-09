@@ -7,6 +7,10 @@ export class GemaController {
 
     @Get()
     async getAllGemas() {
-        return this.gemasService.getAllGemas();
+        return {
+            data: await this.gemasService.getAllGemas(),
+            message: 'Successfully fetched all gemas',
+            success: true,
+        }
     }
 }
