@@ -7,7 +7,7 @@ export class GemaService {
 
     async getAllGemas() {
         return {
-            data: await this.prisma.gemas.findMany(),
+            data: await this.prisma.gema.findMany(),
             error: null,
             loading: false,
         }
