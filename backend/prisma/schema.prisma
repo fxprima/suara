@@ -14,11 +14,15 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
-  name     String
-  gemas    Gema[]
+  id              String @id @default(uuid())
+  username        String
+  firstname       String
+  lastname        String?
+  email           String @unique
+  password        String
+  phone           String? @unique
+  dob             DateTime
+  gemas           Gema[]
 }
 
 model Gema {
