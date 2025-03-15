@@ -9,7 +9,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  console.log("App is listening", process.env.PORT ?? 3000);
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
