@@ -1,15 +1,42 @@
+"use client";
+
+import api from "@/services/api";
+import { useState } from "react";
+
 export default function Home() {
+  const [formData, setFormData] = useState({});
+
+  const handleSignup = () => {
+    try {
+      const data = {};
+      api.post("/auth/signup", data);
+    } catch (error) {}
+  };
+
   return (
     <div className="flex h-screen w-full bg-base-200 text-base-content">
       <div className="max-w-5xl mx-auto flex w-full h-full items-center justify-between p-10 space-x-10">
         {/* Left */}
-        <div className="min-w-2/5 flex justify-center items-center">
-          <img src="logo.svg" alt="Logo" className="" />
+        <div className="min-w-2/5 max-h-110 flex justify-center items-center">
+          <svg width="502" height="520" viewBox="0 0 502 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M261.366 129.374C204.975 244.906 343.41 343.566 303.705 324.186C263.999 304.806 124.582 206.712 146.781 96.2565C156.252 49.1355 228.289 -15.2955 267.994 4.08471C307.7 23.4649 280.747 89.6682 261.366 129.374Z"
+              fill="#FFD000"
+            />
+            <path
+              d="M0.166065 333.144C-1.12078 377.308 29.0915 422.54 77.8021 415.44C284.266 385.345 301.297 556.192 302.584 512.028C303.871 467.864 254.1 321.94 88.4717 289.602C47.3836 281.58 1.45292 288.98 0.166065 333.144Z"
+              fill="#FFD000"
+            />
+            <path
+              d="M499.643 196.752C510.941 239.466 479.326 291.444 442.759 294.549C234.861 312.2 257.133 482.443 245.836 439.729C234.538 397.016 249.816 243.596 403.748 174.435C444.805 155.989 488.345 154.038 499.643 196.752Z"
+              fill="#FFD000"
+            />
+          </svg>
         </div>
 
         {/* Right */}
-        <div className="minw-3/5 flex flex-col justify-center items-center bg-base-100 p-10 rounded-4xl shadow-xl border border-neutral">
-          <h1 className="text-3xl font-bold mb-4">Welcome to Suara</h1>
+        <div className="minw-3/5 flex flex-col justify-center items-center bg-base-300 p-10 rounded-4xl shadow-xl border border-neutral">
+          <h1 className="text-4xl font-bold mb-4">Express your Suara</h1>
           <h2 className="text-xl font-semibold mb-6">Join us today.</h2>
 
           <button className="w-full btn btn-outline btn-primary flex items-center justify-center mb-4 hover:scale-105 transition-transform">
@@ -38,7 +65,20 @@ export default function Home() {
                       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                     </g>
                   </svg>
-                  <input className="w-full bg-transparent focus:outline-none" type="email" placeholder="Email" required autoComplete="off" name="email" />
+                  <input
+                    className="w-full bg-transparent focus:outline-none"
+                    type="email"
+                    placeholder="Email"
+                    required
+                    autoComplete="off"
+                    name="email"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
+                    }
+                  />
                 </label>
 
                 {/* Password */}
@@ -77,7 +117,7 @@ export default function Home() {
                   </svg>
                   <input type="tel" className="tabular-nums" required placeholder="Phone" name="phone" />
                 </label>
-                
+
                 {/* DOB */}
                 <label className="text-sm text-neutral-content">
                   <h3 className="font-semibold text-lg">Date of Birth</h3>
@@ -87,7 +127,7 @@ export default function Home() {
               </form>
 
               <div className="modal-action flex justify-end mt-4">
-                <button type="button" className="btn btn-primary">
+                <button onClick={handleSignup} type="button" className="btn btn-primary">
                   Sign up
                 </button>
                 <label htmlFor="signup-modal" className="btn bg-transparent ml-2">
