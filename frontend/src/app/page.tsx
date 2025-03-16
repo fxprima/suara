@@ -19,6 +19,20 @@ export default function Home() {
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
 
+  const clearForm = () => {
+    setFormData({
+      email: "",
+      password: "",
+      phone: "",
+      username: "",
+      firstname: "",
+      lastname: "",
+      dob: "",
+    });
+    setErrors([]);
+    setSuccess("");
+  };
+
   const handleSignup = async () => {
     try {
       setErrors([]);
@@ -375,7 +389,7 @@ export default function Home() {
           </div>
 
           {/* Tombol untuk buka modal */}
-          <label htmlFor="signup-modal" className="w-full btn btn-primary hover:scale-105 transition-transform">
+          <label htmlFor="signup-modal" className="w-full btn btn-primary hover:scale-105 transition-transform" onClick={clearForm}>
             Create account
           </label>
 
