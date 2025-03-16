@@ -10,8 +10,6 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerUserDto: RegisterUserDto) {
     try {
-      console.log("MASUK API")
-      console.log('createUserDto', registerUserDto);
       const { email, username, phone } = registerUserDto;
 
       const checks = [
