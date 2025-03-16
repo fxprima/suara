@@ -60,12 +60,11 @@ export default function Home() {
         lastname: "",
         dob: "",
       });
-
       // Set success message
       setSuccess(res.data.message);
     } catch (err: any) {
-      console.error("Error:", err);
 
+      console.error(err);
       const errorMessages =
         err.response?.data?.message || [err.message || "Internal server error"];
 
@@ -175,7 +174,7 @@ export default function Home() {
 
               <form className="w-full flex flex-col gap-4">
                 {/* Username */}
-                <label className="input validator w-full">
+                <label className="input  w-full">
                   <FontAwesomeIcon icon={faAt} className="h-5 w-5 opacity-50" />
                   <input
                     type="text"
@@ -195,7 +194,7 @@ export default function Home() {
 
                 {/* Nama Depan & Belakang */}
                 <div className="flex gap-4">
-                  <label className="input validator w-full">
+                  <label className="input  w-full">
                     <FontAwesomeIcon icon={faUser} className="h-5 w-5 opacity-50" />
                     <input
                       type="text"
@@ -211,7 +210,7 @@ export default function Home() {
                       }
                     />
                   </label>
-                  <label className="input validator w-full">
+                  <label className="input  w-full">
                     <FontAwesomeIcon icon={faUser} className="h-5 w-5 opacity-50" />
                     <input
                       type="text"
@@ -297,7 +296,7 @@ export default function Home() {
                 </label>
 
                 {/* Confirm Password */}
-                <label className="input validator flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
+                <label className="input  flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
                   <svg
                     className="h-5 w-5 opacity-50"
                     xmlns="http://www.w3.org/2000/svg"
@@ -325,7 +324,7 @@ export default function Home() {
                 </label>
 
                 {/* Phone */}
-                <label className="input validator flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
+                <label className="input  flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
                   <svg
                     className="h-5 w-5 opacity-50"
                     xmlns="http://www.w3.org/2000/svg"
