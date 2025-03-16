@@ -62,7 +62,7 @@ export default function Home() {
       });
 
       // Set success message
-      setSuccess("Signup berhasil. Silakan cek email untuk verifikasi!");
+      setSuccess(res.data.message);
     } catch (err: any) {
       console.error("Error:", err);
 
