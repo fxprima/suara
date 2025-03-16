@@ -9,6 +9,7 @@ export default function Home() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     phone: "",
     username: "",
     firstname: "",
@@ -23,6 +24,7 @@ export default function Home() {
     setFormData({
       email: "",
       password: "",
+      confirmPassword: "",
       phone: "",
       username: "",
       firstname: "",
@@ -41,6 +43,7 @@ export default function Home() {
       const data = {
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
         phone: formData.phone,
         username: formData.username,
         firstname: formData.firstname,
@@ -54,6 +57,7 @@ export default function Home() {
       setFormData({
         email: "",
         password: "",
+        confirmPassword: "",
         phone: "",
         username: "",
         firstname: "",
@@ -320,6 +324,14 @@ export default function Home() {
                     placeholder="Confirm Password"
                     autoComplete="new-password"
                     name="confirmPassword"
+                    onChange={
+                      (e) =>
+                        setFormData({
+                          ...formData,
+                          confirmPassword: e.target.value,
+                        })
+  
+                    }
                   />
                 </label>
 

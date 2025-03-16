@@ -10,7 +10,12 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe()); // untuk validasi input pipe untuk semua request
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true, // menolak data yang tidak didefinisikan dalam DTO
+    transform: true, // mengubah tipe data yang dikirimkan sesuai dengan DTO
+  }));
+  
 
   await app.listen(process.env.PORT ?? 3000);
 }
