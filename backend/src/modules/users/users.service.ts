@@ -11,7 +11,7 @@ export class UsersService {
       data : {
         email: createUserDto.email,
         password: createUserDto.password,
-        phone: createUserDto.phone,
+        phone: createUserDto.phone ? createUserDto.phone : null,
         username: createUserDto.username,
         firstname: createUserDto.firstname,
         lastname: createUserDto.lastname,
@@ -19,6 +19,25 @@ export class UsersService {
       }
     })
   }
+  
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  async findByUsername(username: string) {
+    return await this.prisma.user.findUnique({
+      where: { username },
+    });
+  }
+
+  async findByPhone(phone: string) {
+    return await this.prisma.user.findUnique({
+      where: { phone },
+    });
+  }
+
 
   findAll() {
     return `This action returns all users`;
