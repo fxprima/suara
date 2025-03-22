@@ -4,6 +4,7 @@ import api from "@/services/api";
 import { faUser, faAt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -34,6 +35,23 @@ export default function Home() {
     setErrors([]);
     setSuccess("");
   };
+
+  const handleLogin = async () => {
+    const res = await signIn('credentials', {
+      redirect: false, // biar kita kontrol redirect-nya manual
+      email: formData.email,
+      password: formData.password,
+    });
+  
+    if (res?.error) {
+      setErrors([res.error]);
+    } else {
+      setSuccess('Login successful!');
+      // Optional: redirect ke halaman dashboard
+      // router.push('/dashboard');
+    }
+  };
+  
 
   const handleSignup = async () => {
     try {
@@ -67,10 +85,8 @@ export default function Home() {
       // Set success message
       setSuccess(res.data.message);
     } catch (err: any) {
-
       console.error(err);
-      const errorMessages =
-        err.response?.data?.message || [err.message || "Internal server error"];
+      const errorMessages = err.response?.data?.message || [err.message || "Internal server error"];
 
       if (Array.isArray(errorMessages)) setErrors(errorMessages);
       else setErrors([errorMessages]);
@@ -82,13 +98,7 @@ export default function Home() {
       <div className="max-w-5xl mx-auto flex w-full h-full items-center justify-between p-10 space-x-10">
         {/* Left Section */}
         <div className="min-w-2/5 max-h-110 flex justify-center items-center">
-          <svg
-            width="502"
-            height="520"
-            viewBox="0 0 502 520"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg width="502" height="520" viewBox="0 0 502 520" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M261.366 129.374C204.975 244.906 343.41 343.566 303.705 324.186C263.999 304.806 124.582 206.712 146.781 96.2565C156.252 49.1355 228.289 -15.2955 267.994 4.08471C307.7 23.4649 280.747 89.6682 261.366 129.374Z"
               fill="#FFD000"
@@ -111,11 +121,7 @@ export default function Home() {
 
           {/* Button Sign Up with Google */}
           <button className="w-full btn btn-outline btn-primary flex items-center justify-center mb-4 hover:scale-105 transition-transform">
-            <img
-              src="https://www.svgrepo.com/show/355037/google.svg"
-              alt="Google"
-              className="w-5 h-5 mr-2"
-            />
+            <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-5 h-5 mr-2" />
             Sign up with Google
           </button>
 
@@ -135,18 +141,8 @@ export default function Home() {
               {/* Success Alert */}
               {success && (
                 <div role="alert" className="alert alert-success mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 shrink-0 stroke-current"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12l2 2l4-4"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4-4" />
                   </svg>
                   <span>{success}</span>
                 </div>
@@ -155,18 +151,8 @@ export default function Home() {
               {/* Error Alert */}
               {errors.length > 0 && (
                 <div role="alert" className="alert alert-error mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 shrink-0 stroke-current"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <ul className="list-disc list-inside">
                     {errors.map((err, i) => (
@@ -234,18 +220,8 @@ export default function Home() {
 
                 {/* Email */}
                 <label className="input flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
-                  <svg
-                    className="h-5 w-5 opacity-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <g
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                      fill="none"
-                      stroke="currentColor"
-                    >
+                  <svg className="h-5 w-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
                       <rect width="20" height="16" x="2" y="4" rx="2"></rect>
                       <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                     </g>
@@ -269,18 +245,8 @@ export default function Home() {
 
                 {/* Password */}
                 <label className="input flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
-                  <svg
-                    className="h-5 w-5 opacity-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <g
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                      fill="none"
-                      stroke="currentColor"
-                    >
+                  <svg className="h-5 w-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
                       <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
                       <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
                     </g>
@@ -293,26 +259,14 @@ export default function Home() {
                     autoComplete="new-password"
                     name="password"
                     value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </label>
 
                 {/* Confirm Password */}
                 <label className="input  flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
-                  <svg
-                    className="h-5 w-5 opacity-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <g
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                      fill="none"
-                      stroke="currentColor"
-                    >
+                  <svg className="h-5 w-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
                       <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
                       <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
                     </g>
@@ -324,64 +278,37 @@ export default function Home() {
                     placeholder="Confirm Password"
                     autoComplete="new-password"
                     name="confirmPassword"
-                    onChange={
-                      (e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-  
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
                     }
                   />
                 </label>
 
                 {/* Phone */}
                 <label className="input  flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
-                  <svg
-                    className="h-5 w-5 opacity-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <g
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                      fill="none"
-                      stroke="currentColor"
-                    >
+                  <svg className="h-5 w-5 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor">
                       <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
                       <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
                     </g>
                   </svg>
-                  <input
-                    type="tel"
-                    className="tabular-nums"
-                    required
-                    placeholder="Phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                  />
+                  <input type="tel" className="tabular-nums" required placeholder="Phone" name="phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                 </label>
 
                 {/* DOB */}
                 <label className="text-sm text-neutral-content">
                   <h3 className="font-semibold text-lg">Date of Birth</h3>
-                  <p className="text-gray-400 my-3">
-                    This will not be shown publicly. Confirm your own age, even if
-                    this account is for a business, a pet, or something else.
-                  </p>
+                  <p className="text-gray-400 my-3">This will not be shown publicly. Confirm your own age, even if this account is for a business, a pet, or something else.</p>
                   <input
                     type="date"
                     className="input w-full focus:outline-none"
                     required
                     name="dob"
                     value={formData.dob}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dob: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                     pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
                     title="Enter a valid date in YYYY-MM-DD format"
                   />
@@ -421,8 +348,67 @@ export default function Home() {
           </p>
 
           <div className="mt-6 text-center">
-            <p className="text-neutral-content">Already have an account?</p>
-            <a className="text-primary hover:underline cursor-pointer">Sign in</a>
+            <p className="text-neutral-content mb-2">Already have an account?</p>
+            {/* Tombol untuk buka modal */}
+            <label htmlFor="login-modal" className="w-full btn btn-outline btn-primary hover:scale-105 transition-transform" onClick={clearForm}>
+              Login
+            </label>
+
+            <input type="checkbox" id="login-modal" className="modal-toggle" />
+            <div className="modal">
+              <div className="modal-box shadow-md bg-base-300 p-6 rounded-2xl m-auto flex flex-col">
+              
+                <h2 className="text-2xl font-semibold text-center">Login</h2>
+                <form className="flex flex-col gap-4 mt-4" method="dialog">
+                  
+                  <label className="input  w-full">
+                    <FontAwesomeIcon icon={faAt} className="h-5 w-5 opacity-50" />
+                    <input type="text" placeholder="Email" onChange={
+                      (e) => setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
+                    }/>
+                  </label>
+
+                  <label className="input  w-full">
+                    <FontAwesomeIcon icon={faUser} className="h-5 w-5 opacity-50" />
+                    <input type="password" placeholder="Password" name="password" onChange={
+                      (e) => setFormData({
+                        ...formData,
+                        password: e.target.value,
+                      })
+                    }/>
+                  </label>
+                </form>
+
+                {/* Forgot Password */}
+                <a href="#" className=" text-center mt-5">
+                  Forgot password?
+                </a>
+
+                <div className="modal-action flex justify-end mt-4">
+                  <button onClick={handleLogin} type="button" className="btn btn-primary w-full">
+                    Login
+                  </button>                  
+                  
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center w-full my-4">
+                  <div className="flex-1 border-t border-white"></div>
+                  <span className="px-3 text-white">or</span>
+                  <div className="flex-1 border-t border-white"></div>
+                </div>
+
+                {/* Button Sign Up with Google */}
+                <button className="w-full btn btn-outline btn-primary flex items-center justify-center mb-4 hover:scale-105 transition-transform">
+                  <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+                  Sign up with Google
+                </button>
+
+              </div>
+            </div>
           </div>
         </div>
       </div>

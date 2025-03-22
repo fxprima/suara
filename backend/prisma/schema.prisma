@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id              String @id @default(uuid())
   username        String @unique
   firstname       String
@@ -22,27 +22,27 @@ model User {
   password        String
   phone           String? @unique
   dob             DateTime
-  gemas           Gema[]
+  gemas           Gemas[]
   lastLogin       DateTime?
-  refreshTokens   RefreshToken[]
+  refreshTokens   RefreshTokens[]
 }
 
-model RefreshToken {
+model RefreshTokens {
   id          String   @id @default(uuid())
   token       String   @unique
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userAgent   String?
   ipAddress   String?
   expiresAt   DateTime
   createdAt   DateTime @default(now())
 }
 
-model Gema {
+model Gemas {
   id        String   @id @default(uuid())
   title     String
   content   String
   authorId  String
-  author    User @relation(fields: [authorId], references: [id])
+  author    Users @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
 }

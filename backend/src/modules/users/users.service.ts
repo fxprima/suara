@@ -12,7 +12,7 @@ import { Request, Response } from 'express';
 export class UsersService {
   constructor (private prisma: PrismaService, private jwt: JwtService) {}
   async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
+    return this.prisma.users.create({
       data : {
         email: createUserDto.email,
         password: await argon2.hash(createUserDto.password),
@@ -29,7 +29,7 @@ export class UsersService {
     const token = req.cookies['refresh_token'];
 
     if(token) {
-      await this.prisma.refreshToken.delete({
+      await this.prisma.refreshTokens.delete({
         where: { token }
       });
       res.clearCookie('refresh_token');
@@ -42,7 +42,7 @@ export class UsersService {
     const token = req.cookies['refresh_token'];
     if (!token) throw new UnauthorizedException('No token provided');
 
-    const storedToken = await this.prisma.refreshToken.findUnique({
+    const storedToken = await this.prisma.refreshTokens.findUnique({
       where: { token }
     });
 
@@ -58,9 +58,16 @@ export class UsersService {
   }
 
   async login(dto: LoginDto, req: Request, res: Response) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { email: dto.email },
     });
+
+    console.log(
+      'login servce',
+      dto.email,
+      dto.password,
+      user
+    )
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
@@ -75,7 +82,7 @@ export class UsersService {
 
     const refreshToken = uuidv4();
 
-    await this.prisma.refreshToken.create({
+    await this.prisma.refreshTokens.create({
       data : {
         token: refreshToken,
         userId: user.id,
@@ -85,31 +92,46 @@ export class UsersService {
       }
     })
 
-    res.cookie('refersh_token', refreshToken, {
+    console.log(
+      'login',
+      dto.email,
+      dto.password,
+      user,
+      accessToken,
+      refreshToken
+    )
+
+    res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 1000 * 60 * 60 * 24 * 30
     })
 
+    console.log(
+      res.json(
+        { accessToken }
+      )
+    )
+
     return res.json({ accessToken })
 
   }
 
   async findByEmail(email: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { email },
     });
   }
 
   async findByUsername(username: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { username },
     });
   }
 
   async findByPhone(phone: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { phone },
     });
   }
