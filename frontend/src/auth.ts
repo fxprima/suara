@@ -1,4 +1,3 @@
-// src/auth.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import api from "@/services/api";
@@ -53,6 +52,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
     },
     pages: {
-        signIn: "/", // gunakan halaman utama sebagai halaman login
+        signIn: "/", 
     },
 });
