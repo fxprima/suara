@@ -7,37 +7,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
         CredentialsProvider({
             name: "Credentials",
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials) {
+            credentials: { },
+            async authorize(credentials: any) {
                 try {
-
                     const res = await api.post("/auth/signin", {
-                        email: credentials?.email,
-                        password: credentials?.password,
+                        email: credentials.email,
+                        password: credentials.password,
+                    }, {
+                        withCredentials: true
                     });
-
+            
                     const responseData = res.data.data;
                     if (responseData?.accessToken) {
                         return {
-                            id: responseData.user?.id, 
-                            email: String(credentials?.email),
+                            id: responseData.user.id,
+                            email: responseData.user.email,
                             accessToken: responseData.accessToken,
                         };
                     }
                     return null;
-                } catch (error: any) {
-                    console.error(error.response?.data?.message);
+                } catch (error) {
+                    console.error("Authorize error", error);
                     return null;
                 }
-            },
+            }
         }),
     ],
     session: {
         strategy: "jwt",
-        maxAge: 15 * 60, // 15 menit
+        maxAge: 30, // 15 menit
     },
     callbacks: {
         async jwt({ token, user }: { token: any; user?: any }) {

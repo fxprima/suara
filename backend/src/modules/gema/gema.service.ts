@@ -13,6 +13,7 @@ export class GemaService {
         }
     }
     sayHello() {
+        console.log("Hello World!")
         return {
             data: 'Hello World!',
             error: null,

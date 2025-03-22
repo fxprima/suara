@@ -94,11 +94,10 @@ export class UsersService {
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 * 30
-    })
-
+      secure: process.env.NODE_ENV === 'production' ? true : false,
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // atau 'none' untuk prod + https
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    });
     
 
     return res.json({
