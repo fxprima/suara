@@ -1,5 +1,6 @@
 "use client";
 
+import { AuthGuard } from "@/components/AuthGuard";
 import api from "@/services/api";
 import { signOut, useSession } from "next-auth/react";
 
@@ -24,13 +25,13 @@ export default function Dashboard() {
     }
 
     return (
-
+        <AuthGuard redirectTo="/" requireAuth={true}>
         <div>
             <h1>Dashboard</h1>
             <button onClick={clickme} className="btn btn-primary">Click </button>
             <button onClick={logout} className="btn btn-primary">Loogut </button>
             <p>Welcome, {session?.user?.email}</p>
         </div>
-
+        </AuthGuard>
     );
 }

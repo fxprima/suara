@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import api from "@/services/api";
 import { faUser, faAt } from "@fortawesome/free-solid-svg-icons";
@@ -24,6 +24,7 @@ export default function Home() {
 
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const clearForm = () => {
     setFormData({
@@ -44,11 +45,13 @@ export default function Home() {
     e.preventDefault();
     setErrors([]);
 
+    setLoading(true);
     const res = await signIn("credentials", {
       redirect: false,
       email: formData.email,
       password: formData.password,
     });
+    setLoading(false);
 
     if (res?.status === 401 || res?.error === "CredentialsSignin") {
       setErrors(["Invalid email or password"]);
@@ -60,6 +63,7 @@ export default function Home() {
 
   const handleSignup = async () => {
     try {
+      setLoading(true);
       setErrors([]);
       setSuccess("");
 
@@ -89,17 +93,20 @@ export default function Home() {
       });
       // Set success message
       setSuccess(res.data.message);
+
     } catch (err: any) {
       console.error(err);
       const errorMessages = err.response?.data?.message || [err.message || "Internal server error"];
 
       if (Array.isArray(errorMessages)) setErrors(errorMessages);
       else setErrors([errorMessages]);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthGuard redirectTo = "/dashboard" requireAuth={false}>
+    <AuthGuard redirectTo="/dashboard" requireAuth={false}>
       <div className="flex h-screen w-full bg-base-200 text-base-content">
         <div className="max-w-5xl mx-auto flex w-full h-full items-center justify-between p-10 space-x-10">
           {/* Left Section */}
@@ -288,8 +295,9 @@ export default function Home() {
                 </form>
 
                 <div className="modal-action flex justify-end mt-4">
-                  <button onClick={handleSignup} type="button" className="btn btn-primary">
-                    Sign up
+                  <button onClick={handleSignup} type="button" className="btn btn-primary ">
+                    {loading && <span className="loading loading-spinner loading-sm"></span>}
+                    {loading ? "Signing up..." : "Sign up"}
                   </button>
                   <label htmlFor="signup-modal" className="btn bg-transparent ml-2">
                     Close
@@ -361,8 +369,9 @@ export default function Home() {
                   </a>
 
                   <div className="modal-action flex justify-end mt-4">
-                    <button onClick={handleLogin} type="button" className="btn btn-primary w-full">
-                      Login
+                    <button onClick={handleLogin} type="button" className="btn btn-primary w-full flex items-center justify-center gap-2">
+                      {loading && <span className="loading loading-spinner loading-sm"></span>}
+                      {loading ? "Logging in..." : "Login"}
                     </button>
                   </div>
 
