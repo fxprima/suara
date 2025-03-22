@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import api from "@/services/api";
-import { faUser, faAt } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faAt, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthGuard } from "@/components/AuthGuard";
 
@@ -21,6 +21,7 @@ export default function Home() {
     lastname: "",
     dob: "",
   });
+
 
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
@@ -39,6 +40,8 @@ export default function Home() {
     });
     setErrors([]);
     setSuccess("");
+
+
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -46,11 +49,19 @@ export default function Home() {
     setErrors([]);
 
     setLoading(true);
+
+    const emailInput = document.querySelector('input[name="loginEmail"]') as HTMLInputElement;
+    const passwordInput = document.querySelector('input[name="loginPassword"]') as HTMLInputElement;
+
+    const email = emailInput?.value || formData.email;
+    const password = passwordInput?.value || formData.password;
+
     const res = await signIn("credentials", {
       redirect: false,
-      email: formData.email,
-      password: formData.password,
+      email: email,
+      password: password,
     });
+    
     setLoading(false);
 
     if (res?.status === 401 || res?.error === "CredentialsSignin") {
@@ -353,13 +364,13 @@ export default function Home() {
 
                   <h2 className="text-2xl font-semibold text-center">Login</h2>
                   <form className="flex flex-col gap-4 mt-4" method="dialog">
-                    <label className="input  w-full">
+                    <label className="input w-full">
                       <FontAwesomeIcon icon={faAt} className="h-5 w-5 opacity-50" />
-                      <input type="text" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                      <input type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} autoComplete="email" defaultValue={formData.email} name = "loginEmail" />
                     </label>
-                    <label className="input  w-full">
-                      <FontAwesomeIcon icon={faUser} className="h-5 w-5 opacity-50" />
-                      <input type="password" placeholder="Password" name="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                    <label className="input w-full">
+                      <FontAwesomeIcon icon={faKey} className="h-5 w-5 opacity-50" />
+                      <input type="password" placeholder="Password" name="loginPassword" onChange={(e) => setFormData({ ...formData, password: e.target.value })} autoComplete="current-password" defaultValue={formData.password}/>
                     </label>
                   </form>
 
