@@ -82,6 +82,12 @@ export class UsersService {
 
     const refreshToken = uuidv4();
 
+    // set last login
+    await this.prisma.users.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    })
+
     await this.prisma.refreshTokens.create({
       data : {
         token: refreshToken,
@@ -92,14 +98,6 @@ export class UsersService {
       }
     })
 
-    console.log(
-      'login',
-      dto.email,
-      dto.password,
-      user,
-      accessToken,
-      refreshToken
-    )
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
@@ -108,13 +106,14 @@ export class UsersService {
       maxAge: 1000 * 60 * 60 * 24 * 30
     })
 
-    console.log(
-      res.json(
-        { accessToken }
-      )
-    )
+    
 
-    return res.json({ accessToken })
+    return res.json({
+      data: {
+        "accessToken": accessToken,
+        "user": user,
+      }
+    })
 
   }
 
