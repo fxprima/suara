@@ -30,7 +30,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                     return null;
                 } catch (error: any) {
-                    console.error(error);
+                    console.error(error.response?.data?.message);
                     return null;
                 }
             },
@@ -42,9 +42,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     callbacks: {
         async jwt({ token, user }: { token: any; user?: any }) {
-            if (user?.accessToken) {
+            if (user?.accessToken) 
                 token.accessToken = user.accessToken;
-            }
+            
             return token;
         },
         async session({ session, token }: { session: any; token: any }) {
