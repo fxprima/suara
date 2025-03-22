@@ -21,11 +21,6 @@ export default function Home() {
     dob: "",
   });
 
-  useEffect(() => {
-    // Untuk testing: force signOut saat komponen dimount
-    signOut({ redirect: false });
-    console.log("test signout");
-  }, []);
 
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");

@@ -38,7 +38,6 @@ export class AuthController {
 
   @Post('signin')
   async login (@Body() loginDto: LoginDto, @Req() req: Request, @Res() res: Response) {
-    console.log("masuk g")
     return this.usersService.login(loginDto, req, res);
   }
 

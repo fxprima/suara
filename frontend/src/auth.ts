@@ -14,12 +14,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
             async authorize(credentials) {
                 try {
-                    console.log("API HIT");
+
                     const res = await api.post("/auth/signin", {
                         email: credentials?.email,
                         password: credentials?.password,
                     });
-                    console.log("Response:", res.data);
+
                     const responseData = res.data.data;
                     if (responseData?.accessToken) {
                         return {

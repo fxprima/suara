@@ -62,13 +62,6 @@ export class UsersService {
       where: { email: dto.email },
     });
 
-    console.log(
-      'login servce',
-      dto.email,
-      dto.password,
-      user
-    )
-
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const isMatch = await argon2.verify(user.password, dto.password);
