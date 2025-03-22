@@ -24,38 +24,6 @@ export class UsersService {
       }
     })
   }
-  
-  async logout(req: Request, res: Response) {
-    const token = req.cookies['refresh_token'];
-
-    if(token) {
-      await this.prisma.refreshTokens.delete({
-        where: { token }
-      });
-      res.clearCookie('refresh_token');
-    }
-
-    return res.json({ message: 'Anda telah logout.' })
-  }
-
-  async refresh(req: Request, res: Response) {
-    const token = req.cookies['refresh_token'];
-    if (!token) throw new UnauthorizedException('No token provided');
-
-    const storedToken = await this.prisma.refreshTokens.findUnique({
-      where: { token }
-    });
-
-    if(!storedToken || storedToken.expiresAt < new Date()) 
-      throw new UnauthorizedException('Token has expired');
-
-    const accessToken = this.jwt.sign(
-      { sub: storedToken.userId }, 
-      { expiresIn: '15m' }
-    )
-
-    return res.json({ accessToken })
-  }
 
   async login(dto: LoginDto, req: Request, res: Response) {
     const user = await this.prisma.users.findUnique({
@@ -73,32 +41,11 @@ export class UsersService {
       { expiresIn: '15m' }
     );
 
-    const refreshToken = uuidv4();
 
-    // set last login
     await this.prisma.users.update({
       where: { id: user.id },
       data: { lastLogin: new Date() }
     })
-
-    await this.prisma.refreshTokens.create({
-      data : {
-        token: refreshToken,
-        userId: user.id,
-        userAgent: req.headers['user-agent'],
-        ipAddress: req.ip,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
-      }
-    })
-
-
-    res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // atau 'none' untuk prod + https
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-    });
-    
 
     return res.json({
       data: {

@@ -24,20 +24,7 @@ model Users {
   dob             DateTime
   gemas           Gemas[]
   lastLogin       DateTime?
-  refreshTokens   RefreshTokens[]
 }
-
-model RefreshTokens {
-  id          String   @id @default(uuid())
-  token       String   @unique
-  userId      String
-  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userAgent   String?
-  ipAddress   String?
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-}
-
 model Gemas {
   id        String   @id @default(uuid())
   title     String

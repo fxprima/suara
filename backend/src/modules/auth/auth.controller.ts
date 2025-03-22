@@ -41,13 +41,4 @@ export class AuthController {
     return this.usersService.login(loginDto, req, res);
   }
 
-  @Post('refresh') 
-  refresh(@Req() req: Request, @Res() res: Response) {
-    return this.usersService.refresh(req, res);
-  }
-
-  @Post('logout')
-  logout(@Req() req: Request, @Res() res: Response) {
-    this.usersService.logout(req, res);
-  }
 }
