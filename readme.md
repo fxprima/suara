@@ -40,11 +40,11 @@ Suara is a web-based social media application designed. This platform enables us
 3. **Configure environment**:
    - Create a `.env` file and fill in the required configurations (see `.env.example` for reference).
 4. **Run the application**:
-   Frontend
+   - Frontend
    ```bash
    yarn dev
    ```
-   Backend
+   - Backend
    ```bash
    yarn start:dev
    ```
