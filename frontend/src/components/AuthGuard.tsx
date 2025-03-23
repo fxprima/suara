@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
+import LoadingScreen from "./loader/LoadingScreen";
 
 type Props = {
     children: ReactNode;
@@ -22,7 +23,7 @@ export function AuthGuard({ children, redirectTo = "/", requireAuth = true }: Pr
     }, [status, requireAuth, redirectTo, router]);
 
     if (status === "loading") 
-        return <p>Loading...</p>;
+        return <LoadingScreen />;
 
     return <>{children}</>;
 }
