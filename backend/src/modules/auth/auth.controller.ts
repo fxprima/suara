@@ -1,13 +1,13 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UsersService } from '../users/users.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserService } from '../user/user.service';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post('register')
   async register(@Body() registerUserDto: RegisterUserDto) {
@@ -15,9 +15,9 @@ export class AuthController {
       const { email, username, phone } = registerUserDto;
 
       const checks = [
-        { fn: () => this.usersService.findByEmail(email), errorMsg: 'Email already exists' },
-        { fn: () => this.usersService.findByUsername(username), errorMsg: 'Username already exists' },
-        ...(phone ? [{ fn: () => this.usersService.findByPhone(phone), errorMsg: 'Phone number already exists' }] : []),
+        { fn: () => this.userService.findByEmail(email), errorMsg: 'Email already exists' },
+        { fn: () => this.userService.findByUsername(username), errorMsg: 'Username already exists' },
+        ...(phone ? [{ fn: () => this.userService.findByPhone(phone), errorMsg: 'Phone number already exists' }] : []),
       ];
 
       for (const check of checks) {
@@ -25,7 +25,7 @@ export class AuthController {
         if (exists) throw new HttpException(check.errorMsg, HttpStatus.BAD_REQUEST);
       }
 
-      await this.usersService.create(registerUserDto);
+      await this.userService.create(registerUserDto);
 
       return { message: 'Signup berhasil' };
     } catch (error: any) {
@@ -38,7 +38,7 @@ export class AuthController {
 
   @Post('signin')
   async login (@Body() loginDto: LoginDto, @Req() req: Request, @Res() res: Response) {
-    return this.usersService.login(loginDto, req, res);
+    return this.userService.login(loginDto, req, res);
   }
 
 }

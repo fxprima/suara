@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Request, Response } from 'express';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor (private prisma: PrismaService, private jwt: JwtService) {}
   async create(createUserDto: CreateUserDto) {
     return this.prisma.users.create({

@@ -1,5 +1,5 @@
 import { Match } from "src/decorators/match.decorator";
-import { CreateUserDto } from "src/modules/users/dto/create-user.dto";
+import { CreateUserDto } from "src/modules/user/dto/create-user.dto";
 
 
 export class RegisterUserDto extends CreateUserDto {
