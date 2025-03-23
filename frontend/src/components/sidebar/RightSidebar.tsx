@@ -3,7 +3,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 export default function RightSidebar() {
 return (
-    <aside className="hidden lg:block w-1/4 p-4 border-l border-base-200 bg-base-100">
+    <aside className="hidden lg:block w-1/4 p-4 border-l border-base-200 bg-base-200">
     <div className="flex items-center space-x-2 mb-4">
         <FontAwesomeIcon icon={faSearch} className="h-5 w-5 opacity-50" />
         <input type="text" placeholder="Search Suara" className="input input-bordered w-full" />
