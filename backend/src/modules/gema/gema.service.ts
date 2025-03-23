@@ -7,12 +7,13 @@ export class GemaService {
 
     async getAllGemas() {
         return {
-            data: await this.prisma.gema.findMany(),
+            data: await this.prisma.gemas.findMany(),
             error: null,
             loading: false,
         }
     }
     sayHello() {
+        console.log("Hello World!")
         return {
             data: 'Hello World!',
             error: null,

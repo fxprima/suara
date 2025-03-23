@@ -12,7 +12,7 @@ import { Request, Response } from 'express';
 export class UsersService {
   constructor (private prisma: PrismaService, private jwt: JwtService) {}
   async create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
+    return this.prisma.users.create({
       data : {
         email: createUserDto.email,
         password: await argon2.hash(createUserDto.password),
@@ -24,41 +24,9 @@ export class UsersService {
       }
     })
   }
-  
-  async logout(req: Request, res: Response) {
-    const token = req.cookies['refresh_token'];
-
-    if(token) {
-      await this.prisma.refreshToken.delete({
-        where: { token }
-      });
-      res.clearCookie('refresh_token');
-    }
-
-    return res.json({ message: 'Anda telah logout.' })
-  }
-
-  async refresh(req: Request, res: Response) {
-    const token = req.cookies['refresh_token'];
-    if (!token) throw new UnauthorizedException('No token provided');
-
-    const storedToken = await this.prisma.refreshToken.findUnique({
-      where: { token }
-    });
-
-    if(!storedToken || storedToken.expiresAt < new Date()) 
-      throw new UnauthorizedException('Token has expired');
-
-    const accessToken = this.jwt.sign(
-      { sub: storedToken.userId }, 
-      { expiresIn: '15m' }
-    )
-
-    return res.json({ accessToken })
-  }
 
   async login(dto: LoginDto, req: Request, res: Response) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { email: dto.email },
     });
 
@@ -73,43 +41,35 @@ export class UsersService {
       { expiresIn: '15m' }
     );
 
-    const refreshToken = uuidv4();
 
-    await this.prisma.refreshToken.create({
-      data : {
-        token: refreshToken,
-        userId: user.id,
-        userAgent: req.headers['user-agent'],
-        ipAddress: req.ip,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+    await this.prisma.users.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() }
+    })
+
+    return res.json({
+      data: {
+        "accessToken": accessToken,
+        "user": user,
       }
     })
-
-    res.cookie('refersh_token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24 * 30
-    })
-
-    return res.json({ accessToken })
 
   }
 
   async findByEmail(email: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { email },
     });
   }
 
   async findByUsername(username: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { username },
     });
   }
 
   async findByPhone(phone: string) {
-    return await this.prisma.user.findUnique({
+    return await this.prisma.users.findUnique({
       where: { phone },
     });
   }
