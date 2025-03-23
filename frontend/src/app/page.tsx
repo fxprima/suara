@@ -22,7 +22,6 @@ export default function Home() {
     dob: "",
   });
 
-
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,8 +39,6 @@ export default function Home() {
     });
     setErrors([]);
     setSuccess("");
-
-
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -61,7 +58,7 @@ export default function Home() {
       email: email,
       password: password,
     });
-    
+
     setLoading(false);
 
     if (res?.status === 401 || res?.error === "CredentialsSignin") {
@@ -104,7 +101,6 @@ export default function Home() {
       });
       // Set success message
       setSuccess(res.data.message);
-
     } catch (err: any) {
       console.error(err);
       const errorMessages = err.response?.data?.message || [err.message || "Internal server error"];
@@ -118,11 +114,11 @@ export default function Home() {
 
   return (
     <AuthGuard redirectTo="/dashboard" requireAuth={false}>
-      <div className="flex h-screen w-full bg-base-200 text-base-content">
-        <div className="max-w-5xl mx-auto flex w-full h-full items-center justify-between p-10 space-x-10">
+      <div className="flex flex-col md:flex-row h-screen w-full bg-base-200 text-base-content">
+        <div className="w-full md:max-w-5xl mx-auto flex flex-col md:flex-row w-full h-full items-center justify-between p-5 md:p-10 space-y-10 md:space-y-0 md:space-x-10">
           {/* Left Section */}
-          <div className="min-w-2/5 max-h-110 flex justify-center items-center">
-            <svg width="502" height="520" viewBox="0 0 502 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="w-full md:min-w-2/5 max-h-110 flex justify-center items-center">
+            <svg width="250" height="260" viewBox="0 0 502 520" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M261.366 129.374C204.975 244.906 343.41 343.566 303.705 324.186C263.999 304.806 124.582 206.712 146.781 96.2565C156.252 49.1355 228.289 -15.2955 267.994 4.08471C307.7 23.4649 280.747 89.6682 261.366 129.374Z"
                 fill="#FFD000"
@@ -139,9 +135,9 @@ export default function Home() {
           </div>
 
           {/* Right Section */}
-          <div className="minw-3/5 flex flex-col justify-center items-center bg-base-300 p-10 rounded-4xl shadow-xl border border-neutral">
-            <h1 className="text-4xl font-bold mb-4">Express your Suara</h1>
-            <h2 className="text-xl font-semibold mb-6">Join us today.</h2>
+          <div className="w-full md:min-w-3/5 flex flex-col justify-center items-center bg-base-300 p-6 md:p-10 rounded-2xl shadow-xl border border-neutral">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4">Express your Suara</h1>
+            <h2 className="text-lg md:text-xl font-semibold mb-6">Join us today.</h2>
 
             {/* Button Sign Up with Google */}
             <button className="w-full btn btn-outline btn-primary flex items-center justify-center mb-4 hover:scale-105 transition-transform">
@@ -338,7 +334,7 @@ export default function Home() {
               .
             </p>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center w-full">
               <p className="text-neutral-content mb-2">Already have an account?</p>
               {/* Tombol untuk buka modal */}
               <label htmlFor="login-modal" className="w-full btn btn-outline btn-primary hover:scale-105 transition-transform" onClick={clearForm}>
