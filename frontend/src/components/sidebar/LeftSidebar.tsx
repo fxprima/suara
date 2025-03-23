@@ -1,8 +1,13 @@
+"use client";
 import SidebarLogo from "./LeftSidebarLogo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faEnvelope, faHome, faHashtag, faUsers, faEllipsisH, faFeather, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { signOut, useSession } from "next-auth/react";
 
-export default function Sidebar() {
+export default function LeftSidebar() {
+    const { data: session } = useSession();
+    console.log(session)
+
 return (
     <aside className="w-20 lg:w-1/5 flex flex-col justify-between p-2 lg:p-4 bg-base-100 border-r border-base-200">
     <div className="space-y-4 flex flex-col items-center lg:items-start">
@@ -23,7 +28,7 @@ return (
             </button>
         ))}
         </nav>
-        <button className="btn btn-primary w-full flex justify-center lg:justify-center">
+        <button className="btn btn-primary w-full flex justify-center lg:justify-center" onClick={() => signOut()}>
         <FontAwesomeIcon icon={faFeather} className="h-5 w-5 opacity-50 mr-0 lg:mr-2" />
         <span className="hidden lg:inline">Post</span>
         </button>
@@ -35,8 +40,9 @@ return (
         </div>
         </div>
         <div className="hidden lg:block">
-        <p className="font-semibold">Felix Prima</p>
-        <p className="text-xs text-gray-500">@fx.prima</p>
+        <p className="font-semibold">{session?.user?.firstname} {session?.user?.lastname}</p>
+        <p className="text-xs text-gray-500">@{session?.user?.username}</p>
+
         </div>
     </div>
     </aside>

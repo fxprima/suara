@@ -7,21 +7,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
         CredentialsProvider({
             name: "Credentials",
-            credentials: { },
+            credentials: {},
             async authorize(credentials: any) {
                 try {
-                    const res = await api.post("/auth/signin", {
-                        email: credentials.email,
-                        password: credentials.password,
-                    }, {
-                        withCredentials: true
-                    });
-            
+                    const res = await api.post(
+                        "/auth/signin",
+                        {
+                            email: credentials.email,
+                            password: credentials.password,
+                        },
+                        { withCredentials: true }
+                    );
+
                     const responseData = res.data.data;
                     if (responseData?.accessToken) {
                         return {
-                            id: responseData.user.id,
-                            email: responseData.user.email,
+                            ...responseData.user,
                             accessToken: responseData.accessToken,
                         };
                     }
@@ -30,26 +31,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     console.error("Authorize error", error);
                     return null;
                 }
-            }
+            },
         }),
     ],
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        maxAge: 30 * 24 * 60 * 60, // 30 hari
     },
     callbacks: {
-        async jwt({ token, user }: { token: any; user?: any }) {
-            if (user?.accessToken) 
-                token.accessToken = user.accessToken;
-            
+        async jwt({ token, user }) {
+            if (user) {
+                token.user = user;
+            }
             return token;
         },
-        async session({ session, token }: { session: any; token: any }) {
-            session.accessToken = token.accessToken;
+        async session({ session, token }) {
+            if (token.user) {
+                session.user = {
+                    ...session.user,
+                    ...token.user,
+                };
+            }
             return session;
         },
     },
     pages: {
-        signIn: "/", 
+        signIn: "/",
     },
 });

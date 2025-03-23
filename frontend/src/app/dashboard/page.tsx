@@ -1,11 +1,11 @@
 import MainFeed from "@/components/feed/MainFeed";
 import RightSidebar from "@/components/sidebar/RightSidebar";
-import Sidebar from "@/components/sidebar/LeftSidebar";
+import LeftSidebar from "@/components/sidebar/LeftSidebar";
 
 export default function Dashboard() {
     return (
         <div className="flex h-screen">
-            <Sidebar />
+            <LeftSidebar />
             <MainFeed />
             <RightSidebar />
         </div>
