@@ -7,6 +7,7 @@ import api from "@/services/api";
 import { faUser, faAt, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthGuard } from "@/components/AuthGuard";
+import { AxiosErrorResponse } from "../../types/error";
 
 export default function Home() {
   const router = useRouter();
@@ -101,12 +102,17 @@ export default function Home() {
       });
       // Set success message
       setSuccess(res.data.message);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      const errorMessages = err.response?.data?.message || [err.message || "Internal server error"];
-
-      if (Array.isArray(errorMessages)) setErrors(errorMessages);
-      else setErrors([errorMessages]);
+      if (err instanceof Error) {
+        const error = err as AxiosErrorResponse;
+        
+        const msg = error.response?.data?.message || error.message || "Internal server error";
+        const errorMessages = Array.isArray(msg) ? msg : [msg];
+        setErrors(errorMessages);
+      } else {
+        setErrors(["Unknown error occurred"]);
+      }
     } finally {
       setLoading(false);
     }
