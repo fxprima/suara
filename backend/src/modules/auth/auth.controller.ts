@@ -1,44 +1,43 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { AuthService } from './auth.service';
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt.auth.guard';
+import { RequestWithUser } from 'src/request-with-user';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { UserPayload } from './interfaces/user-payload.interface';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(@Body() registerUserDto: RegisterUserDto) {
-    try {
-      const { email, username, phone } = registerUserDto;
-
-      const checks = [
-        { fn: () => this.userService.findByEmail(email), errorMsg: 'Email already exists' },
-        { fn: () => this.userService.findByUsername(username), errorMsg: 'Username already exists' },
-        ...(phone ? [{ fn: () => this.userService.findByPhone(phone), errorMsg: 'Phone number already exists' }] : []),
-      ];
-
-      for (const check of checks) {
-        const exists = await check.fn();
-        if (exists) throw new HttpException(check.errorMsg, HttpStatus.BAD_REQUEST);
-      }
-
-      await this.userService.create(registerUserDto);
-
-      return { message: 'Signup berhasil' };
-    } catch (error: any) {
-      throw new HttpException(
-        error.message || 'Internal server error',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.authService.register(registerUserDto);
   }
 
   @Post('signin')
   async login (@Body() loginDto: LoginDto, @Req() req: Request, @Res() res: Response) {
-    return this.userService.login(loginDto, req, res);
+    return this.authService.login(loginDto, req, res);
+  }
+
+  @Post('refresh')
+  async refresh(@Body('refreshToken') token: string) {
+    this.authService.refresh(token);
+  }
+
+  @Post('logout')
+  async logout(@Body('refreshToken') token: string) {
+    return this.authService.logout(token);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me(@CurrentUser() user: UserPayload) {
+    return this.authService.me(user);
   }
 
 }

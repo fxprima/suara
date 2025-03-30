@@ -14,22 +14,33 @@ datasource db {
 }
 
 model Users {
-  id              String @id @default(uuid())
-  username        String @unique
-  firstname       String
-  lastname        String?
-  email           String @unique
-  password        String
-  phone           String? @unique
-  dob             DateTime
-  gemas           Gemas[]
-  lastLogin       DateTime?
+  id            String          @id @default(uuid())
+  username      String          @unique
+  firstname     String
+  lastname      String?
+  email         String          @unique
+  password      String
+  phone         String?         @unique
+  dob           DateTime
+  gemas         Gemas[]
+  lastLogin     DateTime?       @default(now())
+  RefreshTokens RefreshTokens[]
 }
+
+model RefreshTokens {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Users    @relation(fields: [userId], references: [id])
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiredAt DateTime
+}
+
 model Gemas {
   id        String   @id @default(uuid())
   title     String
   content   String
   authorId  String
-  author    Users @relation(fields: [authorId], references: [id])
+  author    Users    @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
 }
