@@ -115,7 +115,7 @@ export default function Home() {
   return (
     <AuthGuard redirectTo="/dashboard" requireAuth={false}>
       <div className="flex flex-col md:flex-row h-screen w-full bg-base-200 text-base-content">
-        <div className="w-full md:max-w-5xl mx-auto flex flex-col md:flex-row w-full h-full items-center justify-between p-5 md:p-10 space-y-10 md:space-y-0 md:space-x-10">
+        <div className="w-full md:max-w-5xl mx-auto flex flex-col md:flex-row h-full items-center justify-between p-5 md:p-10 space-y-10 md:space-y-0 md:space-x-10">
           {/* Left Section */}
           <div className="w-full md:min-w-2/5 max-h-110 flex justify-center items-center">
             <svg width="250" height="260" viewBox="0 0 502 520" fill="none" xmlns="http://www.w3.org/2000/svg">
