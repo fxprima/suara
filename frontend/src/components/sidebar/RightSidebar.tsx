@@ -15,6 +15,7 @@ return (
     </div>
 
     <div className="card bg-base-100 shadow p-4 mb-4">
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
         <h2 className="font-semibold mb-2">What's happening</h2>
         <ul className="text-sm space-y-2">
         <li># Drs. Mashudi</li>
