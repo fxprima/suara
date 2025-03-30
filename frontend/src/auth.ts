@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import api from "@/services/api";
+import { LoginCredentials } from "../types/auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: process.env.NEXTAUTH_SECRET as string,
@@ -8,13 +9,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         CredentialsProvider({
             name: "Credentials",
             credentials: {},
-            async authorize(credentials: any) {
+            async authorize(credentials) {
                 try {
+                    const { email, password } = credentials as LoginCredentials;
+                    
                     const res = await api.post(
                         "/auth/signin",
                         {
-                            email: credentials.email,
-                            password: credentials.password,
+                            email: email,
+                            password: password,
                         },
                         { withCredentials: true }
                     );
