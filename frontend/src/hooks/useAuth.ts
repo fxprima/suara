@@ -20,7 +20,8 @@ export default function useAuth() {
     const fetchUser = async () => {
         try {
             const res = await api.get('/auth/me', { withCredentials: true });
-        setUser(res.data);
+            setUser(res.data);
+            console.log(res)
         } catch (err) {
             setError('Not authenticated');
             setUser(null);
