@@ -83,14 +83,20 @@ export class AuthService {
             data: { lastLogin: new Date() }
         })
 
+        res.cookie('refreshToken', refreshToken.token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        })
+
         return {
             accessToken: accessToken,
-            refreshToken: refreshToken.token,
         }
 
     }
 
-    async refresh(refreshToken: string) {
+    async refresh(refreshToken: string, res: Response) {
         const token = await this.prisma.refreshTokens.findUnique({
             where : { token: refreshToken },
             include: { user: true }
@@ -109,15 +115,38 @@ export class AuthService {
             expiresIn: '15m'
         })
 
+        await this.prisma.refreshTokens.delete({
+            where: { id: token.id },
+        });
+
+        const newRefreshToken = uuidv4();
+        const newExpiry = addDays(new Date(), 7);
+        await this.prisma.refreshTokens.create({
+            data: {
+            userId: token.user.id,
+            token: newRefreshToken,
+            expiredAt: newExpiry,
+            },
+        });
+
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+        });
+
         return {
             accessToken: accessToken
         };
     }
 
-    async logout(refreshToken: string) {
-        const token = await this.prisma.refreshTokens.findUnique({
-            where : { token: refreshToken }
-        })
+    async logout(refreshToken: string, res: Response) {
+        console.log("masuk sini ga sih")
+        const token = await this.prisma.refreshTokens.findFirst({
+            where: { token: refreshToken },
+        });
+        
 
         if (!token) throw new UnauthorizedException('Invalid refresh token')
 
@@ -125,9 +154,15 @@ export class AuthService {
             where: { id: token.id }
         })
 
-        return {
-            message: 'Logout successfully.'
-        }
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        })
+
+        return res.status(200).json({
+            message: "Logged out successfully"
+        })
     }
 
     async me(user: UserPayload) {

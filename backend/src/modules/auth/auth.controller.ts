@@ -20,18 +20,22 @@ export class AuthController {
   }
 
   @Post('signin')
-  async login (@Body() loginDto: LoginDto, @Req() req: Request, @Res() res: Response) {
+  async login (
+    @Body() loginDto: LoginDto, 
+    @Req() req: Request, 
+    @Res( {passthrough: true} ) res: Response
+  ) {
     return this.authService.login(loginDto, req, res);
   }
 
   @Post('refresh')
-  async refresh(@Body('refreshToken') token: string) {
-    this.authService.refresh(token);
+  async refresh(@Body('refreshToken') token: string, @Res() res: Response) {
+    this.authService.refresh(token, res);
   }
 
   @Post('logout')
-  async logout(@Body('refreshToken') token: string) {
-    return this.authService.logout(token);
+  async logout(@Body('refreshToken') token: string, @Res() res: Response) {
+    return this.authService.logout(token, res);
   }
 
   @UseGuards(JwtAuthGuard)
