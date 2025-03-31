@@ -1,7 +1,8 @@
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { ReactNode, useEffect } from "react";
-import LoadingScreen from "./loader/LoadingScreen";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { ReactNode, useEffect, useState } from 'react';
+import LoadingScreen from './loader/LoadingScreen';
 
 type Props = {
     children: ReactNode;
@@ -9,21 +10,27 @@ type Props = {
     requireAuth?: boolean;
 };
 
-export function AuthGuard({ children, redirectTo = "/", requireAuth = true }: Props) {
-    const { status } = useSession();
+export function AuthGuard({ children, redirectTo = '/login', requireAuth = true }: Props) {
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     useEffect(() => {
-        if (requireAuth && status === "unauthenticated") 
+        const token = localStorage.getItem('accessToken');
+        console.log('accessToken from localStorage:', token);
+        setIsAuthenticated(!!token);
+    }, []);
+
+    useEffect(() => {
+        console.log('AuthGuard state:', isAuthenticated, 'requireAuth:', requireAuth);
+        if (isAuthenticated === null) return;
+        if (requireAuth && !isAuthenticated) {
             router.replace(redirectTo);
-        
-        if (!requireAuth && status === "authenticated") 
-            router.replace("/dashboard");
-        
-    }, [status, requireAuth, redirectTo, router]);
+        }
+        if (!requireAuth && isAuthenticated) {
+            router.replace('/dashboard');
+        }
+    }, [isAuthenticated, requireAuth, redirectTo, router]);
 
-    if (status === "loading") 
-        return <LoadingScreen />;
-
+    if (isAuthenticated === null) return <LoadingScreen />;
     return <>{children}</>;
 }
