@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import SidebarLogo from './LeftSidebarLogo';
 import useAuth from '@/hooks/useAuth';
-
+import Link from 'next/link';
 
 export default function LeftSidebar() {
     const { user, logout } = useAuth();
@@ -70,7 +70,10 @@ export default function LeftSidebar() {
                         <li>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
-                                <a href="/profile">Profile</a>
+                                <Link href="/profile" className="flex items-center gap-2">
+                                    <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
+                                    Profile
+                                </Link>
                             </div>
                         </li>
                         <li>

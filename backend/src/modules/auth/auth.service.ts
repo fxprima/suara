@@ -70,6 +70,17 @@ export class AuthService {
             expiredAt: addDays(new Date(), 7)
         };
 
+        const existingToken = await this.prisma.refreshTokens.findFirst({
+            where: {
+                userId: user.id,
+            },
+        });
+
+        if (existingToken) {
+            await this.prisma.refreshTokens.delete({
+                where: { id: existingToken.id },
+            });
+        }
 
         await this.prisma.refreshTokens.create({
             data: {
@@ -99,6 +110,7 @@ export class AuthService {
     }
 
     async refresh(refreshToken: string, res: Response) {
+        console.log("masuk sini ya? treffrsh")
         const token = await this.prisma.refreshTokens.findUnique({
             where : { token: refreshToken },
             include: { user: true }
