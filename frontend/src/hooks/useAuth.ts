@@ -21,7 +21,8 @@ export default function useAuth() {
         try {
             const res = await api.get('/auth/me', { withCredentials: true });
             setUser(res.data);
-        } catch (err) {
+        } catch (err: unknown) {
+            console.log(err);
             setError('Not authenticated');
             setUser(null);
         } finally {
@@ -31,11 +32,11 @@ export default function useAuth() {
 
     const logout = async () => {
         try {
-            const res = await api.post('/auth/logout', {}, { withCredentials: true });
+            await api.post('/auth/logout', {}, { withCredentials: true });
             localStorage.removeItem('accessToken');
             router.replace('/');
         } catch (error: unknown) {
-            
+            console.log(error)
         }
     };
 
