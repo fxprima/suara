@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 import LoadingScreen from './loader/LoadingScreen';
+import useAuth from '@/hooks/useAuth';
 
 type Props = {
     children: ReactNode;
@@ -10,27 +11,17 @@ type Props = {
     requireAuth?: boolean;
 };
 
-export function AuthGuard({ children, redirectTo = '/login', requireAuth = true }: Props) {
+
+export function AuthGuard({ children, redirectTo = '/', requireAuth = true }: Props) {
+    const { isAuthenticated, loading } = useAuth();
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        console.log('accessToken from localStorage:', token);
-        setIsAuthenticated(!!token);
-    }, []);
+        if (loading) return;
+        if (requireAuth && !isAuthenticated) router.replace(redirectTo);
+        if (!requireAuth && isAuthenticated) router.replace('/dashboard');
+    }, [loading, isAuthenticated, requireAuth, redirectTo, router]);
 
-    useEffect(() => {
-        console.log('AuthGuard state:', isAuthenticated, 'requireAuth:', requireAuth);
-        if (isAuthenticated === null) return;
-        if (requireAuth && !isAuthenticated) {
-            router.replace(redirectTo);
-        }
-        if (!requireAuth && isAuthenticated) {
-            router.replace('/dashboard');
-        }
-    }, [isAuthenticated, requireAuth, redirectTo, router]);
-
-    if (isAuthenticated === null) return <LoadingScreen />;
+    if (loading) return <LoadingScreen />;
     return <>{children}</>;
 }

@@ -6,6 +6,7 @@ const api = axios.create({
 });
 
 let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
 
 // Daftar route publik yang gak perlu refresh token
 const PUBLIC_ROUTES = ['/auth/signin', '/auth/register', '/auth/refresh'];
@@ -15,14 +16,22 @@ const isPublicRoute = (url?: string) => {
     return PUBLIC_ROUTES.some((route) => url?.startsWith(route));
 };
 
-// Request Interceptor → Tambahkan Authorization header kalau token tersedia
+function subscribeTokenRefresh(cb: (token: string) => void) {
+    refreshSubscribers.push(cb);
+}
+
+function onTokenRefreshed(token: string) {
+    refreshSubscribers.forEach((cb) => cb(token));
+    refreshSubscribers = [];
+}
+
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('accessToken');
         console.log('[REQUEST]', config.url, '→ token:', token?.slice(0, 20), '...');
-        if (token) {
+        if (token) 
             config.headers.Authorization = `Bearer ${token}`;
-        }
+        
         return config;
     },
     (error) => {
@@ -33,33 +42,34 @@ api.interceptors.request.use(
 
 // Response Interceptor → Tangani 401 → Refresh Token → Retry Request
 api.interceptors.response.use(
-    (res) => {
-        console.log('[RESPONSE]', res.config.url, '→', res.status);
-        return res;
-    },
+    (res) => res,
     async (err) => {
         const originalRequest = err.config;
 
         const pathname = new URL(originalRequest.url, api.defaults.baseURL).pathname;
 
-        if (isPublicRoute(pathname)) {
-            console.log('[SKIP] Public route, no refresh logic:', pathname);
-            return Promise.reject(err);
-        }
+        if (isPublicRoute(pathname)) return Promise.reject(err);
 
-        if (err.response?.status === 401 && !originalRequest._retry && !isRefreshing) {
-            console.log('[INTERCEPTOR] Detected 401, attempting refresh...');
+        if (err.response?.status === 401 && !originalRequest._retry) {
+            if (isRefreshing) {
+                return new Promise((resolve) => {
+                    subscribeTokenRefresh((newToken) => {
+                        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+                        resolve(api(originalRequest));
+                    });
+                });
+            }
+
             originalRequest._retry = true;
             isRefreshing = true;
 
             try {
-                const refreshRes = await api.post('/auth/refresh', {}, { withCredentials: true });
-                const newAccessToken = refreshRes.data.accessToken;
-                console.log('[REFRESH] Success → New token:', newAccessToken?.slice(0, 20), '...');
+                const response = await api.post('/auth/refresh', {}, { withCredentials: true });
+                const newAccessToken = response.data.accessToken;
 
                 localStorage.setItem('accessToken', newAccessToken);
                 api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                onTokenRefreshed(newAccessToken);
 
                 return api(originalRequest);
             } catch (refreshError) {
