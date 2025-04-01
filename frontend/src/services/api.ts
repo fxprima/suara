@@ -7,12 +7,19 @@ const api = axios.create({
 
 let isRefreshing = false;
 
-// 👉 Request Interceptor: Pasang Authorization header kalau token ada
+// Daftar route publik yang gak perlu refresh token
+const PUBLIC_ROUTES = ['/auth/signin', '/auth/register', '/auth/refresh'];
+
+// Utility buat ngecek apakah URL request termasuk public route
+const isPublicRoute = (url?: string) => {
+    return PUBLIC_ROUTES.some((route) => url?.startsWith(route));
+};
+
+// Request Interceptor → Tambahkan Authorization header kalau token tersedia
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('accessToken');
         console.log('[REQUEST]', config.url, '→ token:', token?.slice(0, 20), '...');
-
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -24,7 +31,7 @@ api.interceptors.request.use(
     }
 );
 
-// 👉 Response Interceptor: Tangani 401 → Refresh → Retry original request
+// Response Interceptor → Tangani 401 → Refresh Token → Retry Request
 api.interceptors.response.use(
     (res) => {
         console.log('[RESPONSE]', res.config.url, '→', res.status);
@@ -32,7 +39,13 @@ api.interceptors.response.use(
     },
     async (err) => {
         const originalRequest = err.config;
-        console.log('[RESPONSE ERROR]', err.config?.url, '→', err.response?.status);
+
+        const pathname = new URL(originalRequest.url, api.defaults.baseURL).pathname;
+
+        if (isPublicRoute(pathname)) {
+            console.log('[SKIP] Public route, no refresh logic:', pathname);
+            return Promise.reject(err);
+        }
 
         if (err.response?.status === 401 && !originalRequest._retry && !isRefreshing) {
             console.log('[INTERCEPTOR] Detected 401, attempting refresh...');
@@ -44,12 +57,11 @@ api.interceptors.response.use(
                 const newAccessToken = refreshRes.data.accessToken;
                 console.log('[REFRESH] Success → New token:', newAccessToken?.slice(0, 20), '...');
 
-                // Simpan token & pasang ke header
                 localStorage.setItem('accessToken', newAccessToken);
                 api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
-                return api(originalRequest); // Retry
+                return api(originalRequest);
             } catch (refreshError) {
                 console.log('[REFRESH] Failed:', refreshError);
                 localStorage.removeItem('accessToken');
@@ -63,5 +75,6 @@ api.interceptors.response.use(
         return Promise.reject(err);
     }
 );
+
 
 export default api;
