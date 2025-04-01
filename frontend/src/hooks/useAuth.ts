@@ -21,7 +21,6 @@ export default function useAuth() {
         try {
             const res = await api.get('/auth/me', { withCredentials: true });
             setUser(res.data);
-            console.log(res)
         } catch (err) {
             setError('Not authenticated');
             setUser(null);
@@ -35,9 +34,8 @@ export default function useAuth() {
             const res = await api.post('/auth/logout', {}, { withCredentials: true });
             localStorage.removeItem('accessToken');
             router.replace('/');
-            console.log("Masuk sini")
         } catch (error: unknown) {
-            console.log("hello")
+            
         }
     };
 

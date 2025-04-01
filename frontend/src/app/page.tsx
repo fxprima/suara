@@ -64,9 +64,8 @@ export default function Home() {
 
             localStorage.setItem('accessToken', res.data.accessToken);
             setSuccess('Login successful! Redirecting...');
-            setTimeout(() => {
-                router.push('/dashboard');
-            }, 2000);
+            router.push('/dashboard');
+            
         } catch (err: unknown) {
             if (err instanceof Error) {
                 const error = err as AxiosErrorResponse;
