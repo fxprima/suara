@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { addDays } from 'date-fns';
 import { UserPayload } from './interfaces/user-payload.interface';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -70,6 +71,17 @@ export class AuthService {
             expiredAt: addDays(new Date(), 7)
         };
 
+        const existingToken = await this.prisma.refreshTokens.findFirst({
+            where: {
+                userId: user.id,
+            },
+        });
+
+        if (existingToken) {
+            await this.prisma.refreshTokens.delete({
+                where: { id: existingToken.id },
+            });
+        }
 
         await this.prisma.refreshTokens.create({
             data: {
@@ -99,6 +111,7 @@ export class AuthService {
     }
 
     async refresh(refreshToken: string, res: Response) {
+        console.log('Refresh token received:', refreshToken);
         const token = await this.prisma.refreshTokens.findUnique({
             where : { token: refreshToken },
             include: { user: true }
@@ -107,14 +120,19 @@ export class AuthService {
         if (!token || new Date(token.expiredAt) < new Date()) 
             throw new UnauthorizedException('Invalid refresh token')
         
+        console.log('Token expired?', new Date(token?.expiredAt) < new Date());
+        console.log('User found:', token?.user);
+
+        console.log('Token found in DB:', token);
+        
         const payload = {
             sub: token.user.id,
             username: token.user.username,
-            email: token.user.email
+            email: token.user.email,
         };
 
         const accessToken = this.jwt.sign(payload, {
-            expiresIn: '15m'
+            expiresIn: '10m'
         })
 
         await this.prisma.refreshTokens.delete({
@@ -130,7 +148,8 @@ export class AuthService {
             expiredAt: newExpiry,
             },
         });
-
+        
+        console.log("Prev: ", refreshToken)
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -138,13 +157,14 @@ export class AuthService {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
         });
 
-        return {
+        console.log("Refresh token changed: ", newRefreshToken);
+
+        return res.status(200).json({
             accessToken: accessToken
-        };
+        })
     }
 
     async logout(refreshToken: string, res: Response) {
-        console.log("masuk sini ga sih")
         const token = await this.prisma.refreshTokens.findFirst({
             where: { token: refreshToken },
         });
