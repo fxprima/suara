@@ -9,7 +9,6 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { addDays } from 'date-fns';
 import { UserPayload } from './interfaces/user-payload.interface';
-import { access } from 'fs';
 import { publicUserSelect } from '../user/interfaces/public-user.interface';
 
 @Injectable()
@@ -115,8 +114,14 @@ export class AuthService {
             include: { user: true }
         })
 
-        if (!token || new Date(token.expiredAt) < new Date()) 
+        if (!token || new Date(token.expiredAt) < new Date())  {
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
             throw new UnauthorizedException('Invalid refresh token')
+        }
         
         console.log('Token expired?', new Date(token?.expiredAt) < new Date());
         console.log('User found:', token?.user);
