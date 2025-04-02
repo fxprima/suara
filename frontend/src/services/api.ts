@@ -9,7 +9,7 @@ let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
 // Daftar route publik yang gak perlu refresh token
-const PUBLIC_ROUTES = ['/auth/signin', '/auth/register', '/auth/refresh'];
+const PUBLIC_ROUTES = ['/', '/auth/signin', '/auth/register', '/auth/refresh'];
 
 // Utility buat ngecek apakah URL request termasuk public route
 const isPublicRoute = (url?: string) => {
@@ -49,8 +49,9 @@ api.interceptors.response.use(
         const pathname = new URL(originalRequest.url, api.defaults.baseURL).pathname;
 
         if (isPublicRoute(pathname)) return Promise.reject(err);
-
-        if (err.response?.status === 401 && !originalRequest._retry) {
+        
+        const token = localStorage.getItem('accessToken');
+        if (err.response?.status === 401 && !originalRequest._retry && token) {
             if (isRefreshing) {
                 return new Promise((resolve) => {
                     subscribeTokenRefresh((newToken) => {

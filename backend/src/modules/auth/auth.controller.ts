@@ -6,7 +6,6 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt.auth.guard';
-import { RequestWithUser } from 'src/request-with-user';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { UserPayload } from './interfaces/user-payload.interface';
 
@@ -47,6 +46,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@CurrentUser() user: UserPayload) {
+    console.log("dipanggil")
     return this.authService.me(user);
   }
 

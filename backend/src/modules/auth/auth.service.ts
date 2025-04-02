@@ -9,7 +9,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { addDays } from 'date-fns';
 import { UserPayload } from './interfaces/user-payload.interface';
-import { access } from 'fs';
+import { publicUserSelect } from '../user/interfaces/public-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -59,9 +59,6 @@ export class AuthService {
         const payload = {
             sub: user.id,
             username: user.username,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname
         }
 
         const accessToken = this.jwt.sign(payload);
@@ -117,8 +114,14 @@ export class AuthService {
             include: { user: true }
         })
 
-        if (!token || new Date(token.expiredAt) < new Date()) 
+        if (!token || new Date(token.expiredAt) < new Date())  {
+            res.clearCookie('refreshToken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+            });
             throw new UnauthorizedException('Invalid refresh token')
+        }
         
         console.log('Token expired?', new Date(token?.expiredAt) < new Date());
         console.log('User found:', token?.user);
@@ -128,9 +131,6 @@ export class AuthService {
         const payload = {
             sub: token.user.id,
             username: token.user.username,
-            email: token.user.email,
-            firstname: token.user.firstname,
-            lastname: token.user.lastname
         };
 
         const accessToken = this.jwt.sign(payload, {
@@ -190,6 +190,9 @@ export class AuthService {
     }
 
     async me(user: UserPayload) {
-        return user;
+        return this.prisma.users.findUnique({
+            where: {id : user.id },
+            select: publicUserSelect
+        });
     }
 }

@@ -1,9 +1,7 @@
-export interface JwtPayload {
+import { UserPayload } from "./user-payload.interface";
+
+export interface JwtPayload extends UserPayload{
     sub: string;
-    email: string;
-    username: string;
-    firstname: string;
-    lastname: string;
     iat?: number;
     exp?: number;
 }
