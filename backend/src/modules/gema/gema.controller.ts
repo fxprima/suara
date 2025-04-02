@@ -1,19 +1,35 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { GemaService } from './gema.service';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateGemaDto } from './dto/create-gema.dto';
+import { UpdateGemaDto } from './dto/update-gema.dto';
+import { Request } from 'express';
 
-@Controller('gemas')
+@Controller('gema')
 export class GemaController {
-    constructor(private readonly gemasService: GemaService) {}
+  constructor(private readonly gemaService: GemaService) {}
 
-    @UseGuards(AuthGuard('jwt'))
-    @Get('hello')
-    async sayHello() {
-        return await this.gemasService.sayHello();
-    }
-    
-    @Get('all')
-    async getAllGemas() {
-        return await this.gemasService.getAllGemas();
-    }
+  @Post()
+  create(@Body() createGemaDto: CreateGemaDto, @Req() req: Request) {
+    return 'this.gemaService.create(createGemaDto, req.user.id);'
+  }
+
+  @Get()
+  findAll() {
+    return this.gemaService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.gemaService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateGemaDto: UpdateGemaDto) {
+    return this.gemaService.update(+id, updateGemaDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.gemaService.remove(+id);
+  }
 }

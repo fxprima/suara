@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { addDays } from 'date-fns';
 import { UserPayload } from './interfaces/user-payload.interface';
 import { access } from 'fs';
+import { publicUserSelect } from '../user/interfaces/public-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -59,9 +60,6 @@ export class AuthService {
         const payload = {
             sub: user.id,
             username: user.username,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname
         }
 
         const accessToken = this.jwt.sign(payload);
@@ -128,9 +126,6 @@ export class AuthService {
         const payload = {
             sub: token.user.id,
             username: token.user.username,
-            email: token.user.email,
-            firstname: token.user.firstname,
-            lastname: token.user.lastname
         };
 
         const accessToken = this.jwt.sign(payload, {
@@ -190,6 +185,9 @@ export class AuthService {
     }
 
     async me(user: UserPayload) {
-        return user;
+        return this.prisma.users.findUnique({
+            where: {id : user.id },
+            select: publicUserSelect
+        });
     }
 }

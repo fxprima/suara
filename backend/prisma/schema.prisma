@@ -38,9 +38,21 @@ model RefreshTokens {
 
 model Gemas {
   id        String   @id @default(uuid())
-  title     String
-  content   String
-  authorId  String
-  author    Users    @relation(fields: [authorId], references: [id])
+  content   String   @db.MediumText()
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Author
+  authorId String
+  author   Users  @relation(fields: [authorId], references: [id])
+
+  // Repost / Thread
+  parentId String?
+  parent   Gemas?  @relation("ThreadParent", fields: [parentId], references: [id])
+  replies  Gemas[] @relation("ThreadParent")
+
+  // Engagement
+  viewsCount   Int @default(0)
+  repliesCount Int @default(0)
+  repostCount  Int @default(0)
 }

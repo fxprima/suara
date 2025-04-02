@@ -75,7 +75,7 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 console.log('[REFRESH] Failed:', refreshError);
                 localStorage.removeItem('accessToken');
-                window.location.href = '/';
+                // window.location.href = '/';
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
