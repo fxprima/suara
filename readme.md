@@ -6,7 +6,7 @@ Suara is a web-based social media application designed. This platform enables us
 
 1. **CRUD for Posts** - Create, read, update, and delete posts.
 2. **Threads** - Create long discussions in a single thread.
-3. **Authentication** - Uses NextAuth.js for login and session management.
+3. **Authentication** - Uses JWT for login and session management.
 4. **Profile Setup** - Users can personalize their profiles.
 5. **Engagement** - Retweets, replies, and reactions on posts.
 
