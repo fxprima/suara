@@ -20,13 +20,6 @@ export default function MainFeed() {
         loadPost: false,
     });
 
-    const [message, setMessage] = useState({
-        post: {
-            success: true,
-            message: '',
-        },
-    });
-
     const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
