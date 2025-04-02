@@ -6,7 +6,7 @@ import api from '@/services/api';
 import { faUser, faAt, faKey } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AuthGuard } from '@/components/guard/AuthGuard';
-import { AxiosErrorResponse } from '../../types/errors/api-error-response';
+import { AxiosErrorResponse } from '../../types/errors';
 
 export default function Home() {
     const router = useRouter();

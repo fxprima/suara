@@ -16,6 +16,7 @@ export class GemaController {
     return this.gemaService.create(createGemaDto, user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.gemaService.findAll();

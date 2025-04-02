@@ -29,6 +29,33 @@ interface GemaCardProps {
     repliesCount?: number;
 }
 
+/**
+ * GemaCard - Komponen UI untuk menampilkan 1 post Gema ala Twitter/X style.
+ *
+ * Props:
+ * @param {string} authorName - Nama penulis Gema
+ * @param {string} username - Username penulis (tanpa '@', akan ditampilkan otomatis)
+ * @param {string} [avatar] - URL avatar user (default ke `/default-avatar.png` jika tidak ada)
+ * @param {string} content - Konten teks Gema
+ * @param {MediaFile[]} [media] - Optional array media (image/video), max 4 file
+ * @param {string} [createdAt] - Tanggal pembuatan Gema (ISO string)
+ * @param {number} [viewsCount=0] - Jumlah view
+ * @param {number} [likesCount=0] - Jumlah like
+ * @param {number} [repliesCount=0] - Jumlah reply
+ *
+ * 📦 Contoh penggunaan:
+ * <GemaCard
+ *   authorName="Felix"
+ *   username="felixdev"
+ *   avatar="https://..."
+ *   content="Halo dunia!"
+ *   media={[{ type: 'image', url: 'https://...' }]}
+ *   createdAt="2025-04-02T10:00:00Z"
+ *   viewsCount={100}
+ *   likesCount={20}
+ *   repliesCount={5}
+ * />
+ */
 export const GemaCard: React.FC<GemaCardProps> = ({
     authorName,
     username,
@@ -52,7 +79,7 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                 <div className="flex-1">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-semibold leading-none">{authorName}</p>
+                            <p className="font-semibold leading-none mb-2">{authorName}</p>
                             <p className="text-sm text-gray-500 leading-none">@{username}</p>
                         </div>
                         {createdAt && (

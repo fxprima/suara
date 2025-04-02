@@ -18,8 +18,21 @@ export class GemaService {
     });
   }
 
-  findAll() {
-    return `This action returns all gema`;
+  async findAll() {
+    return await this.prisma.gemas.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      include: {
+        author: {
+          select: {
+            firstname: true,
+            lastname: true,
+            username: true
+          }
+        }
+      }
+    })
   }
 
   findOne(id: number) {

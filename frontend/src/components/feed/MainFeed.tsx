@@ -9,16 +9,23 @@ import { extractErrorMessage } from '@/utils/handleApiError';
 import { ToastMessage } from '../ui/toast/ToastMessage';
 import { useToast } from '@/hooks/useToast';
 import { GemaCard } from '../card/GemaCard';
+import { useFetchData } from '@/hooks/useFetchData';
+import { GemaType } from '../../../types/gema';
 
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
     const textareaRef = useAutoGrow(createGemaField);
+    const {
+        data: gemas,
+        loading: loadingFetchGema,
+        error: errorFetchGema,
+        refetch: refetchGema,
+    } = useFetchData<GemaType[]>('/gema');
 
     const { toasts, showToast } = useToast();
 
     const [loading, setLoading] = useState({
         createGema: false,
-        loadPost: false,
     });
 
     const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -37,6 +44,7 @@ export default function MainFeed() {
 
             setCreateGemaField('');
             showToast('You have successfully posted your Suara!', 'success');
+            refetchGema();
         } catch (error: unknown) {
             showToast(extractErrorMessage(error), 'error');
         } finally {
@@ -68,45 +76,30 @@ export default function MainFeed() {
             </div>
 
             <div className="mt-6 space-y-4">
-                <GemaCard
-                    authorName="Uiiia Uiiaa"
-                    username="@uuiiauiiai"
-                    avatar="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
-                    content="Kucing sebelah tidak friendly"
-                    media={[
-                        {
-                            type: 'image',
-                            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"',
-                        },
-                    ]}
-                    viewsCount={120}
-                    likesCount={12}
-                    repliesCount={3}
-                />
-                <GemaCard
-                    authorName="Uiiia Uiiaa"
-                    username="@uuiiauiiai"
-                    avatar="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
-                    content="Kucing sebelah tidak friendly"
-                    media={[
-                        {
-                            type: 'image',
-                            url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"',
-                        },
-                    ]}
-                    viewsCount={120}
-                    likesCount={12}
-                    repliesCount={3}
-                />
-                <GemaCard
-                    authorName="Uiiia Uiiaa"
-                    username="@uuiiauiiai"
-                    avatar="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
-                    content="Kucing sebelah tidak friendly"
-                    viewsCount={120}
-                    likesCount={12}
-                    repliesCount={3}
-                />
+                {loadingFetchGema && (
+                    <div className="flex justify-center items-center py-6">
+                        <span className="loading loading-spinner loading-md text-primary"></span>
+                    </div>
+                )}
+                {!loadingFetchGema
+                    ? gemas?.map((gema) => (
+                          <GemaCard
+                              key={gema.id}
+                              authorName={`${gema.author.firstname} ${gema.author?.lastname}`}
+                              username={gema.author.username}
+                              avatar={
+                                  gema.author.image ??
+                                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s'
+                              }
+                              content={gema.content}
+                              media={gema.media}
+                              createdAt={gema.createdAt}
+                              viewsCount={gema.viewsCount}
+                              likesCount={gema.likesCount}
+                              repliesCount={gema.repliesCount}
+                          />
+                      ))
+                    : null}
             </div>
         </>
     );
