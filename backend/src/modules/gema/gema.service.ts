@@ -23,6 +23,9 @@ export class GemaService {
       orderBy: {
         createdAt: 'desc'
       },
+      where : {
+        parentId: null
+      },
       include: {
         author: {
           select: {
