@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useAutoGrow } from '@/hooks/useAutoGrow';
 import { AxiosError } from 'axios';
 import { extractErrorMessage } from '@/utils/handleApiError';
-import { ToastMessage } from '../toast/ToastMessage';
+import { ToastMessage } from '../ui/toast/ToastMessage';
 import { useToast } from '@/hooks/useToast';
 
 export default function MainFeed() {
