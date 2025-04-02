@@ -27,6 +27,7 @@ interface GemaCardProps {
     viewsCount?: number;
     likesCount?: number;
     repliesCount?: number;
+    onReply?: () => void;
 }
 
 /**
@@ -66,6 +67,7 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     viewsCount = 0,
     likesCount = 0,
     repliesCount = 0,
+    onReply,
 }) => {
     return (
         <div className="border-b border-base-300 pb-4 pt-2 px-1">
@@ -124,7 +126,10 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                     )}
                     {/* Engagement */}
                     <div className="flex justify-between text-sm text-gray-500 mt-3 px-2 text-center">
-                        <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
+                        <div
+                            className="flex items-center space-x-1 hover:text-primary cursor-pointer"
+                            onClick={onReply}
+                        >
                             <FontAwesomeIcon icon={faComment} className="w-4 h-4" />
                             <span>{repliesCount}</span>
                         </div>

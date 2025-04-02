@@ -10,9 +10,11 @@ import { useToast } from '@/hooks/useToast';
 import { GemaCard } from '../card/GemaCard';
 import { useFetchData } from '@/hooks/useFetchData';
 import { GemaType } from '../../../types/gema';
+import { ReplyModal } from '../modal/ReplyModal';
 
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
+    const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const textareaRef = useAutoGrow(createGemaField);
     const {
         data: gemas,
@@ -26,6 +28,25 @@ export default function MainFeed() {
     const [loading, setLoading] = useState({
         createGema: false,
     });
+
+    const handleSubmitReply = async (text: string) => {
+        try {
+            await api.post(
+                '/gema',
+                {
+                    content: text,
+                    parentId: replyToGema?.id,
+                },
+                { withCredentials: true }
+            );
+
+            setReplyToGema(null); // Tutup modal
+            refetchGema(); // Refresh feed
+            showToast('Reply berhasil dikirim!', 'success');
+        } catch (error) {
+            showToast(extractErrorMessage(error), 'error');
+        }
+    };
 
     const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -102,9 +123,19 @@ export default function MainFeed() {
                               viewsCount={gema.viewsCount}
                               likesCount={gema.likesCount}
                               repliesCount={gema.repliesCount}
+                              onReply={() => setReplyToGema(gema)}
                           />
                       ))
                     : null}
+
+                {replyToGema && (
+                    <ReplyModal
+                        isOpen={true}
+                        gema={replyToGema}
+                        onClose={() => setReplyToGema(null)}
+                        onSubmitReply={handleSubmitReply}
+                    />
+                )}
             </div>
         </>
     );
