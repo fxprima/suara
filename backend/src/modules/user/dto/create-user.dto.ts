@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsDateString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsDateString, IsPhoneNumber } from 'class-validator';
 
 export class CreateUserDto {
     @IsNotEmpty({ message: 'Username harus diisi' })
@@ -23,6 +23,7 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsString({ message: 'Phone harus berupa string' })
+    @IsPhoneNumber()
     phone?: string;
 
     @IsNotEmpty({ message: 'Date of birth harus diisi' })
