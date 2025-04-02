@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import api from '@/services/api';
 import { faUser, faAt, faKey } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AuthGuard } from '@/components/AuthGuard';
-import { AxiosErrorResponse } from '../../types/error';
+import { AuthGuard } from '@/components/guard/AuthGuard';
+import { AxiosErrorResponse } from '../../types/errors/api-error-response';
 
 export default function Home() {
     const router = useRouter();
@@ -65,7 +65,6 @@ export default function Home() {
             localStorage.setItem('accessToken', res.data.accessToken);
             setSuccess('Login successful! Redirecting...');
             router.push('/dashboard');
-            
         } catch (err: unknown) {
             if (err instanceof Error) {
                 const error = err as AxiosErrorResponse;

@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { AuthGuard } from '@/components/AuthGuard';
+import { AuthGuard } from '@/components/guard/AuthGuard';
 import LeftSidebar from '@/components/sidebar/LeftSidebar';
 import RightSidebar from '@/components/sidebar/RightSidebar';
 

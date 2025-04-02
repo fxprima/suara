@@ -3,41 +3,73 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFeather } from '@fortawesome/free-solid-svg-icons';
 import api from '@/services/api';
 import { useState } from 'react';
+import { useAutoGrow } from '@/hooks/useAutoGrow';
+import { AxiosError } from 'axios';
+import { extractErrorMessage } from '@/utils/handleApiError';
+import { ToastMessage } from '../toast/ToastMessage';
+import { useToast } from '@/hooks/useToast';
 
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
+    const textareaRef = useAutoGrow(createGemaField);
 
-    const handlePost = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { toasts, showToast } = useToast();
+
+    const [loading, setLoading] = useState({
+        createGema: false,
+        loadPost: false,
+    });
+
+    const [message, setMessage] = useState({
+        post: {
+            success: true,
+            message: '',
+        },
+    });
+
+    const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         try {
-            console.log('msk');
+            setLoading((prev) => ({ ...prev, createGema: true }));
+
+            console.log(loading);
             const data = {
                 content: createGemaField,
             };
             console.log(data);
-            const res = api.post('/gema', data, { withCredentials: true });
+            const res = await api.post('/gema', data, { withCredentials: true });
             console.log('Res Create Gema: ', res);
+
+            setCreateGemaField('');
+            showToast('You have successfully posted your Suara!', 'success');
         } catch (error: unknown) {
-            console.error(error);
+            showToast(extractErrorMessage(error), 'error');
+        } finally {
+            setLoading((prev) => ({ ...prev, createGema: false }));
         }
     };
 
     return (
         <>
+            <ToastMessage toasts={toasts} />
             <div className="border-b border-base-300 pb-4">
                 <div className="flex items-center space-x-2 mb-4">
                     <FontAwesomeIcon icon={faFeather} className="h-5 w-5 opacity-50" />
-                    <input
-                        type="text"
+                    <textarea
+                        ref={textareaRef}
                         placeholder="What is going on?"
-                        className="input input-bordered w-full"
+                        className="textarea textarea-bordered w-full resize-none min-h-0 overflow-hidden"
+                        rows={1}
                         value={createGemaField}
                         onChange={(e) => setCreateGemaField(e.target.value)}
                     />
                 </div>
                 <button className="btn btn-primary" onClick={handlePost}>
-                    Post
+                    {loading.createGema && (
+                        <span className="loading loading-spinner loading-sm"></span>
+                    )}
+                    {loading.createGema ? 'Menggema...' : 'Gema'}
                 </button>
             </div>
 
