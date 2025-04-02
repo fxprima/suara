@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
 import { GemaService } from './gema.service';
 import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
-import { Request } from 'express';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserPayload } from '../auth/interfaces/user-payload.interface';
+import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 
 @Controller('gema')
 export class GemaController {
   constructor(private readonly gemaService: GemaService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createGemaDto: CreateGemaDto, @Req() req: Request) {
-    return 'this.gemaService.create(createGemaDto, req.user.id);'
+  create(@Body() createGemaDto: CreateGemaDto, @CurrentUser() user: UserPayload) {
+    return this.gemaService.create(createGemaDto, user.id);
   }
 
   @Get()
