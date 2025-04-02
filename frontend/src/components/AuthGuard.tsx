@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import LoadingScreen from './loader/LoadingScreen';
 import useAuth from '@/hooks/useAuth';
 
@@ -10,7 +10,6 @@ type Props = {
     redirectTo?: string;
     requireAuth?: boolean;
 };
-
 
 export function AuthGuard({ children, redirectTo = '/', requireAuth = true }: Props) {
     const { isAuthenticated, loading } = useAuth();
