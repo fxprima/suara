@@ -9,14 +9,28 @@ export class GemaService {
   constructor(private prisma: PrismaService) {}
 
   async create(createGemaDto: CreateGemaDto, authorId: string) {
-    return await this.prisma.gemas.create({
-      data : {
+    const newGema = await this.prisma.gemas.create({
+      data: {
         content: createGemaDto.content,
         parentId: createGemaDto.parentId,
-        authorId
-      }
+        authorId,
+      },
     });
+  
+    if (createGemaDto.parentId) {
+      await this.prisma.gemas.update({
+        where: { id: createGemaDto.parentId },
+        data: {
+          repliesCount: {
+            increment: 1,
+          },
+        },
+      });
+    }
+  
+    return newGema;
   }
+  
 
   async findAll() {
     return await this.prisma.gemas.findMany({
