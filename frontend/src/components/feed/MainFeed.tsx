@@ -4,7 +4,6 @@ import { faFeather } from '@fortawesome/free-solid-svg-icons';
 import api from '@/services/api';
 import { useState } from 'react';
 import { useAutoGrow } from '@/hooks/useAutoGrow';
-import { AxiosError } from 'axios';
 import { extractErrorMessage } from '@/utils/handleApiError';
 import { ToastMessage } from '../ui/toast/ToastMessage';
 import { useToast } from '@/hooks/useToast';
@@ -76,6 +75,12 @@ export default function MainFeed() {
             </div>
 
             <div className="mt-6 space-y-4">
+                {!loadingFetchGema && gemas?.length === 0 && (
+                    <p className="text-center text-sm text-gray-500">
+                        Gema? Gema? …Anyone? Start one!
+                    </p>
+                )}
+
                 {loadingFetchGema && (
                     <div className="flex justify-center items-center py-6">
                         <span className="loading loading-spinner loading-md text-primary"></span>

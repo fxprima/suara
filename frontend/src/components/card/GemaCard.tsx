@@ -84,7 +84,11 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                         </div>
                         {createdAt && (
                             <span className="text-xs text-gray-400">
-                                {new Date(createdAt).toLocaleDateString()}
+                                {new Date(createdAt).toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: '2-digit',
+                                })}
                             </span>
                         )}
                     </div>
