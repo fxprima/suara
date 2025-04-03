@@ -1,9 +1,19 @@
-// ReplyGema.tsx
 import { faComment, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons';
 import { ReplyType } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
 
-export default function ReplyGema({ reply }: { reply: ReplyType }) {
+interface ReplyGemaProps {
+    reply: ReplyType;
+    level?: number;
+}
+
+const MAX_LEVEL = 0;
+
+export default function ReplyGema({ reply, level = 0 }: ReplyGemaProps) {
+    const [showChildren, setShowChildren] = useState(false);
+    const canShowReplies = level < MAX_LEVEL;
+
     return (
         <div className="my-4">
             <div className="flex items-start gap-3">
@@ -33,10 +43,8 @@ export default function ReplyGema({ reply }: { reply: ReplyType }) {
                         </span>
                     </div>
 
-                    {/* Konten Reply */}
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
 
-                    {/* Bar reaksi (opsional) */}
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
                         <span className="hover:text-primary cursor-pointer">
                             <FontAwesomeIcon icon={faComment} />
@@ -51,11 +59,28 @@ export default function ReplyGema({ reply }: { reply: ReplyType }) {
                 </div>
             </div>
 
+            {/* Sub-replies (rekursif), dikasih garis + indentation */}
             {reply.replies && reply.replies.length > 0 && (
                 <div className="ml-7 border-l border-gray-600 pl-4 mt-2">
-                    {reply.replies.map((childReply) => (
-                        <ReplyGema key={childReply.id} reply={childReply} />
-                    ))}
+                    {canShowReplies ? (
+                        // Kita tampilkan subreplies bila level masih < MAX_LEVEL
+                        reply.replies.map((childReply) => (
+                            <ReplyGema key={childReply.id} reply={childReply} level={level + 1} />
+                        ))
+                    ) : // Kalau udah mentok level, kasih button "Show Child Replies"
+                    !showChildren ? (
+                        <button
+                            className="btn btn-link no-underline text-sm "
+                            onClick={() => setShowChildren(true)}
+                        >
+                            Show {reply.replies.length} more replies
+                        </button>
+                    ) : (
+                        // Kalau user klik "Show more", baru render child
+                        reply.replies.map((childReply) => (
+                            <ReplyGema key={childReply.id} reply={childReply} level={level + 1} />
+                        ))
+                    )}
                 </div>
             )}
         </div>

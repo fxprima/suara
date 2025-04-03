@@ -49,7 +49,13 @@ export default function GemaDetail() {
 
                 {/* Konten */}
                 <div>
-                    <p className="text-sm text-gray-500">@{gema.author.username}</p>
+                    <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-sm">
+                            {gema.author.firstname} {gema.author.lastname}
+                        </p>
+                        <p className="text-sm text-gray-500">@{username}</p>
+                    </div>
+
                     <p className="text-xl font-semibold whitespace-pre-wrap">{gema.content}</p>
 
                     {/* Media */}
