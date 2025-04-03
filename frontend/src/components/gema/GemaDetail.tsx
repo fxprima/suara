@@ -27,8 +27,8 @@ export default function GemaDetail() {
     if (!gema) {
         console.log('error:', errorFetchGema);
         return (
-            <div className="text-center py-20 text-red-500 font-medium">
-                Gema tidak ditemukan 🥲
+            <div className="text-center py-20">
+                <p className="text-center text-sm text-gray-500">Gema not found.</p>
             </div>
         );
     }
@@ -91,7 +91,7 @@ export default function GemaDetail() {
                 </div>
             </div>
 
-            {/* Reply Thread */}
+            {/* Replies*/}
             <div className="pt-6 space-y-6">
                 {gema.replies?.map((reply) => (
                     <ReplyGema key={reply.id} reply={reply} />
