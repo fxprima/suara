@@ -50,10 +50,35 @@ export class GemaService {
         }
       }
     })
-  }
+  } 
 
-  findOne(id: number) {
-    return `This action returns a #${id} gema`;
+  async findOne(id: string) {
+    return await this.prisma.gemas.findUnique({
+      where : { id },
+      include : {
+        author : {
+          select : {
+            id: true,
+            username: true,
+            firstname: true,
+            lastname: true
+          }
+        },
+        replies : {
+          include : {
+            author : {
+              select : {
+                id: true,
+                username: true,
+                firstname: true,
+                lastname: true
+              }
+            }
+          },
+          orderBy : { createdAt : 'asc' }
+        }
+      },
+    })
   }
 
   update(id: number, updateGemaDto: UpdateGemaDto) {

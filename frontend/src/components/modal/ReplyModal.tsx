@@ -33,13 +33,7 @@ export const ReplyModal: React.FC<ReplyModalProps> = ({ isOpen, onClose, gema, o
                 <div className="flex items-start space-x-3 mb-4">
                     <div className="avatar">
                         <div className="w-10 rounded-full">
-                            <img
-                                src={
-                                    gema.author.image ??
-                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s'
-                                }
-                                alt="avatar"
-                            />
+                            <img src={gema.author.image ?? '/default-avatar.svg'} alt="avatar" />
                         </div>
                     </div>
                     <div className="flex-1">

@@ -24,7 +24,8 @@ export class GemaController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.gemaService.findOne(+id);
+    console.log("ketembak ", id)
+    return this.gemaService.findOne(id);
   }
 
   @Patch(':id')

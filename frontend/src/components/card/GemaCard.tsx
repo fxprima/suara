@@ -11,6 +11,7 @@ import {
     faBookmark,
     faShare,
 } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
 
 interface MediaFile {
     type: 'image' | 'video';
@@ -18,6 +19,7 @@ interface MediaFile {
 }
 
 interface GemaCardProps {
+    id: string;
     authorName: string;
     username: string;
     avatar?: string;
@@ -34,6 +36,7 @@ interface GemaCardProps {
  * GemaCard - Komponen UI untuk menampilkan 1 post Gema ala Twitter/X style.
  *
  * Props:
+ * @param {string} id - ID Gema.
  * @param {string} authorName - Nama penulis Gema
  * @param {string} username - Username penulis (tanpa '@', akan ditampilkan otomatis)
  * @param {string} [avatar] - URL avatar user (default ke `/default-avatar.png` jika tidak ada)
@@ -46,6 +49,7 @@ interface GemaCardProps {
  *
  * 📦 Contoh penggunaan:
  * <GemaCard
+ *   id = "uiiauiiai"
  *   authorName="Felix"
  *   username="felixdev"
  *   avatar="https://..."
@@ -58,6 +62,7 @@ interface GemaCardProps {
  * />
  */
 export const GemaCard: React.FC<GemaCardProps> = ({
+    id,
     authorName,
     username,
     avatar,
@@ -69,8 +74,13 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     repliesCount = 0,
     onReply,
 }) => {
+    const router = useRouter();
     return (
-        <div className="border-b border-base-300 pb-4 pt-2 px-1">
+        <div
+            className="border-b border-base-300 pb-4 pt-2 px-1 transition duration-150 ease-in-out 
+             hover:bg-base-100 hover:shadow-sm cursor-pointer rounded-xl"
+            onClick={() => router.push(`/${username}/gema/${id}`)}
+        >
             {/* Header */}
             <div className="flex items-start space-x-3">
                 <div className="avatar">
@@ -128,7 +138,10 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                     <div className="flex justify-between text-sm text-gray-500 mt-3 px-2 text-center">
                         <div
                             className="flex items-center space-x-1 hover:text-primary cursor-pointer"
-                            onClick={onReply}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onReply && onReply();
+                            }}
                         >
                             <FontAwesomeIcon icon={faComment} className="w-4 h-4" />
                             <span>{repliesCount}</span>

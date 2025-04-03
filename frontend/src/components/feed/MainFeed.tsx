@@ -40,8 +40,8 @@ export default function MainFeed() {
                 { withCredentials: true }
             );
 
-            setReplyToGema(null); // Tutup modal
-            refetchGema(); // Refresh feed
+            setReplyToGema(null); 
+            refetchGema(); 
             showToast('Reply berhasil dikirim!', 'success');
         } catch (error) {
             showToast(extractErrorMessage(error), 'error');
@@ -110,13 +110,11 @@ export default function MainFeed() {
                 {!loadingFetchGema
                     ? gemas?.map((gema) => (
                           <GemaCard
+                              id={gema.id}
                               key={gema.id}
                               authorName={`${gema.author.firstname} ${gema.author?.lastname}`}
                               username={gema.author.username}
-                              avatar={
-                                  gema.author.image ??
-                                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s'
-                              }
+                              avatar={gema.author.avatar ?? '/default-avatar.svg'}
                               content={gema.content}
                               media={gema.media}
                               createdAt={gema.createdAt}
