@@ -121,11 +121,12 @@ export default function MainFeed() {
                               viewsCount={gema.viewsCount}
                               likesCount={gema.likesCount}
                               repliesCount={gema.repliesCount}
-                              onReply={() => setReplyToGema(gema)}
+                              onReply={() => setReplyToGema(gema)} // trigger set gema.
                           />
                       ))
                     : null}
 
+                {/* ketika replytogema udah ke set, replytogema jadi true. */}
                 {replyToGema && (
                     <ReplyModal
                         isOpen={true}
