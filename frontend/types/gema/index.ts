@@ -42,5 +42,5 @@ export interface ReplyType {
     };
     content: string;
     createdAt: string;
-    replies?: ReplyType[]; // pastikan field "replies" ada di API
+    replies?: ReplyType[]; 
 }

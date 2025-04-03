@@ -16,6 +16,8 @@ export default function GemaDetail() {
         error: errorFetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
+    console.log(gema);
+
     if (loadingFetchGema) {
         return (
             <div className="w-full h-full flex items-center justify-center py-20">
