@@ -1,4 +1,4 @@
-import GemaDetail from '@/components/gema/GemaDetail';
+import GemaDetail from '@/components/layout/gema/GemaDetail';
 
 export default function GemaDetailPage() {
     return <GemaDetail />;

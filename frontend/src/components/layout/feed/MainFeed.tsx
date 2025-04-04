@@ -10,9 +10,10 @@ import { useToast } from '@/hooks/ui/useToast';
 import { GemaCard } from '../../gema/GemaCard';
 import { useFetchData } from '@/hooks/data/useFetchData';
 import { GemaType } from '../../../../types/gema';
-import { ReplyModal } from '../../gema/ReplyModal';
+import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { handleReply } from '@/utils/handeReply';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
+
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
@@ -123,7 +124,7 @@ export default function MainFeed() {
 
                 {/* ketika replytogema udah ke set, replytogema jadi true. */}
                 {replyToGema && (
-                    <ReplyModal
+                    <ReplyGemaModal
                         isOpen={true}
                         gema={replyToGema}
                         onClose={() => setReplyToGema(null)}

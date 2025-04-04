@@ -10,7 +10,12 @@ interface ReplyModalProps {
     onSubmitReply: (text: string) => void;
 }
 
-export const ReplyModal: React.FC<ReplyModalProps> = ({ isOpen, onClose, gema, onSubmitReply }) => {
+export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
+    isOpen,
+    onClose,
+    gema,
+    onSubmitReply,
+}) => {
     const [text, setText] = useState('');
     const { user } = useAuth();
 
@@ -33,7 +38,7 @@ export const ReplyModal: React.FC<ReplyModalProps> = ({ isOpen, onClose, gema, o
                 <div className="flex items-start space-x-3 mb-4">
                     <div className="avatar">
                         <div className="w-10 rounded-full">
-                            <img src={gema.author.image ?? '/default-avatar.svg'} alt="avatar" />
+                            <img src={gema.author.avatar ?? '/default-avatar.svg'} alt="avatar" />
                         </div>
                     </div>
                     <div className="flex-1">

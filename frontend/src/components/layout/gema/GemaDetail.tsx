@@ -3,16 +3,16 @@
 import { useFetchData } from '@/hooks/data/useFetchData';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { GemaType, GemaTypeDetail } from '../../../types/gema';
+import { GemaType, GemaTypeDetail } from '../../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
-import ReplyGema from './ReplyGema';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handeReply';
-import { ReplyModal } from './ReplyModal';
-import { ToastMessage } from '../common/toast/ToastMessage';
+import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
+import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
+import ReplyGema from '@/components/gema/ReplyGema';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -137,7 +137,7 @@ export default function GemaDetail() {
             </div>
 
             {replyToGema && (
-                <ReplyModal
+                <ReplyGemaModal
                     isOpen={true}
                     gema={replyToGema}
                     onClose={() => setReplyToGema(null)}

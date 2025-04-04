@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handeReply';
-import { ReplyModal } from './ReplyModal';
 import { ToastMessage } from '../common/toast/ToastMessage';
+import { ReplyGemaModal } from './ReplyGemaModal';
 
 interface ReplyGemaProps {
     reply: ReplyType;
@@ -115,7 +115,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                 </div>
             )}
             {replyToGema && (
-                <ReplyModal
+                <ReplyGemaModal
                     isOpen={true}
                     gema={replyToGema as GemaType}
                     onClose={() => setReplyToGema(null)}
