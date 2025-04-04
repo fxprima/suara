@@ -12,6 +12,7 @@ import { useFetchData } from '@/hooks/useFetchData';
 import { GemaType } from '../../../types/gema';
 import { ReplyModal } from '../modal/ReplyModal';
 import { handleReply } from '@/utils/handeReply';
+import { useSilentRefetch } from '@/hooks/useSilentRefetch';
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
@@ -21,9 +22,12 @@ export default function MainFeed() {
         loading: loadingFetchGema,
         error: errorFetchGema,
         refetch: refetchGema,
+        silentRefetch: silentRefetchGema,
     } = useFetchData<GemaType[]>('/gema');
 
     const { toasts, showToast } = useToast();
+
+    useSilentRefetch(silentRefetchGema);
 
     const [loading, setLoading] = useState({
         createGema: false,
