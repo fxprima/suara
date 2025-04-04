@@ -128,7 +128,7 @@ export default function GemaDetail() {
             {/* Replies*/}
             <div className="pt-6 space-y-6">
                 {gema.replies?.map((reply) => (
-                    <ReplyGema key={reply.id} reply={reply} />
+                    <ReplyGema key={reply.id} reply={reply} refetchGema={refetchGema} />
                 ))}
             </div>
 

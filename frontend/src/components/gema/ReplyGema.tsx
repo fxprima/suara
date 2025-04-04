@@ -1,21 +1,40 @@
 import { faComment, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons';
-import { ReplyType } from '../../../types/gema';
+import { GemaType, ReplyType } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { useToast } from '@/hooks/useToast';
+import { handleReply } from '@/utils/handeReply';
+import { ReplyModal } from '../modal/ReplyModal';
+import { ToastMessage } from '../ui/toast/ToastMessage';
 
 interface ReplyGemaProps {
     reply: ReplyType;
     level?: number;
+    refetchGema?: () => void;
 }
 
 const MAX_LEVEL = 0;
 
-export default function ReplyGema({ reply, level = 0 }: ReplyGemaProps) {
+export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaProps) {
     const [showChildren, setShowChildren] = useState(false);
     const canShowReplies = level < MAX_LEVEL;
 
+    const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
+    const { toasts, showToast } = useToast();
+
+    const handleSubmitReply = async (text: string) => {
+        await handleReply({
+            text: text,
+            parentId: reply?.id,
+            refetchFn: refetchGema ?? (() => {}),
+            showToast: showToast,
+            onSuccess: () => setReplyToGema(null),
+        });
+    };
+
     return (
         <div className="my-4">
+            <ToastMessage toasts={toasts} />
             <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                     <img
@@ -46,7 +65,13 @@ export default function ReplyGema({ reply, level = 0 }: ReplyGemaProps) {
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
 
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
-                        <span className="hover:text-primary cursor-pointer">
+                        <span
+                            className="flex items-center gap-2 hover:text-primary cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setReplyToGema(reply as GemaType);
+                            }}
+                        >
                             <FontAwesomeIcon icon={faComment} />
                         </span>
                         <span className="hover:text-green-500 cursor-pointer">
@@ -73,15 +98,29 @@ export default function ReplyGema({ reply, level = 0 }: ReplyGemaProps) {
                             className="btn btn-link no-underline text-sm "
                             onClick={() => setShowChildren(true)}
                         >
-                            Show {reply.replies.length} more replies
+                            Show {reply.replies.length} more{' '}
+                            {reply.replies.length > 1 ? 'replies' : 'reply'}
                         </button>
                     ) : (
                         // Kalau user klik "Show more", baru render child
                         reply.replies.map((childReply) => (
-                            <ReplyGema key={childReply.id} reply={childReply} level={level + 1} />
+                            <ReplyGema
+                                key={childReply.id}
+                                reply={childReply}
+                                level={level + 1}
+                                refetchGema={refetchGema}
+                            />
                         ))
                     )}
                 </div>
+            )}
+            {replyToGema && (
+                <ReplyModal
+                    isOpen={true}
+                    gema={replyToGema as GemaType}
+                    onClose={() => setReplyToGema(null)}
+                    onSubmitReply={handleSubmitReply}
+                />
             )}
         </div>
     );
