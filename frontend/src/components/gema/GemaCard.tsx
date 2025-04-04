@@ -139,7 +139,7 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                             className="flex items-center space-x-1 hover:text-primary cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onReply && onReply();
+                                onReply?.();
                             }}
                         >
                             <FontAwesomeIcon icon={faComment} className="w-4 h-4" />

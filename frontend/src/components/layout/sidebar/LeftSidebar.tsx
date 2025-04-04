@@ -77,7 +77,10 @@ export default function LeftSidebar() {
                         <li>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faCog} className="h-4 w-4" />
-                                <a href="/settings">Settings</a>
+                                <Link href="/settings" className="flex items-center gap-2">
+                                    <FontAwesomeIcon icon={faCog} className="h-4 w-4" />
+                                    Settings
+                                </Link>
                             </div>
                         </li>
                         <li>

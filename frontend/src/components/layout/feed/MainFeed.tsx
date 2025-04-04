@@ -21,7 +21,6 @@ export default function MainFeed() {
     const {
         data: gemas,
         loading: loadingFetchGema,
-        error: errorFetchGema,
         refetch: refetchGema,
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaType[]>('/gema');
