@@ -3,10 +3,15 @@
 import { useFetchData } from '@/hooks/useFetchData';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { GemaTypeDetail } from '../../../types/gema';
+import { GemaType, GemaTypeDetail } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
 import ReplyGema from './ReplyGema';
+import { useState } from 'react';
+import { useToast } from '@/hooks/useToast';
+import { handleReply } from '@/utils/handeReply';
+import { ReplyModal } from '../modal/ReplyModal';
+import { ToastMessage } from '../ui/toast/ToastMessage';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -14,9 +19,23 @@ export default function GemaDetail() {
         data: gema,
         loading: loadingFetchGema,
         error: errorFetchGema,
+        refetch: refetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
     console.log(gema);
+
+    const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
+    const { toasts, showToast } = useToast();
+
+    const handleSubmitReply = async (text: string) => {
+        await handleReply({
+            text: text,
+            parentId: gema?.id,
+            refetchFn: refetchGema,
+            showToast: showToast,
+            onSuccess: () => setReplyToGema(null),
+        });
+    };
 
     if (loadingFetchGema) {
         return (
@@ -37,6 +56,7 @@ export default function GemaDetail() {
 
     return (
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+            <ToastMessage toasts={toasts} />
             {/* Gema utama */}
             <div className="flex items-start gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden">
@@ -79,7 +99,13 @@ export default function GemaDetail() {
 
             {/* Reaction Bar */}
             <div className="flex justify-around items-center text-sm text-gray-600 border-y py-3">
-                <div className="flex items-center gap-2">
+                <div
+                    className="flex items-center gap-2 hover:text-primary cursor-pointer"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setReplyToGema(gema);
+                    }}
+                >
                     <FontAwesomeIcon icon={faComment} className="text-lg" />
                     <span>{gema.repliesCount}</span>
                 </div>
@@ -105,6 +131,15 @@ export default function GemaDetail() {
                     <ReplyGema key={reply.id} reply={reply} />
                 ))}
             </div>
+
+            {replyToGema && (
+                <ReplyModal
+                    isOpen={true}
+                    gema={replyToGema}
+                    onClose={() => setReplyToGema(null)}
+                    onSubmitReply={handleSubmitReply}
+                />
+            )}
         </div>
     );
 }
