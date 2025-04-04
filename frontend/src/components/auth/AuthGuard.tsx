@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
-import LoadingScreen from '../ui/loader/LoadingScreen';
+import LoadingScreen from '../common/loader/LoadingScreen';
 import useAuth from '@/hooks/auth/useAuth';
 
 type Props = {

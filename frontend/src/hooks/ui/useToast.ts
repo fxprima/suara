@@ -1,6 +1,6 @@
 'use client';
 
-import { ToastItem } from '@/components/ui/toast/ToastMessage';
+import { ToastItem } from '@/components/common/toast/ToastMessage';
 import { useState, useCallback } from 'react';
 
 /**

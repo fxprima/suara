@@ -10,8 +10,8 @@ import ReplyGema from './ReplyGema';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handeReply';
-import { ReplyModal } from '../modal/ReplyModal';
-import { ToastMessage } from '../ui/toast/ToastMessage';
+import { ReplyModal } from './ReplyModal';
+import { ToastMessage } from '../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 
 export default function GemaDetail() {

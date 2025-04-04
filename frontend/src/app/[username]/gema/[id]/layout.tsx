@@ -1,11 +1,11 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { AuthGuard } from '@/components/guard/AuthGuard';
-import LeftSidebar from '@/components/sidebar/LeftSidebar';
-import RightSidebar from '@/components/sidebar/RightSidebar';
+import { AuthGuard } from '@/components/auth/AuthGuard';
+import RightSidebar from '@/components/layout/sidebar/RightSidebar';
+import LeftSidebar from '@/components/layout/sidebar/LeftSidebar';
 
-export default function GemadLayout({ children }: { children: ReactNode }) {
+export default function GemaLayout({ children }: { children: ReactNode }) {
     return (
         <AuthGuard requireAuth={true} redirectTo="/">
             <div className="dashboard-layout flex h-screen">

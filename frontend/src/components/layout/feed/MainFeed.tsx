@@ -5,12 +5,12 @@ import api from '@/services/api';
 import { useState } from 'react';
 import { useAutoGrow } from '@/hooks/ui/useAutoGrow';
 import { extractErrorMessage } from '@/utils/handleApiError';
-import { ToastMessage } from '../ui/toast/ToastMessage';
+import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useToast } from '@/hooks/ui/useToast';
-import { GemaCard } from '../card/GemaCard';
+import { GemaCard } from '../../gema/GemaCard';
 import { useFetchData } from '@/hooks/data/useFetchData';
-import { GemaType } from '../../../types/gema';
-import { ReplyModal } from '../modal/ReplyModal';
+import { GemaType } from '../../../../types/gema';
+import { ReplyModal } from '../../gema/ReplyModal';
 import { handleReply } from '@/utils/handeReply';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 export default function MainFeed() {

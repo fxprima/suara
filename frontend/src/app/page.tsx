@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import api from '@/services/api';
 import { faUser, faAt, faKey } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AuthGuard } from '@/components/guard/AuthGuard';
+import { AuthGuard } from '@/components/auth/AuthGuard';
 import { AxiosErrorResponse } from '../../types/errors';
 
 export default function Home() {
