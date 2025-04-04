@@ -15,7 +15,7 @@ import {
     faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import SidebarLogo from './LeftSidebarLogo';
-import useAuth from '@/hooks/useAuth';
+import useAuth from '@/hooks/auth/useAuth';
 import Link from 'next/link';
 
 export default function LeftSidebar() {

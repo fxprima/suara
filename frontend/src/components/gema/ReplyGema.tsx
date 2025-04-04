@@ -2,7 +2,7 @@ import { faComment, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons
 import { GemaType, ReplyType } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handeReply';
 import { ReplyModal } from '../modal/ReplyModal';
 import { ToastMessage } from '../ui/toast/ToastMessage';

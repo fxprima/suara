@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { GemaType } from '../../../types/gema';
-import useAuth from '@/hooks/useAuth';
+import useAuth from '@/hooks/auth/useAuth';
 
 interface ReplyModalProps {
     isOpen: boolean;

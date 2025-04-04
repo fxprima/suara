@@ -1,6 +1,6 @@
 'use client';
 
-import { useFetchData } from '@/hooks/useFetchData';
+import { useFetchData } from '@/hooks/data/useFetchData';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { GemaType, GemaTypeDetail } from '../../../types/gema';
@@ -8,11 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
 import ReplyGema from './ReplyGema';
 import { useEffect, useState } from 'react';
-import { useToast } from '@/hooks/useToast';
+import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handeReply';
 import { ReplyModal } from '../modal/ReplyModal';
 import { ToastMessage } from '../ui/toast/ToastMessage';
-import { useSilentRefetch } from '@/hooks/useSilentRefetch';
+import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
