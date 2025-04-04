@@ -27,7 +27,6 @@ export const useToast = () => {
     const [toasts, setToasts] = useState<ToastItem[]>([]);
 
     const showToast = useCallback((message: string, type: ToastItem['type'] = 'info', duration = 3000) => {
-        const id = Date.now(); 
         const newToast = { type, message };
 
         setToasts((prev) => [...prev, newToast]);

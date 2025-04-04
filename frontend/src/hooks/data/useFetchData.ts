@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import api from '@/services/api';
+import { extractErrorMessage } from '@/utils/handleApiError';
 
-export function useFetchData<T = any>(url: string) {
+export function useFetchData<T = unknown>(url: string) {
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -15,9 +16,9 @@ export function useFetchData<T = any>(url: string) {
                 const response = await api.get<T>(url);
                 setData(response.data);
                 setError(null);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('[useFetchData]', err);
-                setError(err.response?.data?.message || 'Something went wrong');
+                setError(extractErrorMessage(err));
             } finally {
                 if (!silent) setLoading(false);
             }

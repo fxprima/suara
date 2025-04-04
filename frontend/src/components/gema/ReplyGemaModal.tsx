@@ -1,8 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { GemaType } from '../../../types/gema';
-import useAuth from '@/hooks/auth/useAuth';
-
 interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -17,7 +15,6 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
     onSubmitReply,
 }) => {
     const [text, setText] = useState('');
-    const { user } = useAuth();
 
     if (!isOpen) return null;
 
