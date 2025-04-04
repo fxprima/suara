@@ -11,7 +11,7 @@ import { GemaCard } from '../card/GemaCard';
 import { useFetchData } from '@/hooks/useFetchData';
 import { GemaType } from '../../../types/gema';
 import { ReplyModal } from '../modal/ReplyModal';
-
+import { handleReply } from '@/utils/handeReply';
 export default function MainFeed() {
     const [createGemaField, setCreateGemaField] = useState('');
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
@@ -30,22 +30,13 @@ export default function MainFeed() {
     });
 
     const handleSubmitReply = async (text: string) => {
-        try {
-            await api.post(
-                '/gema',
-                {
-                    content: text,
-                    parentId: replyToGema?.id,
-                },
-                { withCredentials: true }
-            );
-
-            setReplyToGema(null); 
-            refetchGema(); 
-            showToast('Reply berhasil dikirim!', 'success');
-        } catch (error) {
-            showToast(extractErrorMessage(error), 'error');
-        }
+        await handleReply({
+            text: text,
+            parentId: replyToGema?.id,
+            refetchFn: refetchGema,
+            showToast: showToast,
+            onSuccess: () => setReplyToGema(null),
+        });
     };
 
     const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
