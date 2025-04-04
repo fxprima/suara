@@ -26,7 +26,7 @@ export function useFetchData<T = any>(url: string) {
     );
 
     useEffect(() => {
-        fetchData(); // first load
+        fetchData(); 
     }, [fetchData]);
 
     return {
@@ -34,6 +34,6 @@ export function useFetchData<T = any>(url: string) {
         loading,
         error,
         refetch: () => fetchData(false),
-        silentRefetch: () => fetchData(true), // 🆕 ini buat polling!
+        silentRefetch: () => fetchData(true), 
     };
 }

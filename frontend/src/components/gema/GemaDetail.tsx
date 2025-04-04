@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast';
 import { handleReply } from '@/utils/handeReply';
 import { ReplyModal } from '../modal/ReplyModal';
 import { ToastMessage } from '../ui/toast/ToastMessage';
+import { useSilentRefetch } from '@/hooks/useSilentRefetch';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -25,13 +26,7 @@ export default function GemaDetail() {
 
     console.log(gema);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            silentRefetchGema();
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [refetchGema]);
+    useSilentRefetch(silentRefetchGema);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
