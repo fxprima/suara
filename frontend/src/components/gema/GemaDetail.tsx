@@ -7,7 +7,7 @@ import { GemaType, GemaTypeDetail } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
 import ReplyGema from './ReplyGema';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { handleReply } from '@/utils/handeReply';
 import { ReplyModal } from '../modal/ReplyModal';
@@ -20,9 +20,18 @@ export default function GemaDetail() {
         loading: loadingFetchGema,
         error: errorFetchGema,
         refetch: refetchGema,
+        silentRefetch: silentRefetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
     console.log(gema);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            silentRefetchGema();
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [refetchGema]);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
@@ -128,7 +137,7 @@ export default function GemaDetail() {
             {/* Replies*/}
             <div className="pt-6 space-y-6">
                 {gema.replies?.map((reply) => (
-                    <ReplyGema key={reply.id} reply={reply} refetchGema={refetchGema} />
+                    <ReplyGema key={reply.id} reply={reply} refetchGema={silentRefetchGema} />
                 ))}
             </div>
 
