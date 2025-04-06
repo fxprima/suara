@@ -5,7 +5,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import RightSidebar from '@/components/layout/sidebar/RightSidebar';
 import LeftSidebar from '@/components/layout/sidebar/LeftSidebar';
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function GemaLayout({ children }: { children: ReactNode }) {
     return (
         <AuthGuard requireAuth={true} redirectTo="/">
             <div className="dashboard-layout flex h-screen">

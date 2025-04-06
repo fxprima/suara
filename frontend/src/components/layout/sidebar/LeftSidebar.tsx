@@ -15,7 +15,7 @@ import {
     faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import SidebarLogo from './LeftSidebarLogo';
-import useAuth from '@/hooks/useAuth';
+import useAuth from '@/hooks/auth/useAuth';
 import Link from 'next/link';
 
 export default function LeftSidebar() {
@@ -27,7 +27,7 @@ export default function LeftSidebar() {
                 <SidebarLogo />
                 <nav className="space-y-4 w-full">
                     {[
-                        { icon: faHome, label: 'Home' },
+                        { icon: faHome, label: 'Home', link: '/dashboard' },
                         { icon: faSearch, label: 'Explore' },
                         { icon: faBell, label: 'Notifications' },
                         { icon: faEnvelope, label: 'Messages' },
@@ -37,6 +37,7 @@ export default function LeftSidebar() {
                     ].map((item, idx) => (
                         <button
                             key={idx}
+                            onClick={() => (window.location.href = item.link || '/')}
                             className="btn btn-ghost w-full flex justify-center lg:justify-start"
                         >
                             <FontAwesomeIcon
@@ -57,10 +58,7 @@ export default function LeftSidebar() {
                 <div className="dropdown dropdown-top">
                     <label tabIndex={0} className="avatar cursor-pointer">
                         <div className="w-10 rounded-full">
-                            <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
-                                alt="User avatar"
-                            />
+                            <img src="/default-avatar.svg" alt="User avatar" />
                         </div>
                     </label>
                     <ul
@@ -79,7 +77,10 @@ export default function LeftSidebar() {
                         <li>
                             <div className="flex items-center gap-2">
                                 <FontAwesomeIcon icon={faCog} className="h-4 w-4" />
-                                <a href="/settings">Settings</a>
+                                <Link href="/settings" className="flex items-center gap-2">
+                                    <FontAwesomeIcon icon={faCog} className="h-4 w-4" />
+                                    Settings
+                                </Link>
                             </div>
                         </li>
                         <li>

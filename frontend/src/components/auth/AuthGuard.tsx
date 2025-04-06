@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect } from 'react';
-import LoadingScreen from './loader/LoadingScreen';
-import useAuth from '@/hooks/useAuth';
+import LoadingScreen from '../common/loader/LoadingScreen';
+import useAuth from '@/hooks/auth/useAuth';
 
 type Props = {
     children: ReactNode;

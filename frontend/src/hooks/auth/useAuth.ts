@@ -11,6 +11,30 @@ export type AuthUser = {
     lastname: string;
 };
 
+/**
+ * useAuth - Custom hook untuk mengelola state autentikasi user di frontend.
+ *
+ * @returns {{
+*   user: AuthUser | null,
+*   loading: boolean,
+*   error: string | null,
+*   logout: () => Promise<void>,
+*   isAuthenticated: boolean
+* }}
+*
+* 🔐 Fitur:
+* - Fetch user dari `/auth/me` saat mount
+* - Simpan user ke state jika login berhasil
+* - Jika gagal, atur `error` dan `user = null`
+* - Fungsi `logout()` juga clear token + redirect ke `/`
+*
+* 📦 Contoh penggunaan:
+* const { user, loading, isAuthenticated, logout } = useAuth();
+*
+* 🧠 Tips:
+* - Gunakan `loading` untuk spinner saat data belum siap
+* - Gunakan `isAuthenticated` untuk guard halaman
+*/
 export default function useAuth() {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
