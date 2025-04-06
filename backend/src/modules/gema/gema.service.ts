@@ -85,7 +85,9 @@ export class GemaService {
     if (!gema) return null;
 
     const replies = await this.getRepliesRecursive(id);
-    console.log({ ...gema, replies });
+    if (process.env.NODE_ENV !== 'production') {
+      console.log({ ...gema, replies });
+    }
     return { ...gema, replies };
   }
 
