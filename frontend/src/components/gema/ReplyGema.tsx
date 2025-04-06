@@ -3,7 +3,7 @@ import { GemaType, ReplyType } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
-import { handleReply } from '@/utils/handeReply';
+import { handleReply } from '@/utils/handleReply';
 import { ToastMessage } from '../common/toast/ToastMessage';
 import { ReplyGemaModal } from './ReplyGemaModal';
 

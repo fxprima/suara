@@ -11,7 +11,7 @@ import { GemaCard } from '../../gema/GemaCard';
 import { useFetchData } from '@/hooks/data/useFetchData';
 import { GemaType } from '../../../../types/gema';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
-import { handleReply } from '@/utils/handeReply';
+import { handleReply } from '@/utils/handleReply';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 
 export default function MainFeed() {

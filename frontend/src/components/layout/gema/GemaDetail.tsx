@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
-import { handleReply } from '@/utils/handeReply';
+import { handleReply } from '@/utils/handleReply';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
