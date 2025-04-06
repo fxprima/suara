@@ -24,8 +24,6 @@ export default function GemaDetail() {
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
-    console.log(gema);
-
     useSilentRefetch(silentRefetchGema);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
