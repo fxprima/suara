@@ -47,6 +47,17 @@ export class GemaService {
             lastname: true,
             username: true
           }
+        },
+        likedBy: {
+          select : {
+            user: {
+              select : {
+                firstname: true,
+                lastname: true,
+                username: true
+              }
+            }
+          }
         }
       }
     })
@@ -79,7 +90,19 @@ export class GemaService {
   async getGemaDetailRecursive(id: string) {
     const gema = await this.prisma.gemas.findUnique({
       where: { id },
-      include: { author: true }
+      include: { 
+        author: true , 
+        likedBy: {
+          select : {
+            user : {
+              select : {
+                id: true,
+                username: true,
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!gema) return null;

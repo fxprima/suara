@@ -39,6 +39,11 @@ export default function GemaDetail() {
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
 
+    const handleLikes = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        alert('Click');
+    };
+
     const handleSubmitReply = async (text: string) => {
         await handleReply({
             text: text,
@@ -126,9 +131,13 @@ export default function GemaDetail() {
                     <span>{0}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faHeart} className="text-lg" />
-                    <span>{gema.likesCount}</span>
+                <div className="flex items-center gap-2 group">
+                    <FontAwesomeIcon
+                        icon={faHeart}
+                        className="text-lg cursor-pointer group-hover:text-red-500 transition-colors"
+                        onClick={(e) => handleLikes(e)}
+                    />
+                    <span>{gema.likedBy.length}</span>
                 </div>
 
                 <div className="flex items-center gap-2">

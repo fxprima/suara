@@ -1,19 +1,20 @@
+export interface UserPublicProfile {
+    firstname: string;
+    lastname: string;
+    username: string;
+    avatar?: string;
+}
 export interface GemaType {
     id: string;
     content: string;
     createdAt: string;
-    author: {
-        firstname: string;
-        lastname: string;
-        username: string;
-        avatar?: string;
-    };
+    author: UserPublicProfile;
     media?: {
         type: 'image' | 'video';
         url: string;
     }[];
     viewsCount: number;
-    likesCount: number;
+    likedBy : UserPublicProfile[];
     repliesCount: number;
 }
 
@@ -22,24 +23,15 @@ export interface GemaTypeDetail extends GemaType {
         id: string;
         content: string;
         createdAt: string;
-        author: {
-            firstname: string;
-            lastname: string;
-            username: string;
-            avatar?: string;
-        };
+        author: UserPublicProfile;
+        likedBy : UserPublicProfile[];
     }[];
 }
 
 
 export interface ReplyType {
     id: string;
-    author: {
-        firstname: string;
-        lastname: string;
-        username: string;
-        avatar?: string;
-    };
+    author: UserPublicProfile;
     content: string;
     createdAt: string;
     replies?: ReplyType[]; 
