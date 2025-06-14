@@ -86,10 +86,20 @@ export class GemaService {
 
     const replies = await this.getRepliesRecursive(id);
     if (process.env.NODE_ENV !== 'production') {
-      console.log({ ...gema, replies });
+      // console.log({ ...gema, replies });
     }
     return { ...gema, replies };
   }
+
+  async incrementViews(id: string) {
+    return this.prisma.gemas.update({
+      where: { id },
+      data: {
+        viewsCount: { increment: 1 },
+      },
+    });
+  }
+
 
   async findOne(id: string) {
     const data = await this.getGemaDetailRecursive(id);

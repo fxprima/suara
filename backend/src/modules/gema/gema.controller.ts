@@ -22,6 +22,12 @@ export class GemaController {
     return this.gemaService.findAll();
   }
 
+  @Patch(':id/views') 
+  async incrementViews(@Param('id') id: string) {
+    console.log("Kepanggil")
+    return await this.gemaService.incrementViews(id);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.gemaService.findOne(id);

@@ -6,13 +6,14 @@ import { useParams } from 'next/navigation';
 import { GemaType, GemaTypeDetail } from '../../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import ReplyGema from '@/components/gema/ReplyGema';
+import api from '@/services/api';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -25,6 +26,15 @@ export default function GemaDetail() {
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
     useSilentRefetch(silentRefetchGema);
+
+    console.log('Gema Detail:', gema);
+
+    useEffect(() => {
+        if (id)
+            api.patch(`/gema/${id}/views`).catch((err) =>
+                console.error('Failed to increment views:', err)
+            );
+    }, [id]);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
