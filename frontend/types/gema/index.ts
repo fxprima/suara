@@ -1,4 +1,5 @@
 export interface UserPublicProfile {
+    id: string;
     firstname: string;
     lastname: string;
     username: string;
@@ -14,7 +15,7 @@ export interface GemaType {
         url: string;
     }[];
     viewsCount: number;
-    likedBy : UserPublicProfile[];
+    likedBy : {user: UserPublicProfile}[];
     repliesCount: number;
 }
 
@@ -24,10 +25,9 @@ export interface GemaTypeDetail extends GemaType {
         content: string;
         createdAt: string;
         author: UserPublicProfile;
-        likedBy : UserPublicProfile[];
+        likedBy : {user: UserPublicProfile}[];
     }[];
 }
-
 
 export interface ReplyType {
     id: string;

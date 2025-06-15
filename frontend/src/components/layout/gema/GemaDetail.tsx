@@ -14,6 +14,7 @@ import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import ReplyGema from '@/components/gema/ReplyGema';
 import api from '@/services/api';
+import useAuth from '@/hooks/auth/useAuth';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -25,9 +26,9 @@ export default function GemaDetail() {
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
-    useSilentRefetch(silentRefetchGema);
+    const { user: loggedUser } = useAuth();
 
-    console.log('Gema Detail:', gema);
+    useSilentRefetch(silentRefetchGema);
 
     useEffect(() => {
         if (id)
@@ -38,10 +39,16 @@ export default function GemaDetail() {
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
+    const isGemaLikedByUser = () => {
+        if (!id || !gema || !loggedUser) return false;
+        console.log(gema.likedBy);
+        return gema.likedBy.some((u) => u.user.id === loggedUser.id);
+    };
 
     const handleLikes = async (e: React.MouseEvent) => {
         e.preventDefault();
         alert('Click');
+        console.log(await isGemaLikedByUser());
     };
 
     const handleSubmitReply = async (text: string) => {
@@ -134,7 +141,9 @@ export default function GemaDetail() {
                 <div className="flex items-center gap-2 group">
                     <FontAwesomeIcon
                         icon={faHeart}
-                        className="text-lg cursor-pointer group-hover:text-red-500 transition-colors"
+                        className={`text-lg cursor-pointer group-hover:text-red-500 transition-colors ${
+                            isGemaLikedByUser() ? 'text-red-500' : ''
+                        }`}
                         onClick={(e) => handleLikes(e)}
                     />
                     <span>{gema.likedBy.length}</span>
