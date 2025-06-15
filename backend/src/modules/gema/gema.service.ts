@@ -123,6 +123,27 @@ export class GemaService {
     });
   }
 
+  async likeGema(uid: string, gid: string) {
+    
+    const isGemaLiked = await this.prisma.gemaLikes.findFirst({
+      where: { userId: uid, gemaId: gid }
+    })
+
+    if (isGemaLiked) 
+        return this.prisma.gemaLikes.delete({
+          where : {userId_gemaId: {
+            userId: uid,
+            gemaId: gid
+          }}
+        })
+
+    return this.prisma.gemaLikes.create({
+      data : {
+        gemaId: gid,
+        userId: uid
+      }
+    })
+  }
 
   async findOne(id: string) {
     const data = await this.getGemaDetailRecursive(id);

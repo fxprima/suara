@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req} from '@nestjs/common';
 import { GemaService } from './gema.service';
 import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
@@ -26,6 +26,12 @@ export class GemaController {
   async incrementViews(@Param('id') id: string) {
     console.log("Kepanggil")
     return await this.gemaService.incrementViews(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/likes')
+  async likeGema(@Param('id') id: string, @CurrentUser() user: UserPayload) {
+    return await this.gemaService.likeGema(user.id, id);
   }
 
   @Get(':id')

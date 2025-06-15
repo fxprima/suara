@@ -25,7 +25,7 @@ model Users {
   gemas         Gemas[]
   lastLogin     DateTime?       @default(now())
   RefreshTokens RefreshTokens[]
-  likedGemas    GemaLike[]
+  likedGemas    GemaLikes[]
 }
 
 model RefreshTokens {
@@ -53,13 +53,13 @@ model Gemas {
   replies  Gemas[] @relation("ThreadParent")
 
   // Engagement
-  viewsCount   Int        @default(0)
-  repliesCount Int        @default(0)
-  repostCount  Int        @default(0)
-  likedBy      GemaLike[]
+  viewsCount   Int         @default(0)
+  repliesCount Int         @default(0)
+  repostCount  Int         @default(0)
+  likedBy      GemaLikes[]
 }
 
-model GemaLike {
+model GemaLikes {
   id        String   @id @default(uuid())
   userId    String
   user      Users    @relation(fields: [userId], references: [id])

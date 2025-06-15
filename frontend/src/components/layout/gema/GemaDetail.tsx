@@ -47,8 +47,9 @@ export default function GemaDetail() {
 
     const handleLikes = async (e: React.MouseEvent) => {
         e.preventDefault();
-        alert('Click');
-        console.log(await isGemaLikedByUser());
+        await api
+            .patch(`/gema/${gema?.id}/likes`)
+            .catch((err) => console.log('Error to like', err));
     };
 
     const handleSubmitReply = async (text: string) => {
