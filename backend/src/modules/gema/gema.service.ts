@@ -47,6 +47,17 @@ export class GemaService {
             lastname: true,
             username: true
           }
+        },
+        likedBy: {
+          select : {
+            user: {
+              select : {
+                firstname: true,
+                lastname: true,
+                username: true
+              }
+            }
+          }
         }
       }
     })
@@ -65,7 +76,18 @@ export class GemaService {
   async getRepliesRecursive(id: string) {
     const replies = await this.prisma.gemas.findMany({
       where: { parentId: id },
-      include: { author: true }
+      include: { 
+        author: true, 
+        likedBy: {
+          select : {
+            user : {
+              select : {
+                id: true,
+                username: true,
+              }
+            }
+          }
+        }}
     });
     
 
@@ -79,16 +101,59 @@ export class GemaService {
   async getGemaDetailRecursive(id: string) {
     const gema = await this.prisma.gemas.findUnique({
       where: { id },
-      include: { author: true }
+      include: { 
+        author: true , 
+        likedBy: {
+          select : {
+            user : {
+              select : {
+                id: true,
+                username: true,
+              }
+            }
+          }
+        }
+      }
     });
 
     if (!gema) return null;
 
     const replies = await this.getRepliesRecursive(id);
     if (process.env.NODE_ENV !== 'production') {
-      console.log({ ...gema, replies });
+      // console.log({ ...gema, replies });
     }
     return { ...gema, replies };
+  }
+
+  async incrementViews(id: string) {
+    return this.prisma.gemas.update({
+      where: { id },
+      data: {
+        viewsCount: { increment: 1 },
+      },
+    });
+  }
+
+  async likeGema(uid: string, gid: string) {
+    
+    const isGemaLiked = await this.prisma.gemaLikes.findFirst({
+      where: { userId: uid, gemaId: gid }
+    })
+
+    if (isGemaLiked) 
+        return this.prisma.gemaLikes.delete({
+          where : {userId_gemaId: {
+            userId: uid,
+            gemaId: gid
+          }}
+        })
+
+    return this.prisma.gemaLikes.create({
+      data : {
+        gemaId: gid,
+        userId: uid
+      }
+    })
   }
 
   async findOne(id: string) {
