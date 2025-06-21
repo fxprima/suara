@@ -79,7 +79,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                             <FontAwesomeIcon icon={faRetweet} />
                             <span>{0}</span>
                         </div>
-                        <div className="flex items-center hover:text-pink-500 cursor-pointer gap-2 group">
+                        <div className="flex items-center hover:text-red-500 cursor-pointer gap-2 group">
                             <FontAwesomeIcon icon={faHeart} />
                             <span>{reply.likedBy.length}</span>
                         </div>
