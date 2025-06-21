@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { GemaType, GemaTypeDetail } from '../../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
@@ -28,6 +28,8 @@ export default function GemaDetail() {
 
     const { user: loggedUser } = useAuth();
 
+    const [likesCount, setLikesCount] = useState(0);
+
     useSilentRefetch(silentRefetchGema);
 
     useEffect(() => {
@@ -37,19 +39,36 @@ export default function GemaDetail() {
             );
     }, [id]);
 
+    const hasInitLikes = useRef(false);
+    const [isLiked, setIsLiked] = useState(false);
+
+    useEffect(() => {
+        if (gema && !hasInitLikes.current) {
+            setLikesCount(gema.likedBy.length);
+            setIsLiked(gema.likedBy.some((u) => u.user.id === loggedUser!.id));
+            hasInitLikes.current = true;
+        }
+    }, [gema, loggedUser]);
+
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
+
     const isGemaLikedByUser = () => {
         if (!id || !gema || !loggedUser) return false;
-        console.log(gema.likedBy);
         return gema.likedBy.some((u) => u.user.id === loggedUser.id);
     };
 
     const handleLikes = async (e: React.MouseEvent) => {
         e.preventDefault();
-        await api
-            .patch(`/gema/${gema?.id}/likes`)
-            .catch((err) => console.log('Error to like', err));
+        setIsLiked((prev) => !prev);
+        setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+
+        try {
+            await api.patch(`/gema/${gema!.id}/likes`);
+        } catch (err) {
+            setIsLiked((prev) => !prev);
+            setLikesCount((prev) => (isLiked ? prev + 1 : prev - 1));
+        }
     };
 
     const handleSubmitReply = async (text: string) => {
@@ -147,7 +166,7 @@ export default function GemaDetail() {
                         }`}
                         onClick={(e) => handleLikes(e)}
                     />
-                    <span>{gema.likedBy.length}</span>
+                    <span>{likesCount}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
