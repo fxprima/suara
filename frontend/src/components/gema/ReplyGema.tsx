@@ -13,7 +13,7 @@ interface ReplyGemaProps {
     refetchGema?: () => void;
 }
 
-const MAX_LEVEL = 0;
+const MAX_LEVEL = 1;
 
 export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaProps) {
     const [showChildren, setShowChildren] = useState(false);
