@@ -65,21 +65,24 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
 
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
-                        <span
-                            className="flex items-center gap-2 hover:text-primary cursor-pointer"
+                        <div
+                            className="flex items-center gap-2 group hover:text-primary cursor-pointer "
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setReplyToGema(reply as GemaType);
                             }}
                         >
                             <FontAwesomeIcon icon={faComment} />
-                        </span>
-                        <span className="hover:text-green-500 cursor-pointer">
+                            <span>{reply.replies?.length}</span>
+                        </div>
+                        <div className="flex items-center gap-2 group hover:text-green-500 cursor-pointer ">
                             <FontAwesomeIcon icon={faRetweet} />
-                        </span>
-                        <span className="hover:text-pink-500 cursor-pointer">
+                            <span>{0}</span>
+                        </div>
+                        <div className="flex items-center hover:text-pink-500 cursor-pointer gap-2 group">
                             <FontAwesomeIcon icon={faHeart} />
-                        </span>
+                            <span>{reply.likedBy.length}</span>
+                        </div>
                     </div>
                 </div>
             </div>

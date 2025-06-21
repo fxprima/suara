@@ -114,7 +114,7 @@ export default function MainFeed() {
                               media={gema.media}
                               createdAt={gema.createdAt}
                               viewsCount={gema.viewsCount}
-                              likesCount={gema.likesCount}
+                              likesCount={gema.likedBy.length}
                               repliesCount={gema.repliesCount}
                               onReply={() => setReplyToGema(gema)} // trigger set gema.
                           />

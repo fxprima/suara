@@ -2,7 +2,7 @@
 
 import { useFetchData } from '@/hooks/data/useFetchData';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
 import { GemaType, GemaTypeDetail } from '../../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
@@ -15,8 +15,10 @@ import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import ReplyGema from '@/components/gema/ReplyGema';
 import api from '@/services/api';
 import useAuth from '@/hooks/auth/useAuth';
+import { useRouter } from 'next/navigation';
 
 export default function GemaDetail() {
+    const router = useRouter();
     const { username, id } = useParams() as { username: string; id: string };
     const {
         data: gema,

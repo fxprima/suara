@@ -76,7 +76,18 @@ export class GemaService {
   async getRepliesRecursive(id: string) {
     const replies = await this.prisma.gemas.findMany({
       where: { parentId: id },
-      include: { author: true }
+      include: { 
+        author: true, 
+        likedBy: {
+          select : {
+            user : {
+              select : {
+                id: true,
+                username: true,
+              }
+            }
+          }
+        }}
     });
     
 

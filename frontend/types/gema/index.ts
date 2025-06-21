@@ -20,19 +20,10 @@ export interface GemaType {
 }
 
 export interface GemaTypeDetail extends GemaType {
-    replies: {
-        id: string;
-        content: string;
-        createdAt: string;
-        author: UserPublicProfile;
-        likedBy : {user: UserPublicProfile}[];
-    }[];
+    replies: GemaType[];
 }
 
-export interface ReplyType {
+export interface ReplyType extends GemaType{
     id: string;
-    author: UserPublicProfile;
-    content: string;
-    createdAt: string;
     replies?: ReplyType[]; 
 }
