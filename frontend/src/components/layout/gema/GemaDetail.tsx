@@ -2,19 +2,23 @@
 
 import { useFetchData } from '@/hooks/data/useFetchData';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
 import { GemaType, GemaTypeDetail } from '../../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faRetweet, faHeart, faEye } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { ToastMessage } from '../../common/toast/ToastMessage';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import ReplyGema from '@/components/gema/ReplyGema';
+import api from '@/services/api';
+import useAuth from '@/hooks/auth/useAuth';
+import { useRouter } from 'next/navigation';
 
 export default function GemaDetail() {
+    const router = useRouter();
     const { username, id } = useParams() as { username: string; id: string };
     const {
         data: gema,
@@ -24,10 +28,50 @@ export default function GemaDetail() {
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
+    const { user: loggedUser } = useAuth();
+
+    const [likesCount, setLikesCount] = useState(0);
+
     useSilentRefetch(silentRefetchGema);
+
+    useEffect(() => {
+        if (id)
+            api.patch(`/gema/${id}/views`).catch((err) =>
+                console.error('Failed to increment views:', err)
+            );
+    }, [id]);
+
+    const hasInitLikes = useRef(false);
+    const [isLiked, setIsLiked] = useState(false);
+
+    useEffect(() => {
+        if (gema && !hasInitLikes.current) {
+            setLikesCount(gema.likedBy.length);
+            setIsLiked(gema.likedBy.some((u) => u.user.id === loggedUser!.id));
+            hasInitLikes.current = true;
+        }
+    }, [gema, loggedUser]);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
+
+    const isGemaLikedByUser = () => {
+        if (!id || !gema || !loggedUser) return false;
+        return gema.likedBy.some((u) => u.user.id === loggedUser.id);
+    };
+
+    const handleLikes = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsLiked((prev) => !prev);
+        setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+
+        try {
+            await api.patch(`/gema/${gema!.id}/likes`);
+        } catch (err) {
+            setIsLiked((prev) => !prev);
+            setLikesCount((prev) => (isLiked ? prev + 1 : prev - 1));
+        }
+    };
 
     const handleSubmitReply = async (text: string) => {
         await handleReply({
@@ -116,9 +160,15 @@ export default function GemaDetail() {
                     <span>{0}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faHeart} className="text-lg" />
-                    <span>{gema.likesCount}</span>
+                <div className="flex items-center gap-2 group">
+                    <FontAwesomeIcon
+                        icon={faHeart}
+                        className={`text-lg cursor-pointer group-hover:text-red-500 transition-colors ${
+                            isGemaLikedByUser() ? 'text-red-500' : ''
+                        }`}
+                        onClick={(e) => handleLikes(e)}
+                    />
+                    <span>{likesCount}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
