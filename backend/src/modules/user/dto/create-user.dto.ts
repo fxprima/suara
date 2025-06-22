@@ -23,7 +23,7 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsString({ message: 'Phone harus berupa string' })
-    @IsPhoneNumber()
+    // @IsPhoneNumber()
     phone?: string;
 
     @IsNotEmpty({ message: 'Date of birth harus diisi' })
