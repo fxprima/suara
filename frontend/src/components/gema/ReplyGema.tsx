@@ -44,9 +44,15 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
     };
 
     return (
-        <div className="my-4">
+        <div className="my-4 ">
             <ToastMessage toasts={toasts} />
-            <div className="flex items-start gap-3">
+            <div
+                className="flex items-start gap-3 hover:bg-base-100 p-3 rounded-lg transition-colors cursor-pointer"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = `/${reply.author.username}/gema/${reply.id}`;
+                }}
+            >
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                     <img
                         src={reply.author.avatar || '/default-avatar.svg'}
@@ -55,7 +61,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                     />
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 ">
                     <div className="flex items-center gap-2">
                         <p className="font-semibold text-sm">
                             {reply.author.firstname} {reply.author.lastname}
