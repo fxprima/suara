@@ -16,6 +16,7 @@ import ReplyGema from '@/components/gema/ReplyGema';
 import api from '@/services/api';
 import useAuth from '@/hooks/auth/useAuth';
 import { useRouter } from 'next/navigation';
+import isGemaLikedByUser from '@/utils/gema';
 
 export default function GemaDetail() {
     const router = useRouter();
@@ -54,11 +55,6 @@ export default function GemaDetail() {
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
-
-    const isGemaLikedByUser = () => {
-        if (!id || !gema || !loggedUser) return false;
-        return gema.likedBy.some((u) => u.user.id === loggedUser.id);
-    };
 
     const handleLikes = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -164,7 +160,7 @@ export default function GemaDetail() {
                     <FontAwesomeIcon
                         icon={faHeart}
                         className={`text-lg cursor-pointer group-hover:text-red-500 transition-colors ${
-                            isGemaLikedByUser() ? 'text-red-500' : ''
+                            isGemaLikedByUser(gema, loggedUser?.id ?? '') ? 'text-red-500' : ''
                         }`}
                         onClick={(e) => handleLikes(e)}
                     />

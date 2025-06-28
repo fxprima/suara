@@ -6,6 +6,9 @@ import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ToastMessage } from '../common/toast/ToastMessage';
 import { ReplyGemaModal } from './ReplyGemaModal';
+import api from '@/services/api';
+import isGemaLikedByUser from '@/utils/gema';
+import useAuth from '@/hooks/auth/useAuth';
 
 interface ReplyGemaProps {
     reply: ReplyType;
@@ -21,6 +24,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
+    const { user: loggedUser } = useAuth();
 
     const handleSubmitReply = async (text: string) => {
         await handleReply({
@@ -29,6 +33,13 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
             refetchFn: refetchGema ?? (() => {}),
             showToast: showToast,
             onSuccess: () => setReplyToGema(null),
+        });
+    };
+
+    const handleLikeReply = async (e: React.MouseEvent, replyId: string) => {
+        e.stopPropagation();
+        api.patch(`/gema/${replyId}/likes`).catch((err) => {
+            console.error('Failed to like reply:', err);
         });
     };
 
@@ -79,7 +90,12 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                             <FontAwesomeIcon icon={faRetweet} />
                             <span>{0}</span>
                         </div>
-                        <div className="flex items-center hover:text-red-500 cursor-pointer gap-2 group">
+                        <div
+                            className={`flex items-center gap-2 group hover:text-red-500 cursor-pointer ${
+                                isGemaLikedByUser(reply, loggedUser?.id ?? '') ? 'text-red-500' : ''
+                            }`}
+                            onClick={(e) => handleLikeReply(e, reply.id)}
+                        >
                             <FontAwesomeIcon icon={faHeart} />
                             <span>{reply.likedBy.length}</span>
                         </div>
