@@ -97,7 +97,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                             <span>{0}</span>
                         </div>
                         <div
-                            className={`flex items-center gap-2 group hover:text-red-500 cursor-pointer ${
+                            className={`flex items-center gap-2 group hover:text-red-400 cursor-pointer ${
                                 isGemaLikedByUser(reply, loggedUser?.id ?? '') ? 'text-red-500' : ''
                             }`}
                             onClick={(e) => handleLikeReply(e, reply.id)}
