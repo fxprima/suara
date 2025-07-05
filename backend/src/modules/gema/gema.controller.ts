@@ -1,18 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFiles} from '@nestjs/common';
 import { GemaService } from './gema.service';
 import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserPayload } from '../auth/interfaces/user-payload.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('gema')
 export class GemaController {
   constructor(private readonly gemaService: GemaService) {}
 
+  @UseInterceptors(
+    FilesInterceptor('media', 4, {
+      fileFilter: (_req, file, cb) => {
+        const ok = /^(image|video)\//.test(file.mimetype);
+        cb(ok ? null : new Error('Invalid mime'), ok);
+      },
+    }),
+  )
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createGemaDto: CreateGemaDto, @CurrentUser() user: UserPayload) {
+  create(
+    @Body() createGemaDto: CreateGemaDto, 
+    @CurrentUser() user: UserPayload,
+    @UploadedFiles() media: Express.Multer.File[] | undefined,
+  ) {
+  
     return this.gemaService.create(createGemaDto, user.id);
   }
 
