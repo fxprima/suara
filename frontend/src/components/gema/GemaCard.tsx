@@ -53,7 +53,7 @@ interface GemaCardProps {
  *   username="felixdev"
  *   avatar="https://..."
  *   content="Halo dunia!"
- *   media={[{ type: 'image', url: 'https://...' }]}
+ *   media=[{ type: 'image', url: 'https://...' }]
  *   createdAt="2025-04-02T10:00:00Z"
  *   viewsCount={100}
  *   likesCount={20}
