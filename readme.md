@@ -29,6 +29,8 @@ Suara is a web-based social media application designed. This platform enables us
 ## Preview
 <img width="1755" height="813" alt="image" src="https://github.com/user-attachments/assets/d5d804eb-e65b-497a-8225-66888ebb5ccc" />
 <img width="1755" height="813" alt="image" src="https://github.com/user-attachments/assets/33e41843-4163-47a4-b12b-7947e30ab79c" />
+<img width="1755" height="821" alt="image" src="https://github.com/user-attachments/assets/ad591c1f-dd63-44d6-826f-fdda39da7ce1" />
+
 <img width="1755" height="813" alt="image" src="https://github.com/user-attachments/assets/7fdfec77-c5a6-4a7b-abe7-cc708249e55e" />
 <img width="1890" height="878" alt="image" src="https://github.com/user-attachments/assets/1c4dcb57-725a-4889-9c61-4cc18ae29b57" />
 
