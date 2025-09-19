@@ -11,6 +11,7 @@ import {
     faShare,
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
+import MediaPreviewModal from '../common/media/MediaPreviewModal';
 
 interface MediaFile {
     type: 'image' | 'video';
@@ -76,6 +77,10 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     const router = useRouter();
 
     const videoRefs = React.useRef<HTMLVideoElement[]>([]);
+    const [preview, setPreview] = React.useState<{ open: boolean; index: number }>({
+        open: false,
+        index: 0,
+    });
 
     React.useEffect(() => {
         const iosInline = (v: HTMLVideoElement) => {
@@ -166,7 +171,7 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                                     className="relative overflow-hidden rounded-xl h-full cursor-pointer"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        // TODO: openModal(item, idx)
+                                        setPreview({ open: true, index: idx });
                                     }}
                                 >
                                     {item.type === 'image' ? (
@@ -211,6 +216,13 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                             ))}
                         </div>
                     )}
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={media}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
 
                     {/* Engagement */}
                     <div className="flex justify-between text-sm text-gray-500 mt-3 px-2 text-center">
