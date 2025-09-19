@@ -33,6 +33,8 @@ export default function MainFeed() {
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaType[]>('/gema');
 
+    console.log(gemas);
+
     const { toasts, showToast } = useToast();
 
     useSilentRefetch(silentRefetchGema);

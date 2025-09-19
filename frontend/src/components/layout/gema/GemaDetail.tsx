@@ -123,7 +123,7 @@ export default function GemaDetail() {
                     {/* Media */}
                     {gema.media?.[0] && (
                         <div className="mt-4 rounded-xl overflow-hidden border">
-                            <Image
+                            <img
                                 src={gema.media[0].url}
                                 alt="Post image"
                                 width={600}
