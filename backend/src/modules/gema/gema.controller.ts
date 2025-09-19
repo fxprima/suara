@@ -10,7 +10,7 @@ import { MediaService } from '../media/media.service';
 
 @Controller('gema')
 export class GemaController {
-  constructor(private readonly gemaService: GemaService) {}
+  constructor(private readonly gemaService: GemaService, private readonly mediaService: MediaService) {}
 
   @UseInterceptors(
     FilesInterceptor('media', 4, {
@@ -21,7 +21,7 @@ export class GemaController {
     }),
   )
   @UseGuards(JwtAuthGuard)
-  @Post()
+@Post()
   create(
     @Body() createGemaDto: CreateGemaDto, 
     @CurrentUser() user: UserPayload,

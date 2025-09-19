@@ -74,6 +74,45 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     onReply,
 }) => {
     const router = useRouter();
+
+    const videoRefs = React.useRef<HTMLVideoElement[]>([]);
+
+    React.useEffect(() => {
+        const iosInline = (v: HTMLVideoElement) => {
+            // jaga-jaga iOS
+            v.setAttribute('playsinline', 'true');
+            v.setAttribute('webkit-playsinline', 'true');
+        };
+
+        const obs = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => {
+                    const v = e.target as HTMLVideoElement;
+                    if (e.isIntersecting) {
+                        // pause semua video lain
+                        videoRefs.current.forEach((o) => {
+                            if (o && o !== v) o.pause();
+                        });
+                        v.play().catch(() => {
+                            /* ignore */
+                        });
+                    } else {
+                        v.pause();
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        videoRefs.current.forEach((v) => {
+            if (!v) return;
+            iosInline(v);
+            obs.observe(v);
+        });
+
+        return () => obs.disconnect();
+    }, []);
+
     return (
         <div
             className="border-b border-base-300 pb-4 pt-2 px-1 transition duration-150 ease-in-out 
@@ -108,31 +147,71 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                     {/* Media */}
                     {media.length > 0 && (
                         <div
-                            className={`grid gap-2 mt-3 ${
+                            className={`grid gap-2 mt-3
+                            ${
                                 media.length === 1
                                     ? 'grid-cols-1'
                                     : media.length <= 4
                                     ? 'grid-cols-2'
                                     : 'grid-cols-3'
-                            }`}
+                            }
+                            auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[170px] lg:auto-rows-[180px]`}
+                            onClick={(e) => e.stopPropagation()}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onTouchStart={(e) => e.stopPropagation()}
                         >
                             {media.map((item, idx) => (
-                                <div key={idx} className="overflow-hidden rounded-xl max-h-80">
+                                <div
+                                    key={idx}
+                                    className="relative overflow-hidden rounded-xl h-full cursor-pointer"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // TODO: openModal(item, idx)
+                                    }}
+                                >
                                     {item.type === 'image' ? (
                                         <img
                                             src={item.url}
                                             alt={`media-${idx}`}
                                             className="w-full h-full object-cover"
+                                            loading="lazy"
                                         />
                                     ) : (
-                                        <video controls className="w-full rounded-xl">
-                                            <source src={item.url} />
-                                        </video>
+                                        <div className="relative w-full h-full">
+                                            <video
+                                                ref={(el) => {
+                                                    if (el) videoRefs.current[idx] = el;
+                                                }}
+                                                className="w-full h-full object-cover gema-video"
+                                                preload="metadata"
+                                                muted
+                                                loop
+                                                autoPlay
+                                                playsInline
+                                                onClick={(e) => e.stopPropagation()}
+                                                onPointerDown={(e) => e.stopPropagation()}
+                                                onTouchStart={(e) => e.stopPropagation()}
+                                                onPlay={(e) => {
+                                                    const current = e.currentTarget;
+                                                    videoRefs.current.forEach((v) => {
+                                                        if (v && v !== current) v.pause();
+                                                    });
+                                                }}
+                                            >
+                                                <source src={item.url} />
+                                            </video>
+
+                                            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-xs bg-black/60 text-white">
+                                                <span aria-hidden>▶</span>
+                                                <span>Video</span>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                             ))}
                         </div>
                     )}
+
                     {/* Engagement */}
                     <div className="flex justify-between text-sm text-gray-500 mt-3 px-2 text-center">
                         <div
