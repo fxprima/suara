@@ -2,18 +2,41 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { MediaService } from '../media/media.service';
 
 @Injectable()
 export class GemaService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,  private media: MediaService) {}
 
-  async create(createGemaDto: CreateGemaDto, authorId: string) {
+  async create(createGemaDto: CreateGemaDto, authorId: string, media: Express.Multer.File[] | undefined) {
+    console.log(createGemaDto);
+    console.log(media);
+
+    let mediaData: {
+      url: string;
+      type: string;
+    }[] = [];
+
+    if (media && media.length > 0) {
+      const uploaded = await Promise.all(
+        media.map(file => this.media.upload(file))
+      )
+
+      mediaData = uploaded.map(res => ({
+        url: res.url,
+        type: res.resource_type === 'image' ? 'image' : 'video',
+      }));
+    }
+
+    console.log(mediaData);
+
     const newGema = await this.prisma.gemas.create({
       data: {
         content: createGemaDto.content,
         parentId: createGemaDto.parentId,
         authorId,
+        media: mediaData.length > 0 ?  mediaData  : undefined,
       },
     });
   
@@ -74,28 +97,6 @@ export class GemaService {
    * @returns Sebuah promise yang menghasilkan array balasan, masing-masing berisi penulisnya dan balasan yang bersarang.
    */
   async getRepliesRecursive(id: string) {
-    const replies = await this.prisma.gemas.findMany({
-      where: { parentId: id },
-      include: { 
-        author: true, 
-        likedBy: {
-          select : {
-            user : {
-              select : {
-                id: true,
-                username: true,
-              }
-            }
-          }
-        }}
-    });
-    
-
-    for (const reply of replies) {
-      reply['replies'] = await this.getRepliesRecursive(reply.id);
-    }
-
-    return replies;
   }
 
   async getGemaDetailRecursive(id: string) {

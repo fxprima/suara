@@ -4,6 +4,8 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { GemaModule } from './modules/gema/gema.module';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
   imports: [
@@ -11,7 +13,9 @@ import { GemaModule } from './modules/gema/gema.module';
     PrismaModule,
     AuthModule,
     UserModule,
-    GemaModule
+    GemaModule,
+    CloudinaryModule,
+    MediaModule
   ],
   controllers: [],
   providers: [],

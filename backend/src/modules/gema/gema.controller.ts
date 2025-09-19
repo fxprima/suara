@@ -6,6 +6,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserPayload } from '../auth/interfaces/user-payload.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { MediaService } from '../media/media.service';
 
 @Controller('gema')
 export class GemaController {
@@ -27,7 +28,7 @@ export class GemaController {
     @UploadedFiles() media: Express.Multer.File[] | undefined,
   ) {
   
-    return this.gemaService.create(createGemaDto, user.id);
+    return this.gemaService.create(createGemaDto, user.id, media);
   }
 
   @UseGuards(JwtAuthGuard)
