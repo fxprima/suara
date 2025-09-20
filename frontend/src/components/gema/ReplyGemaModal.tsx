@@ -1,11 +1,14 @@
 'use client';
 import { useState } from 'react';
 import { GemaType } from '../../../types/gema';
+import MediaPicker from '@/components/common/media/MediaPicker';
+
 interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     gema: GemaType;
-    onSubmitReply: (text: string) => void;
+    onSubmitReply: (formData: FormData) => void;
+    showToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
@@ -13,10 +16,27 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
     onClose,
     gema,
     onSubmitReply,
+    showToast,
 }) => {
     const [text, setText] = useState('');
+    const [files, setFiles] = useState<File[]>([]);
 
     if (!isOpen) return null;
+
+    const canSubmit = text.trim().length > 0 || files.length > 0;
+
+    const submit = () => {
+        if (!canSubmit) return;
+
+        const formData = new FormData();
+        formData.append('content', text.trim());
+        files.forEach((file) => formData.append('media', file));
+
+        onSubmitReply(formData);
+        setText('');
+        setFiles([]);
+        onClose();
+    };
 
     return (
         <dialog className="modal backdrop-blur-sm" open={isOpen}>
@@ -26,6 +46,7 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     <button
                         onClick={onClose}
                         className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4"
+                        aria-label="Close"
                     >
                         ✕
                     </button>
@@ -62,30 +83,38 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     <div className="avatar">
                         <div className="w-10 rounded-full">
                             <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s" // tambahin avatar
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
                                 alt="avatar"
                             />
                         </div>
                     </div>
-                    <textarea
-                        className="textarea textarea-bordered w-full"
-                        placeholder="Add your reply..."
-                        rows={3}
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                    />
+                    <div className="flex-1">
+                        <textarea
+                            className="textarea textarea-bordered w-full"
+                            placeholder="Add your reply..."
+                            rows={3}
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                        />
+
+                        {/* Media picker untuk reply */}
+                        <MediaPicker
+                            files={files}
+                            onChange={setFiles}
+                            max={4}
+                            showToast={showToast}
+                            className="mt-2"
+                        />
+                    </div>
                 </div>
 
                 {/* Tombol aksi */}
                 <div className="text-right mt-4">
                     <button
                         className="btn btn-primary"
-                        disabled={!text.trim()}
-                        onClick={() => {
-                            onSubmitReply(text.trim());
-                            setText('');
-                            onClose();
-                        }}
+                        disabled={!canSubmit}
+                        onClick={submit}
+                        type="button"
                     >
                         Reply
                     </button>

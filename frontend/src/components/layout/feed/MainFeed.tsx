@@ -14,6 +14,7 @@ import { GemaType } from '../../../../types/gema';
 import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { handleReply } from '@/utils/handleReply';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
+import MediaPicker from '@/components/common/media/MediaPicker';
 
 export default function MainFeed() {
     /* ──────────────── state ──────────────── */
@@ -40,42 +41,8 @@ export default function MainFeed() {
     useSilentRefetch(silentRefetchGema);
 
     /* ──────────────── helpers ──────────────── */
-    const handleSelectMedia = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(e.target.files ?? []);
-        if (!files.length) return;
 
-        const total = selectedFiles.length + files.length;
-        if (total > 4) {
-            showToast('Maximum 4 media files allowed', 'error');
-            e.target.value = '';
-            return;
-        }
-
-        const valid = files.filter(
-            (f) => f.type.startsWith('image/') || f.type.startsWith('video/')
-        );
-
-        if (valid.length !== files.length) {
-            showToast('Only images or videos are allowed', 'error');
-        }
-
-        setSelectedFiles((prev) => [...prev, ...valid]);
-        e.target.value = '';
-    };
-
-    const removeFile = (idx: number) => {
-        setSelectedFiles((prev) => {
-            const copy = [...prev];
-            URL.revokeObjectURL(URL.createObjectURL(copy[idx])); // clean object URL
-            copy.splice(idx, 1);
-            return copy;
-        });
-    };
-
-    const clearMedia = () => {
-        selectedFiles.forEach((f) => URL.revokeObjectURL(f as any));
-        setSelectedFiles([]);
-    };
+    const clearMedia = () => setSelectedFiles([]);
 
     const handlePost = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -135,62 +102,13 @@ export default function MainFeed() {
                             onChange={(e) => setCreateGemaField(e.target.value)}
                         />
 
-                        {/* media preview */}
-                        {selectedFiles.length > 0 && (
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                                {selectedFiles.map((file, i) => {
-                                    const url = URL.createObjectURL(file);
-                                    const isImage = file.type.startsWith('image/');
-                                    return (
-                                        <div key={i} className="relative w-full h-32 md:h-40">
-                                            {isImage ? (
-                                                <img
-                                                    src={url}
-                                                    alt={file.name}
-                                                    className="object-cover w-full h-full rounded-md"
-                                                />
-                                            ) : (
-                                                <video
-                                                    src={url}
-                                                    className="object-cover w-full h-full rounded-md"
-                                                    muted
-                                                    loop
-                                                />
-                                            )}
-
-                                            <button
-                                                onClick={() => removeFile(i)}
-                                                className="absolute -top-2 -right-2 bg-base-100 rounded-full p-1 text-xs"
-                                                title="Remove file"
-                                            >
-                                                <FontAwesomeIcon icon={faTimes} />
-                                            </button>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-
-                        {/* media chooser */}
-                        <div className="flex items-center mt-4">
-                            <FontAwesomeIcon
-                                icon={faImage}
-                                className="h-5 w-5 opacity-50 cursor-pointer hover:text-primary"
-                                onClick={() => fileInputRef.current?.click()}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*,video/*"
-                                multiple
-                                ref={fileInputRef}
-                                onChange={handleSelectMedia}
-                                className="hidden"
-                                title="Choose images or videos to upload"
-                            />
-                            <span className="ml-2 text-xs opacity-60">
-                                {selectedFiles.length}/4
-                            </span>
-                        </div>
+                        <MediaPicker
+                            files={selectedFiles}
+                            onChange={setSelectedFiles}
+                            max={4}
+                            showToast={showToast}
+                            className="w-full"
+                        />
                     </div>
                 </div>
 
