@@ -16,6 +16,9 @@ import ReplyGema from '@/components/gema/ReplyGema';
 import api from '@/services/api';
 import useAuth from '@/hooks/auth/useAuth';
 import { useRouter } from 'next/navigation';
+import isGemaLikedByUser from '@/utils/gema';
+import GemaMediaGrid from '@/components/common/media/GemaMediaGrid';
+import MediaPreviewModal from '@/components/common/media/MediaPreviewModal';
 
 export default function GemaDetail() {
     const router = useRouter();
@@ -30,7 +33,11 @@ export default function GemaDetail() {
 
     const { user: loggedUser } = useAuth();
 
+    console.log(gema);
+
     const [likesCount, setLikesCount] = useState(0);
+
+    const [preview, setPreview] = useState({ open: false, index: 0 });
 
     useSilentRefetch(silentRefetchGema);
 
@@ -55,11 +62,6 @@ export default function GemaDetail() {
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
 
-    const isGemaLikedByUser = () => {
-        if (!id || !gema || !loggedUser) return false;
-        return gema.likedBy.some((u) => u.user.id === loggedUser.id);
-    };
-
     const handleLikes = async (e: React.MouseEvent) => {
         e.preventDefault();
         setIsLiked((prev) => !prev);
@@ -73,15 +75,96 @@ export default function GemaDetail() {
         }
     };
 
-    const handleSubmitReply = async (text: string) => {
+    const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
-            text: text,
+            formData: formData,
             parentId: gema?.id,
             refetchFn: refetchGema,
             showToast: showToast,
             onSuccess: () => setReplyToGema(null),
         });
     };
+
+    // ===== ShowMedia setup (autoplay muted + pause saat out of view) =====
+    const videoRefs = useRef<HTMLVideoElement[]>([]);
+
+    useEffect(() => {
+        const iosInline = (v: HTMLVideoElement) => {
+            v.setAttribute('playsinline', 'true');
+            v.setAttribute('webkit-playsinline', 'true');
+        };
+
+        const obs = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => {
+                    const v = e.target as HTMLVideoElement;
+                    if (e.isIntersecting) {
+                        videoRefs.current.forEach((o) => {
+                            if (o && o !== v) o.pause();
+                        });
+                        v.play().catch(() => {});
+                    } else {
+                        v.pause();
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        videoRefs.current.forEach((v) => {
+            if (!v) return;
+            iosInline(v);
+            obs.observe(v);
+        });
+
+        return () => obs.disconnect();
+    }, [gema?.media?.length]);
+
+    const attachRef = (idx: number) => (el: HTMLVideoElement | null) => {
+        if (el) videoRefs.current[idx] = el;
+    };
+
+    const renderTile = (
+        item: { type: 'image' | 'video'; url: string },
+        idx: number,
+        extraClass = ''
+    ) => (
+        <div key={idx} className={`relative overflow-hidden rounded-xl ${extraClass}`}>
+            {item.type === 'image' ? (
+                <img
+                    src={item.url}
+                    alt={`media-${idx}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                />
+            ) : (
+                <div className="w-full h-full">
+                    <video
+                        ref={attachRef(idx)}
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        onPlay={(e) => {
+                            const current = e.currentTarget;
+                            videoRefs.current.forEach((v) => {
+                                if (v && v !== current) v.pause();
+                            });
+                        }}
+                    >
+                        <source src={item.url} />
+                    </video>
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-xs bg-black/60 text-white">
+                        <span aria-hidden>▶</span>
+                        <span>Video</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+    // ====================================================================
 
     if (loadingFetchGema) {
         return (
@@ -105,7 +188,7 @@ export default function GemaDetail() {
             <ToastMessage toasts={toasts} />
             {/* Gema utama */}
             <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                     <img
                         src={gema.author.avatar || '/default-avatar.svg'}
                         alt="avatar"
@@ -124,18 +207,18 @@ export default function GemaDetail() {
 
                     <p className="text-xl font-semibold whitespace-pre-wrap">{gema.content}</p>
 
-                    {/* Media */}
-                    {gema.media?.[0] && (
-                        <div className="mt-4 rounded-xl overflow-hidden border">
-                            <Image
-                                src={gema.media[0].url}
-                                alt="Post image"
-                                width={600}
-                                height={400}
-                                className="w-full object-cover"
-                            />
-                        </div>
-                    )}
+                    <GemaMediaGrid
+                        media={gema.media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={gema.media ?? []}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
 
                     <div className="text-sm text-gray-500 mt-2">
                         {new Date(gema.createdAt).toLocaleString()}
@@ -164,7 +247,7 @@ export default function GemaDetail() {
                     <FontAwesomeIcon
                         icon={faHeart}
                         className={`text-lg cursor-pointer group-hover:text-red-500 transition-colors ${
-                            isGemaLikedByUser() ? 'text-red-500' : ''
+                            isGemaLikedByUser(gema, loggedUser?.id ?? '') ? 'text-red-500' : ''
                         }`}
                         onClick={(e) => handleLikes(e)}
                     />

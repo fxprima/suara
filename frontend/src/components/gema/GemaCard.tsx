@@ -11,6 +11,8 @@ import {
     faShare,
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
+import MediaPreviewModal from '../common/media/MediaPreviewModal';
+import GemaMediaGrid from '../common/media/GemaMediaGrid';
 
 interface MediaFile {
     type: 'image' | 'video';
@@ -53,7 +55,7 @@ interface GemaCardProps {
  *   username="felixdev"
  *   avatar="https://..."
  *   content="Halo dunia!"
- *   media={[{ type: 'image', url: 'https://...' }]}
+ *   media=[{ type: 'image', url: 'https://...' }]
  *   createdAt="2025-04-02T10:00:00Z"
  *   viewsCount={100}
  *   likesCount={20}
@@ -74,6 +76,47 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     onReply,
 }) => {
     const router = useRouter();
+
+    const videoRefs = React.useRef<HTMLVideoElement[]>([]);
+
+    const [preview, setPreview] = React.useState({ open: false, index: 0 });
+
+    React.useEffect(() => {
+        const iosInline = (v: HTMLVideoElement) => {
+            // jaga-jaga iOS
+            v.setAttribute('playsinline', 'true');
+            v.setAttribute('webkit-playsinline', 'true');
+        };
+
+        const obs = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => {
+                    const v = e.target as HTMLVideoElement;
+                    if (e.isIntersecting) {
+                        // pause semua video lain
+                        videoRefs.current.forEach((o) => {
+                            if (o && o !== v) o.pause();
+                        });
+                        v.play().catch(() => {
+                            /* ignore */
+                        });
+                    } else {
+                        v.pause();
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        videoRefs.current.forEach((v) => {
+            if (!v) return;
+            iosInline(v);
+            obs.observe(v);
+        });
+
+        return () => obs.disconnect();
+    }, []);
+
     return (
         <div
             className="border-b border-base-300 pb-4 pt-2 px-1 transition duration-150 ease-in-out 
@@ -105,34 +148,21 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                     </div>
                     {/* Content */}
                     <div className="mt-2 whitespace-pre-wrap text-base">{content}</div>
+
                     {/* Media */}
-                    {media.length > 0 && (
-                        <div
-                            className={`grid gap-2 mt-3 ${
-                                media.length === 1
-                                    ? 'grid-cols-1'
-                                    : media.length <= 4
-                                    ? 'grid-cols-2'
-                                    : 'grid-cols-3'
-                            }`}
-                        >
-                            {media.map((item, idx) => (
-                                <div key={idx} className="overflow-hidden rounded-xl max-h-80">
-                                    {item.type === 'image' ? (
-                                        <img
-                                            src={item.url}
-                                            alt={`media-${idx}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <video controls className="w-full rounded-xl">
-                                            <source src={item.url} />
-                                        </video>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <GemaMediaGrid
+                        media={media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={media}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
+
                     {/* Engagement */}
                     <div className="flex justify-between text-sm text-gray-500 mt-3 px-2 text-center">
                         <div

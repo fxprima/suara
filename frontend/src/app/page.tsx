@@ -630,6 +630,13 @@ export default function Home() {
                                         />
                                         Sign up with Google
                                     </button>
+
+                                    <label
+                                        htmlFor="login-modal"
+                                        className="btn bg-transparent ml-2"
+                                    >
+                                        Close
+                                    </label>
                                 </div>
                             </div>
                         </div>
