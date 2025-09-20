@@ -20,18 +20,45 @@ const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
 }) => {
     const [idx, setIdx] = React.useState(initialIndex);
     const touchX = React.useRef<number | null>(null);
+    const videoRef = React.useRef<HTMLVideoElement | null>(null);
 
+    // Reset index saat modal dibuka dari thumbnail ke-n
+    React.useEffect(() => {
+        if (open) setIdx(initialIndex);
+    }, [open, initialIndex]);
+
+    // Keyboard navigation — IGNORE kalau fokus di video/input
     React.useEffect(() => {
         if (!open) return;
-        setIdx(initialIndex);
 
         const onKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-            if (e.key === 'ArrowRight') setIdx((i) => (i + 1) % items.length);
-            if (e.key === 'ArrowLeft') setIdx((i) => (i - 1 + items.length) % items.length);
-        };
-        document.addEventListener('keydown', onKey);
+            const target = e.target as HTMLElement | null;
+            const tag = target?.tagName.toLowerCase();
 
+            // jangan navigasi kalau user lagi interaksi dengan video / form
+            if (
+                tag === 'input' ||
+                tag === 'textarea' ||
+                tag === 'select' ||
+                target?.isContentEditable ||
+                target?.closest('video')
+            ) {
+                return;
+            }
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                onClose();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                setIdx((i) => (i + 1) % items.length);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setIdx((i) => (i - 1 + items.length) % items.length);
+            }
+        };
+
+        document.addEventListener('keydown', onKey);
         const prev = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
 
@@ -39,7 +66,17 @@ const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
             document.removeEventListener('keydown', onKey);
             document.body.style.overflow = prev;
         };
-    }, [open, initialIndex, items.length, onClose]);
+    }, [open, items.length, onClose]);
+
+    // Pause video lama saat pindah index
+    React.useEffect(() => {
+        const v = videoRef.current;
+        return () => {
+            try {
+                v?.pause();
+            } catch {}
+        };
+    }, [idx]);
 
     if (!open || typeof document === 'undefined') return null;
 
@@ -67,12 +104,17 @@ const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
             >
                 {item.type === 'image' ? (
                     <img
+                        key={item.url} // force remount saat pindah item
                         src={item.url}
                         alt=""
                         className="max-h-[90vh] w-auto object-contain rounded-xl"
                     />
                 ) : (
                     <video
+                        key={item.url} // force remount
+                        ref={(el) => {
+                            videoRef.current = el;
+                        }}
                         src={item.url}
                         controls
                         autoPlay
