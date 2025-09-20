@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
 import MediaPreviewModal from '../common/media/MediaPreviewModal';
+import GemaMediaGrid from '../common/media/GemaMediaGrid';
 
 interface MediaFile {
     type: 'image' | 'video';
@@ -77,10 +78,8 @@ export const GemaCard: React.FC<GemaCardProps> = ({
     const router = useRouter();
 
     const videoRefs = React.useRef<HTMLVideoElement[]>([]);
-    const [preview, setPreview] = React.useState<{ open: boolean; index: number }>({
-        open: false,
-        index: 0,
-    });
+
+    const [preview, setPreview] = React.useState({ open: false, index: 0 });
 
     React.useEffect(() => {
         const iosInline = (v: HTMLVideoElement) => {
@@ -149,73 +148,13 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                     </div>
                     {/* Content */}
                     <div className="mt-2 whitespace-pre-wrap text-base">{content}</div>
-                    {/* Media */}
-                    {media.length > 0 && (
-                        <div
-                            className={`grid gap-2 mt-3
-                            ${
-                                media.length === 1
-                                    ? 'grid-cols-1'
-                                    : media.length <= 4
-                                    ? 'grid-cols-2'
-                                    : 'grid-cols-3'
-                            }
-                            auto-rows-[130px] sm:auto-rows-[150px] md:auto-rows-[170px] lg:auto-rows-[180px]`}
-                            onClick={(e) => e.stopPropagation()}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onTouchStart={(e) => e.stopPropagation()}
-                        >
-                            {media.map((item, idx) => (
-                                <div
-                                    key={idx}
-                                    className="relative overflow-hidden rounded-xl h-full cursor-pointer"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setPreview({ open: true, index: idx });
-                                    }}
-                                >
-                                    {item.type === 'image' ? (
-                                        <img
-                                            src={item.url}
-                                            alt={`media-${idx}`}
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
-                                        />
-                                    ) : (
-                                        <div className="relative w-full h-full">
-                                            <video
-                                                ref={(el) => {
-                                                    if (el) videoRefs.current[idx] = el;
-                                                }}
-                                                className="w-full h-full object-cover gema-video"
-                                                preload="metadata"
-                                                muted
-                                                loop
-                                                autoPlay
-                                                playsInline
-                                                onClick={(e) => e.stopPropagation()}
-                                                onPointerDown={(e) => e.stopPropagation()}
-                                                onTouchStart={(e) => e.stopPropagation()}
-                                                onPlay={(e) => {
-                                                    const current = e.currentTarget;
-                                                    videoRefs.current.forEach((v) => {
-                                                        if (v && v !== current) v.pause();
-                                                    });
-                                                }}
-                                            >
-                                                <source src={item.url} />
-                                            </video>
 
-                                            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-xs bg-black/60 text-white">
-                                                <span aria-hidden>▶</span>
-                                                <span>Video</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    {/* Media */}
+                    <GemaMediaGrid
+                        media={media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
 
                     <MediaPreviewModal
                         open={preview.open}

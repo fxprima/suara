@@ -9,6 +9,7 @@ import { ReplyGemaModal } from './ReplyGemaModal';
 import api from '@/services/api';
 import isGemaLikedByUser from '@/utils/gema';
 import useAuth from '@/hooks/auth/useAuth';
+import GemaMediaGrid from '../common/media/GemaMediaGrid';
 
 interface ReplyGemaProps {
     reply: ReplyType;
@@ -80,6 +81,8 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                     </div>
 
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
+
+                    <GemaMediaGrid media={reply.media} className="mt-4" />
 
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
                         <div

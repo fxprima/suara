@@ -17,6 +17,7 @@ import api from '@/services/api';
 import useAuth from '@/hooks/auth/useAuth';
 import { useRouter } from 'next/navigation';
 import isGemaLikedByUser from '@/utils/gema';
+import GemaMediaGrid from '@/components/common/media/GemaMediaGrid';
 
 export default function GemaDetail() {
     const router = useRouter();
@@ -203,44 +204,7 @@ export default function GemaDetail() {
 
                     <p className="text-xl font-semibold whitespace-pre-wrap">{gema.content}</p>
 
-                    {gema.media && gema.media.length > 0 && (
-                        <>
-                            {gema.media.length === 1 && (
-                                <div className="mt-4">
-                                    {renderTile(gema.media[0] as any, 0, 'aspect-video')}
-                                </div>
-                            )}
-
-                            {gema.media.length === 2 && (
-                                <div className="mt-4 grid grid-cols-2 gap-2">
-                                    {renderTile(gema.media[0] as any, 0, 'aspect-[4/3]')}
-                                    {renderTile(gema.media[1] as any, 1, 'aspect-[4/3]')}
-                                </div>
-                            )}
-
-                            {gema.media.length === 3 && (
-                                <div className="mt-4 grid grid-cols-2 gap-2">
-                                    {renderTile(
-                                        gema.media[0] as any,
-                                        0,
-                                        'aspect-[3/4] md:aspect-[4/5]'
-                                    )}
-                                    <div className="grid grid-rows-2 gap-2">
-                                        {renderTile(gema.media[1] as any, 1, 'aspect-square')}
-                                        {renderTile(gema.media[2] as any, 2, 'aspect-square')}
-                                    </div>
-                                </div>
-                            )}
-
-                            {gema.media.length >= 4 && (
-                                <div className="mt-4 grid grid-cols-2 gap-2">
-                                    {(gema.media as any[])
-                                        .slice(0, 4)
-                                        .map((m, i) => renderTile(m, i, 'aspect-square'))}
-                                </div>
-                            )}
-                        </>
-                    )}
+                    <GemaMediaGrid media={gema.media} className="mt-4" />
 
                     <div className="text-sm text-gray-500 mt-2">
                         {new Date(gema.createdAt).toLocaleString()}
