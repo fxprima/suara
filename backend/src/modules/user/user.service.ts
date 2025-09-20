@@ -40,6 +40,25 @@ export class UserService {
     });
   }
 
+  async getPublicProfileByUsername(username: string) {
+    const res = await this.prisma.users.findUnique(
+      {
+        where: { username: username },
+        select: {
+          id: true,
+          firstname: true,
+          lastname: true,
+          username: true,
+          avatar: true,
+          biography: true,
+          website: true,
+          location: true,
+          dob: true
+        }
+      }
+    )
+    return res;
+  }
 
   findAll() {
     return `This action returns all users`;
@@ -49,8 +68,15 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    console.log("Masuk service update");
+    if (updateUserDto.password) {
+      updateUserDto.password = await argon2.hash(updateUserDto.password);
+    }
+    return await this.prisma.users.update({
+      where: { id: id },
+      data: updateUserDto
+    });
   }
 
   remove(id: number) {

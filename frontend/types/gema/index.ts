@@ -4,6 +4,10 @@ export interface UserPublicProfile {
     lastname: string;
     username: string;
     avatar?: string;
+    biography?: string;
+    website?: string;
+    location?: string;
+    dob?: Date;
 }
 export interface GemaType {
     id: string;

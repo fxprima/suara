@@ -14,20 +14,21 @@ datasource db {
 }
 
 model Users {
-  id              String @id @default(uuid())
-  username        String @unique
-  firstname       String
-  lastname        String?
-  email           String @unique
-  password        String
-  biography       String? @db.MediumText()
-  location        String?
-  website         String?
-  phone           String? @unique
-  dob             DateTime
-  gemas           Gemas[]
-  lastLogin       DateTime? @default(now())
-  RefreshTokens   RefreshTokens[]
+  id            String          @id @default(uuid())
+  username      String          @unique
+  firstname     String
+  lastname      String?
+  email         String          @unique
+  password      String
+  avatar        String?         @default("https://ui-avatars.com/api/?background=random&name=User")
+  biography     String?         @db.MediumText()
+  location      String?
+  website       String?
+  phone         String?         @unique
+  dob           DateTime
+  gemas         Gemas[]
+  lastLogin     DateTime?       @default(now())
+  RefreshTokens RefreshTokens[]
   likedGemas    GemaLikes[]
 }
 
