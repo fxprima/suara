@@ -18,6 +18,7 @@ import useAuth from '@/hooks/auth/useAuth';
 import { useRouter } from 'next/navigation';
 import isGemaLikedByUser from '@/utils/gema';
 import GemaMediaGrid from '@/components/common/media/GemaMediaGrid';
+import MediaPreviewModal from '@/components/common/media/MediaPreviewModal';
 
 export default function GemaDetail() {
     const router = useRouter();
@@ -35,6 +36,8 @@ export default function GemaDetail() {
     console.log(gema);
 
     const [likesCount, setLikesCount] = useState(0);
+
+    const [preview, setPreview] = useState({ open: false, index: 0 });
 
     useSilentRefetch(silentRefetchGema);
 
@@ -204,7 +207,18 @@ export default function GemaDetail() {
 
                     <p className="text-xl font-semibold whitespace-pre-wrap">{gema.content}</p>
 
-                    <GemaMediaGrid media={gema.media} className="mt-4" />
+                    <GemaMediaGrid
+                        media={gema.media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={gema.media ?? []}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
 
                     <div className="text-sm text-gray-500 mt-2">
                         {new Date(gema.createdAt).toLocaleString()}

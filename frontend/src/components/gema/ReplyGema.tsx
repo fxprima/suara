@@ -10,6 +10,7 @@ import api from '@/services/api';
 import isGemaLikedByUser from '@/utils/gema';
 import useAuth from '@/hooks/auth/useAuth';
 import GemaMediaGrid from '../common/media/GemaMediaGrid';
+import MediaPreviewModal from '../common/media/MediaPreviewModal';
 
 interface ReplyGemaProps {
     reply: ReplyType;
@@ -26,6 +27,8 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
     const { user: loggedUser } = useAuth();
+
+    const [preview, setPreview] = useState({ open: false, index: 0 });
 
     const handleSubmitReply = async (text: string) => {
         await handleReply({
@@ -82,7 +85,18 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
 
-                    <GemaMediaGrid media={reply.media} className="mt-4" />
+                    <GemaMediaGrid
+                        media={reply.media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={reply.media ?? []}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
 
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
                         <div
