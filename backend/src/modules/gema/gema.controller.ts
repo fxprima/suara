@@ -39,7 +39,6 @@ export class GemaController {
 
   @Patch(':id/views') 
   async incrementViews(@Param('id') id: string) {
-    console.log("Kepanggil")
     return await this.gemaService.incrementViews(id);
   }
 
