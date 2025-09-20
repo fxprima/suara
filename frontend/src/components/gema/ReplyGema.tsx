@@ -6,6 +6,11 @@ import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ToastMessage } from '../common/toast/ToastMessage';
 import { ReplyGemaModal } from './ReplyGemaModal';
+import api from '@/services/api';
+import isGemaLikedByUser from '@/utils/gema';
+import useAuth from '@/hooks/auth/useAuth';
+import GemaMediaGrid from '../common/media/GemaMediaGrid';
+import MediaPreviewModal from '../common/media/MediaPreviewModal';
 
 interface ReplyGemaProps {
     reply: ReplyType;
@@ -21,10 +26,13 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
+    const { user: loggedUser } = useAuth();
 
-    const handleSubmitReply = async (text: string) => {
+    const [preview, setPreview] = useState({ open: false, index: 0 });
+
+    const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
-            text: text,
+            formData: formData,
             parentId: reply?.id,
             refetchFn: refetchGema ?? (() => {}),
             showToast: showToast,
@@ -32,10 +40,23 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
         });
     };
 
+    const handleLikeReply = async (e: React.MouseEvent, replyId: string) => {
+        e.stopPropagation();
+        api.patch(`/gema/${replyId}/likes`).catch((err) => {
+            console.error('Failed to like reply:', err);
+        });
+    };
+
     return (
-        <div className="my-4">
+        <div className="my-4 ">
             <ToastMessage toasts={toasts} />
-            <div className="flex items-start gap-3">
+            <div
+                className="flex items-start gap-3 hover:bg-base-100 p-3 rounded-lg transition-colors cursor-pointer"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    window.location.href = `/${reply.author.username}/gema/${reply.id}`;
+                }}
+            >
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                     <img
                         src={reply.author.avatar || '/default-avatar.svg'}
@@ -44,7 +65,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                     />
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 ">
                     <div className="flex items-center gap-2">
                         <p className="font-semibold text-sm">
                             {reply.author.firstname} {reply.author.lastname}
@@ -64,6 +85,19 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
                     <p className="text-base mt-1 whitespace-pre-wrap">{reply.content}</p>
 
+                    <GemaMediaGrid
+                        media={reply.media}
+                        className="mt-3"
+                        onOpenPreview={(index) => setPreview({ open: true, index })}
+                    />
+
+                    <MediaPreviewModal
+                        open={preview.open}
+                        items={reply.media ?? []}
+                        initialIndex={preview.index}
+                        onClose={() => setPreview((p) => ({ ...p, open: false }))}
+                    />
+
                     <div className="flex gap-6 text-sm text-gray-500 mt-2 pl-1">
                         <div
                             className="flex items-center gap-2 group hover:text-primary cursor-pointer "
@@ -79,7 +113,12 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                             <FontAwesomeIcon icon={faRetweet} />
                             <span>{0}</span>
                         </div>
-                        <div className="flex items-center hover:text-red-500 cursor-pointer gap-2 group">
+                        <div
+                            className={`flex items-center gap-2 group hover:text-red-400 cursor-pointer ${
+                                isGemaLikedByUser(reply, loggedUser?.id ?? '') ? 'text-red-500' : ''
+                            }`}
+                            onClick={(e) => handleLikeReply(e, reply.id)}
+                        >
                             <FontAwesomeIcon icon={faHeart} />
                             <span>{reply.likedBy.length}</span>
                         </div>

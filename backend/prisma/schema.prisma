@@ -55,6 +55,9 @@ model Gemas {
   parent   Gemas?  @relation("ThreadParent", fields: [parentId], references: [id])
   replies  Gemas[] @relation("ThreadParent")
 
+  // Media
+  media Json? @default("[]") // ← array objek {type,url}
+
   // Engagement
   viewsCount   Int         @default(0)
   repliesCount Int         @default(0)
