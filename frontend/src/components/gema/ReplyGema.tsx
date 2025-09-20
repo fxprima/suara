@@ -30,9 +30,9 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
     const [preview, setPreview] = useState({ open: false, index: 0 });
 
-    const handleSubmitReply = async (text: string) => {
+    const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
-            text: text,
+            formData: formData,
             parentId: reply?.id,
             refetchFn: refetchGema ?? (() => {}),
             showToast: showToast,

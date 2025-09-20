@@ -7,7 +7,7 @@ interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     gema: GemaType;
-    onSubmitReply: (text: string) => void;
+    onSubmitReply: (formData: FormData) => void;
     showToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
@@ -32,7 +32,7 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
         formData.append('content', text.trim());
         files.forEach((file) => formData.append('media', file));
 
-        onSubmitReply(formData.get('content') as string);
+        onSubmitReply(formData);
         setText('');
         setFiles([]);
         onClose();

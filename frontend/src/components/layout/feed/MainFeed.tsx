@@ -69,9 +69,9 @@ export default function MainFeed() {
         }
     };
 
-    const handleSubmitReply = async (text: string) => {
+    const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
-            text,
+            formData: formData,
             parentId: replyToGema?.id,
             refetchFn: refetchGema,
             showToast,

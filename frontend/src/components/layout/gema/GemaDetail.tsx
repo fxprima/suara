@@ -75,9 +75,9 @@ export default function GemaDetail() {
         }
     };
 
-    const handleSubmitReply = async (text: string) => {
+    const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
-            text: text,
+            formData: formData,
             parentId: gema?.id,
             refetchFn: refetchGema,
             showToast: showToast,
