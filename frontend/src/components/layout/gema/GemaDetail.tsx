@@ -31,6 +31,8 @@ export default function GemaDetail() {
 
     const { user: loggedUser } = useAuth();
 
+    console.log(gema);
+
     const [likesCount, setLikesCount] = useState(0);
 
     useSilentRefetch(silentRefetchGema);
@@ -79,6 +81,87 @@ export default function GemaDetail() {
         });
     };
 
+    // ===== ShowMedia setup (autoplay muted + pause saat out of view) =====
+    const videoRefs = useRef<HTMLVideoElement[]>([]);
+
+    useEffect(() => {
+        const iosInline = (v: HTMLVideoElement) => {
+            v.setAttribute('playsinline', 'true');
+            v.setAttribute('webkit-playsinline', 'true');
+        };
+
+        const obs = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => {
+                    const v = e.target as HTMLVideoElement;
+                    if (e.isIntersecting) {
+                        videoRefs.current.forEach((o) => {
+                            if (o && o !== v) o.pause();
+                        });
+                        v.play().catch(() => {});
+                    } else {
+                        v.pause();
+                    }
+                });
+            },
+            { threshold: 0.5 }
+        );
+
+        videoRefs.current.forEach((v) => {
+            if (!v) return;
+            iosInline(v);
+            obs.observe(v);
+        });
+
+        return () => obs.disconnect();
+    }, [gema?.media?.length]);
+
+    const attachRef = (idx: number) => (el: HTMLVideoElement | null) => {
+        if (el) videoRefs.current[idx] = el;
+    };
+
+    const renderTile = (
+        item: { type: 'image' | 'video'; url: string },
+        idx: number,
+        extraClass = ''
+    ) => (
+        <div key={idx} className={`relative overflow-hidden rounded-xl ${extraClass}`}>
+            {item.type === 'image' ? (
+                <img
+                    src={item.url}
+                    alt={`media-${idx}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                />
+            ) : (
+                <div className="w-full h-full">
+                    <video
+                        ref={attachRef(idx)}
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        onPlay={(e) => {
+                            const current = e.currentTarget;
+                            videoRefs.current.forEach((v) => {
+                                if (v && v !== current) v.pause();
+                            });
+                        }}
+                    >
+                        <source src={item.url} />
+                    </video>
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-xs bg-black/60 text-white">
+                        <span aria-hidden>▶</span>
+                        <span>Video</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+    // ====================================================================
+
     if (loadingFetchGema) {
         return (
             <div className="w-full h-full flex items-center justify-center py-20">
@@ -101,7 +184,7 @@ export default function GemaDetail() {
             <ToastMessage toasts={toasts} />
             {/* Gema utama */}
             <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                     <img
                         src={gema.author.avatar || '/default-avatar.svg'}
                         alt="avatar"
@@ -120,17 +203,43 @@ export default function GemaDetail() {
 
                     <p className="text-xl font-semibold whitespace-pre-wrap">{gema.content}</p>
 
-                    {/* Media */}
-                    {gema.media?.[0] && (
-                        <div className="mt-4 rounded-xl overflow-hidden border">
-                            <img
-                                src={gema.media[0].url}
-                                alt="Post image"
-                                width={600}
-                                height={400}
-                                className="w-full object-cover"
-                            />
-                        </div>
+                    {gema.media && gema.media.length > 0 && (
+                        <>
+                            {gema.media.length === 1 && (
+                                <div className="mt-4">
+                                    {renderTile(gema.media[0] as any, 0, 'aspect-video')}
+                                </div>
+                            )}
+
+                            {gema.media.length === 2 && (
+                                <div className="mt-4 grid grid-cols-2 gap-2">
+                                    {renderTile(gema.media[0] as any, 0, 'aspect-[4/3]')}
+                                    {renderTile(gema.media[1] as any, 1, 'aspect-[4/3]')}
+                                </div>
+                            )}
+
+                            {gema.media.length === 3 && (
+                                <div className="mt-4 grid grid-cols-2 gap-2">
+                                    {renderTile(
+                                        gema.media[0] as any,
+                                        0,
+                                        'aspect-[3/4] md:aspect-[4/5]'
+                                    )}
+                                    <div className="grid grid-rows-2 gap-2">
+                                        {renderTile(gema.media[1] as any, 1, 'aspect-square')}
+                                        {renderTile(gema.media[2] as any, 2, 'aspect-square')}
+                                    </div>
+                                </div>
+                            )}
+
+                            {gema.media.length >= 4 && (
+                                <div className="mt-4 grid grid-cols-2 gap-2">
+                                    {(gema.media as any[])
+                                        .slice(0, 4)
+                                        .map((m, i) => renderTile(m, i, 'aspect-square'))}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <div className="text-sm text-gray-500 mt-2">

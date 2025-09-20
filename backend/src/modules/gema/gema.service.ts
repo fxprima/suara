@@ -97,6 +97,28 @@ export class GemaService {
    * @returns Sebuah promise yang menghasilkan array balasan, masing-masing berisi penulisnya dan balasan yang bersarang.
    */
   async getRepliesRecursive(id: string) {
+    const replies = await this.prisma.gemas.findMany({
+      where: { parentId: id },
+      include: { 
+        author: true, 
+        likedBy: {
+          select : {
+            user : {
+              select : {
+                id: true,
+                username: true,
+              }
+            }
+          }
+        }}
+    });
+    
+
+    for (const reply of replies) {
+      reply['replies'] = await this.getRepliesRecursive(reply.id);
+    }
+
+    return replies;
   }
 
   async getGemaDetailRecursive(id: string) {

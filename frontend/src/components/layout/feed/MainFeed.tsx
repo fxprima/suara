@@ -90,9 +90,9 @@ export default function MainFeed() {
             const res = await api.post('/gema', formData, { withCredentials: true });
             console.log('Res Create Gema:', res);
 
-            // setCreateGemaField('');
-            // clearMedia();
-            // showToast('You have successfully posted your Suara!', 'success');
+            setCreateGemaField('');
+            clearMedia();
+            showToast('You have successfully posted your Suara!', 'success');
             refetchGema();
         } catch (err) {
             console.error(err);
