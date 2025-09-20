@@ -4,11 +4,11 @@ Suara is a web-based social media application designed. This platform enables us
 
 ## ✨ Key Features
 
-1. **CRUD for Posts** - Create, read, update, and delete posts.
-2. **Threads** - Create long discussions in a single thread.
-3. **Authentication** - Uses JWT for login and session management.
+1. **CRUD for Posts** - Create, read, update, and delete posts. ✅
+2. **Threads** - Create long discussions in a single thread. ✅
+3. **Authentication** - Uses JWT for login and session management. ✅
 4. **Profile Setup** - Users can personalize their profiles.
-5. **Engagement** - Retweets, replies, and reactions on posts.
+5. **Engagement** - Retweets, replies, and reactions on posts. ✅
 
 ### 🔥 Enhancements
 1. **AI (Enhance Post)** - Improve post quality with AI assistance.
