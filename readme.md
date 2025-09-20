@@ -24,7 +24,7 @@ Suara is a web-based social media application designed. This platform enables us
 - **Backend**: NestJS
 - **Database**: MySQL
 - **Authentication**: JWT with Refresh Token Rotation
-- **Realtime**: WebSocket
+- **Realtime**: AJAX
 
 ## Preview
 <img width="1755" height="813" alt="image" src="https://github.com/user-attachments/assets/d5d804eb-e65b-497a-8225-66888ebb5ccc" />
