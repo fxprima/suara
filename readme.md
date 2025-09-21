@@ -57,7 +57,6 @@ Suara is a web-based social media application designed. This platform enables us
 📌 **Target Full Completion: End of November 2025**
 
 
-
 ## 🛠️ Technologies Used
 
 - **Frontend**: Next.js
