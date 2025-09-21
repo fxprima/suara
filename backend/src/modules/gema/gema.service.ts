@@ -55,6 +55,40 @@ export class GemaService {
   }
   
 
+  async findGemasByAuthor(authorId: string) {
+    return await this.prisma.gemas.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      },
+      where : {
+        parentId: null,
+        authorId: authorId
+      },
+      include: {
+        author: {
+          select: {
+            firstname: true,
+            lastname: true,
+            username: true,
+            avatar: true
+          }
+        },
+        likedBy: {
+          select : {
+            user: {
+              select : {
+                firstname: true,
+                lastname: true,
+                username: true
+              }
+            }
+          }
+        }
+      }
+    })
+  } 
+        
+
   async findAll() {
     return await this.prisma.gemas.findMany({
       orderBy: {
@@ -68,7 +102,8 @@ export class GemaService {
           select: {
             firstname: true,
             lastname: true,
-            username: true
+            username: true,
+            avatar: true
           }
         },
         likedBy: {

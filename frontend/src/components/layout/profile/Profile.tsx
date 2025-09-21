@@ -6,25 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink, faLocationDot, faCalendar } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { GemaCard } from '@/components/gema/GemaCard';
+import { useFetchData } from '@/hooks/data/useFetchData';
+import { GemaType, UserPublicProfile } from '../../../../types/gema';
 
 type TabKey = 'posts' | 'replies' | 'media' | 'likes';
-
-interface MediaFile {
-    type: 'image' | 'video';
-    url: string;
-}
-interface FeedItem {
-    id: string;
-    authorName: string;
-    username: string;
-    avatar?: string;
-    content: string;
-    createdAt?: string;
-    viewsCount?: number;
-    likesCount?: number;
-    repliesCount?: number;
-    media?: MediaFile[];
-}
 
 export default function MyProfilePage() {
     const { user } = useAuth();
@@ -37,75 +22,42 @@ export default function MyProfilePage() {
         { key: 'likes', label: 'Likes' },
     ] as const;
 
+    const { data: userPublicData, loading: userProfile } = useFetchData<UserPublicProfile>(
+        `user/profile/${user?.username}`
+    );
+
+    const { data: userGemas, loading: userGemasLoading } = useFetchData<GemaType[]>(
+        user ? `gema/author/${user.id}` : ''
+    );
+
+    const posts = userGemas || [];
+    console.log(userGemas);
+
     // --- safe fallbacks ---
-    const displayName = `${user?.firstname ?? ''} ${user?.lastname ?? ''}`.trim() || 'User';
-    const username = user?.username ?? 'felixdev';
+    const displayName =
+        `${userPublicData?.firstname ?? ''} ${userPublicData?.lastname ?? ''}`.trim() || 'User';
+    const username = userPublicData?.username ?? 'felixdev';
+
     const avatarUrl =
-        user?.avatar ||
+        userPublicData?.avatar ||
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s';
+
     const bannerUrl =
-        user?.banner || 'https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200';
-    const joinedText = user?.createdAt
-        ? new Date(String(user.createdAt)).toLocaleDateString('id-ID', {
+        userPublicData?.banner ||
+        'https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200';
+
+    const joinedText = userPublicData?.createdAt
+        ? new Date(String(userPublicData.createdAt)).toLocaleDateString('id-ID', {
               month: 'long',
               year: 'numeric',
           })
         : 'January 2025';
 
-    // --- dummy feeds (tanpa API) ---
-    const allPosts: FeedItem[] = useMemo(
-        () => [
-            {
-                id: 'p1',
-                authorName: displayName,
-                username,
-                avatar: avatarUrl,
-                content:
-                    'Launching “Suara” soon. Minimal features first, iterate fast. #buildinpublic',
-                createdAt: '2025-04-02T10:00:00Z',
-                viewsCount: 120,
-                likesCount: 18,
-                repliesCount: 3,
-                media: [
-                    { type: 'image', url: 'https://picsum.photos/id/1015/1200/800' },
-                    { type: 'image', url: 'https://picsum.photos/id/1025/1200/800' },
-                ],
-            },
-            {
-                id: 'p2',
-                authorName: displayName,
-                username,
-                avatar: avatarUrl,
-                content:
-                    'Refactor auth flow + session rotation weekend ini. Any pitfalls I should avoid?',
-                createdAt: '2025-04-03T08:30:00Z',
-                viewsCount: 88,
-                likesCount: 12,
-                repliesCount: 4,
-            },
-            {
-                id: 'p3',
-                authorName: displayName,
-                username,
-                avatar: avatarUrl,
-                content:
-                    'Today I learned: handling iOS inline video needs playsinline + webkit-playsinline.',
-                createdAt: '2025-04-04T07:10:00Z',
-                viewsCount: 64,
-                likesCount: 7,
-                repliesCount: 1,
-                media: [{ type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4' }],
-            },
-        ],
-        [displayName, username, avatarUrl]
-    );
+    const replies = posts.slice(0, 1);
+    const mediaOnly = posts.filter((p) => (p.media?.length ?? 0) > 0);
+    const likes = posts.slice(1);
 
-    const posts = allPosts;
-    const replies = allPosts.slice(0, 1);
-    const mediaOnly = allPosts.filter((p) => (p.media?.length ?? 0) > 0);
-    const likes = allPosts.slice(1);
-
-    const tabMap: Record<TabKey, FeedItem[]> = {
+    const tabMap: Record<TabKey, GemaType[]> = {
         posts,
         replies,
         media: mediaOnly,
@@ -139,29 +91,31 @@ export default function MyProfilePage() {
                             <h1 className="text-xl font-bold">{displayName}</h1>
                             <p className="text-sm opacity-70">@{username}</p>
                         </div>
-                        <button className="btn btn-sm btn-outline rounded-full">
+                        <Link href="/profile/edit" className="btn btn-sm btn-outline rounded-full">
                             Edit Profile
-                        </button>
+                        </Link>
                     </div>
 
-                    {user?.biography && <p className="mt-3 text-sm">{user.biography}</p>}
+                    {userPublicData?.biography && (
+                        <p className="mt-3 text-sm">{userPublicData.biography}</p>
+                    )}
 
                     <div className="flex flex-wrap gap-4 mt-3 text-sm opacity-80">
-                        {user?.location && (
+                        {userPublicData?.location && (
                             <span className="flex items-center gap-1">
-                                <FontAwesomeIcon icon={faLocationDot} /> {user.location}
+                                <FontAwesomeIcon icon={faLocationDot} /> {userPublicData.location}
                             </span>
                         )}
-                        {user?.website && (
+                        {userPublicData?.website && (
                             <span className="flex items-center gap-1">
                                 <FontAwesomeIcon icon={faLink} />
                                 <Link
-                                    href={user.website}
+                                    href={userPublicData.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-primary hover:underline"
                                 >
-                                    {user.website.replace(/^https?:\/\//, '')}
+                                    {userPublicData.website.replace(/^https?:\/\//, '')}
                                 </Link>
                             </span>
                         )}
@@ -219,14 +173,14 @@ export default function MyProfilePage() {
                                 <GemaCard
                                     key={p.id}
                                     id={p.id}
-                                    authorName={p.authorName}
-                                    username={p.username}
-                                    avatar={p.avatar}
+                                    authorName={`${p.author.firstname} ${p.author?.lastname}`}
+                                    username={p.author.username}
+                                    avatar={p.author.avatar ?? '/default-avatar.svg'}
                                     content={p.content}
                                     media={p.media}
                                     createdAt={p.createdAt}
                                     viewsCount={p.viewsCount}
-                                    likesCount={p.likesCount}
+                                    likesCount={p.likedBy.length}
                                     repliesCount={p.repliesCount}
                                     onReply={() => {}}
                                 />

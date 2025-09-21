@@ -8,6 +8,11 @@ export interface UserPublicProfile {
     website?: string;
     location?: string;
     dob?: Date;
+    banner?: string;
+    createdAt: Date;
+    followersCount: number;
+    followingCount: number;
+    
 }
 export interface GemaType {
     id: string;

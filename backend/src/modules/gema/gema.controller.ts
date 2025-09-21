@@ -37,6 +37,12 @@ export class GemaController {
     return this.gemaService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('author/:authorId')
+  findByAuthor(@Param('authorId') authorId: string) {
+    return this.gemaService.findGemasByAuthor(authorId);
+  }
+
   @Patch(':id/views') 
   async incrementViews(@Param('id') id: string) {
     return await this.gemaService.incrementViews(id);

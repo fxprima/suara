@@ -16,7 +16,10 @@ export class UserService {
         username: createUserDto.username,
         firstname: createUserDto.firstname,
         lastname: createUserDto.lastname,
-        dob: createUserDto.dob
+        dob: createUserDto.dob,
+        createdAt: new Date(),
+        isAdmin: false,
+        isVerified: false
       }
     })
   }
@@ -53,7 +56,10 @@ export class UserService {
           biography: true,
           website: true,
           location: true,
-          dob: true
+          dob: true,
+          banner: true,
+          createdAt: true,
+
         }
       }
     )

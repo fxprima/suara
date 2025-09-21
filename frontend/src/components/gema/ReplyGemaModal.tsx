@@ -83,8 +83,8 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     <div className="avatar">
                         <div className="w-10 rounded-full">
                             <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s"
-                                alt="avatar"
+                                src={gema.author.avatar ?? '/default-avatar.svg'}
+                                alt="Your avatar"
                             />
                         </div>
                     </div>

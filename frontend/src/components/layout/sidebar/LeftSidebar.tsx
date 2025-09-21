@@ -17,9 +17,15 @@ import {
 import SidebarLogo from './LeftSidebarLogo';
 import useAuth from '@/hooks/auth/useAuth';
 import Link from 'next/link';
+import { useFetchData } from '@/hooks/data/useFetchData';
+import { UserPublicProfile } from '../../../../types/gema';
 
 export default function LeftSidebar() {
     const { user, logout } = useAuth();
+
+    const { data: userPublicData, loading: userProfile } = useFetchData<UserPublicProfile>(
+        `user/profile/${user?.username}`
+    );
 
     return (
         <aside className="w-20 lg:w-1/5 flex flex-col justify-between p-2 lg:p-4 bg-base-200 border-r border-base-200">
@@ -58,7 +64,7 @@ export default function LeftSidebar() {
                 <div className="dropdown dropdown-top">
                     <label tabIndex={0} className="avatar cursor-pointer">
                         <div className="w-10 rounded-full">
-                            <img src="/default-avatar.svg" alt="User avatar" />
+                            <img src={`${userPublicData?.avatar}`} alt="User avatar" />
                         </div>
                     </label>
                     <ul
