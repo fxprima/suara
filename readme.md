@@ -14,14 +14,13 @@ Suara is a web-based social media application designed. This platform enables us
 | Profile Setup           | Bio, avatar, banner, location, link.                        | ✅ Done       | 21 Sep 2025     |
 | Engagement – Likes      | Like/unlike posts with real-time count updates.             | ✅ Done       | 21 Sep 2025     |
 | Engagement – Replies    | Reply to posts with thread view.                            | ✅ Done       | 21 Sep 2025     |
-| Engagement – Retweets   | Share other user’s post (with/without quote).               | ⏳ In Progress| 28 Sep 2025     |
-| Engagement – Reactions  | Emoji-based reactions (❤️ 😂 🔥 etc).                        | ⏳ Planned    | 05 Oct 2025     |
-| Following System        | Follow/unfollow users + followers/following list.           | ⏳ Planned    | 05 Oct 2025     |
-| Notifications           | Real-time notifications (likes, replies, retweets, follows).| ⏳ Planned    | 12 Oct 2025     |
-| Private Account         | Approve/reject follow requests.                             | ⏳ Planned    | 12 Oct 2025     |
-| Save Gema (Bookmarks)   | Save posts privately.                                        | ⏳ Planned    | 19 Oct 2025     |
-| Share Gema              | Share posts via link/social platforms.                      | ⏳ Planned    | 19 Oct 2025     |
-| Messages (DM)           | Direct messaging system.                                    | ⏳ Planned    | 26 Oct 2025     |
+| Following System        | Follow/unfollow users + followers/following list.           | ⏳ Planned    | 28 Sep 2025     |
+| Notifications           | Real-time notifications (likes, replies, retweets, follows).| ⏳ Planned    | 05 Oct 2025     |
+| Private Account         | Approve/reject follow requests.                             | ⏳ Planned    | 05 Oct 2025     |
+| Save Gema (Bookmarks)   | Save posts privately.                                        | ⏳ Planned    | 12 Oct 2025     |
+| Share Gema              | Share posts via link/social platforms.                      | ⏳ Planned    | 12 Oct 2025     |
+| Engagement – Retweets   | Share other user’s post (with/without quote).               | ⏳ In Progress| 19 Oct 2025     |
+| Messages (DM)           | Direct messaging system.                                    | ⏳ Planned    | 19 Oct 2025     |
 | Who to Follow           | Suggested users to follow.                                  | ⏳ Planned    | 26 Oct 2025     |
 
 ---
@@ -56,6 +55,7 @@ Suara is a web-based social media application designed. This platform enables us
 - 🔥 Enhancements: **09 – 23 Nov 2025**
 
 📌 **Target Full Completion: End of November 2025**
+
 
 
 ## 🛠️ Technologies Used
