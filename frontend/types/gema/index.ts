@@ -16,6 +16,7 @@ export interface UserPublicProfile {
 }
 export interface GemaType {
     id: string;
+    parentId: string | null;
     content: string;
     createdAt: string;
     author: UserPublicProfile;

@@ -26,13 +26,6 @@ export default function MyProfilePage() {
         `user/profile/${user?.username}`
     );
 
-    const { data: userGemas, loading: userGemasLoading } = useFetchData<GemaType[]>(
-        user ? `gema/author/${user.id}` : ''
-    );
-
-    const posts = userGemas || [];
-    console.log(userGemas);
-
     // --- safe fallbacks ---
     const displayName =
         `${userPublicData?.firstname ?? ''} ${userPublicData?.lastname ?? ''}`.trim() || 'User';
@@ -53,9 +46,28 @@ export default function MyProfilePage() {
           })
         : 'January 2025';
 
-    const replies = posts.slice(0, 1);
-    const mediaOnly = posts.filter((p) => (p.media?.length ?? 0) > 0);
-    const likes = posts.slice(1);
+    const { data: userGemas, loading: userGemasLoading } = useFetchData<GemaType[]>(
+        user ? `gema/author/${user.id}` : ''
+    );
+
+    const allPosts = userGemas || [];
+
+    console.log(allPosts);
+
+    const posts = allPosts.filter((p) => p.parentId === null);
+    const mediaOnly = allPosts.filter((p) => (p.media?.length ?? 0) > 0);
+    const replies = allPosts.filter((p) => p.parentId !== null);
+
+    const { data: likedGemas, loading: likedGemasLoading } = useFetchData<GemaType[]>(
+        user ? `gema/likes/${user.id}` : ''
+    );
+
+    console.log(replies);
+
+    console.log(`likedGemas: `);
+    console.log(likedGemas);
+
+    const likes = likedGemas || [];
 
     const tabMap: Record<TabKey, GemaType[]> = {
         posts,

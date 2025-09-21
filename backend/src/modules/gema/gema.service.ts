@@ -54,6 +54,38 @@ export class GemaService {
     return newGema;
   }
   
+async findLikedGemasByUser(userId: string) {
+  return await this.prisma.gemas.findMany({
+    where: {
+      likedBy: {
+        some: { userId }, // filter gema yang dilike user ini
+      },
+    },
+    include: {
+      author: {
+        select: {
+          firstname: true,
+          lastname: true,
+          username: true,
+          avatar: true,
+        },
+      },
+      likedBy: {
+        select: {
+          user: {
+            select: {
+              firstname: true,
+              lastname: true,
+              username: true,
+            },
+          },
+        },
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 
   async findGemasByAuthor(authorId: string) {
     return await this.prisma.gemas.findMany({
@@ -61,7 +93,6 @@ export class GemaService {
         createdAt: 'desc'
       },
       where : {
-        parentId: null,
         authorId: authorId
       },
       include: {
