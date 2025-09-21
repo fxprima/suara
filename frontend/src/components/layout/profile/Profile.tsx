@@ -182,19 +182,10 @@ export default function MyProfilePage() {
                     ) : (
                         <div className="divide-y divide-base-300">
                             {activeFeed.map((p) => (
-                                <GemaCard
-                                    key={p.id}
-                                    id={p.id}
-                                    authorName={`${p.author.firstname} ${p.author?.lastname}`}
-                                    username={p.author.username}
-                                    avatar={p.author.avatar ?? '/default-avatar.svg'}
-                                    content={p.content}
-                                    media={p.media}
-                                    createdAt={p.createdAt}
-                                    viewsCount={p.viewsCount}
-                                    likesCount={p.likedBy.length}
-                                    repliesCount={p.repliesCount}
-                                    onReply={() => {}}
+                                <GemaCard 
+                                    key={p.id} 
+                                    gema={p} 
+                                    onReply={() => {}} 
                                 />
                             ))}
                         </div>

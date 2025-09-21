@@ -77,6 +77,8 @@ async findLikedGemasByUser(userId: string) {
               firstname: true,
               lastname: true,
               username: true,
+              avatar: true,
+              id: true,
             },
           },
         },
@@ -98,6 +100,7 @@ async findLikedGemasByUser(userId: string) {
       include: {
         author: {
           select: {
+            id: true,
             firstname: true,
             lastname: true,
             username: true,
@@ -108,6 +111,8 @@ async findLikedGemasByUser(userId: string) {
           select : {
             user: {
               select : {
+                id:true,
+                avatar: true,
                 firstname: true,
                 lastname: true,
                 username: true
@@ -131,6 +136,7 @@ async findLikedGemasByUser(userId: string) {
       include: {
         author: {
           select: {
+            id: true,
             firstname: true,
             lastname: true,
             username: true,
@@ -141,6 +147,8 @@ async findLikedGemasByUser(userId: string) {
           select : {
             user: {
               select : {
+                id:true,
+                avatar: true,
                 firstname: true,
                 lastname: true,
                 username: true

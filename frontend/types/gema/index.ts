@@ -16,16 +16,17 @@ export interface UserPublicProfile {
 }
 export interface GemaType {
     id: string;
-    parentId: string | null;
-    content: string;
-    createdAt: string;
     author: UserPublicProfile;
+    content: string;
+    parentId: string | null;
+    createdAt: string;
     media?: {
         type: 'image' | 'video';
         url: string;
     }[];
     viewsCount: number;
     likedBy : {user: UserPublicProfile}[];
+    likesCount?: number;
     repliesCount: number;
 }
 
