@@ -4,7 +4,7 @@ Suara is a web-based social media application designed. This platform enables us
 
 # ✨ Suara – Feature Checklist
 
-## 📌 Key Features
+## 📌 Core Features
 
 | Feature                | Description                                                  | Status       | Est. Completion |
 |-------------------------|--------------------------------------------------------------|--------------|-----------------|
@@ -15,20 +15,14 @@ Suara is a web-based social media application designed. This platform enables us
 | Engagement – Likes      | Like/unlike posts with real-time count updates.             | ✅ Done       | 21 Sep 2025     |
 | Engagement – Replies    | Reply to posts with thread view.                            | ✅ Done       | 21 Sep 2025     |
 | Engagement – Retweets   | Share other user’s post (with/without quote).               | ⏳ In Progress| 28 Sep 2025     |
-
----
-
-## 🔔 Social Features
-
-| Feature                 | Description                                                  | Status       | Est. Completion |
-|--------------------------|--------------------------------------------------------------|--------------|-----------------|
-| Notifications            | Real-time notifications (likes, replies, retweets, follows). | ⏳ Planned    | 12 Oct 2025     |
-| Following System         | Follow/unfollow users + followers/following list.            | ⏳ Planned    | 12 Oct 2025     |
-| Private Account          | Approve/reject follow requests.                              | ⏳ Planned    | 19 Oct 2025     |
-| Save Gema (Bookmarks)    | Save posts privately.                                        | ⏳ Planned    | 19 Oct 2025     |
-| Share Gema               | Share posts via link/social platforms.                      | ⏳ Planned    | 19 Oct 2025     |
-| Messages (DM)            | Direct messaging system.                                    | ⏳ Planned    | 26 Oct 2025     |
-| Who to Follow            | Suggested users to follow.                                  | ⏳ Planned    | 02 Nov 2025     |
+| Engagement – Reactions  | Emoji-based reactions (❤️ 😂 🔥 etc).                        | ⏳ Planned    | 05 Oct 2025     |
+| Following System        | Follow/unfollow users + followers/following list.           | ⏳ Planned    | 05 Oct 2025     |
+| Notifications           | Real-time notifications (likes, replies, retweets, follows).| ⏳ Planned    | 12 Oct 2025     |
+| Private Account         | Approve/reject follow requests.                             | ⏳ Planned    | 12 Oct 2025     |
+| Save Gema (Bookmarks)   | Save posts privately.                                        | ⏳ Planned    | 19 Oct 2025     |
+| Share Gema              | Share posts via link/social platforms.                      | ⏳ Planned    | 19 Oct 2025     |
+| Messages (DM)           | Direct messaging system.                                    | ⏳ Planned    | 26 Oct 2025     |
+| Who to Follow           | Suggested users to follow.                                  | ⏳ Planned    | 26 Oct 2025     |
 
 ---
 
@@ -36,9 +30,9 @@ Suara is a web-based social media application designed. This platform enables us
 
 | Feature                | Description                                                  | Status       | Est. Completion |
 |-------------------------|--------------------------------------------------------------|--------------|-----------------|
-| Explore Page            | Discover trending posts, users, and hashtags.                | ⏳ Planned    | 09 Nov 2025     |
-| Search                  | Search posts, users, and hashtags.                           | ⏳ Planned    | 09 Nov 2025     |
-| Hashtags                | Clickable hashtags with grouped feeds.                       | ⏳ Planned    | 09 Nov 2025     |
+| Explore Page            | Discover trending posts, users, and hashtags.                | ⏳ Planned    | 02 Nov 2025     |
+| Search                  | Search posts, users, and hashtags.                           | ⏳ Planned    | 02 Nov 2025     |
+| Hashtags                | Clickable hashtags with grouped feeds.                       | ⏳ Planned    | 02 Nov 2025     |
 
 ---
 
@@ -46,21 +40,20 @@ Suara is a web-based social media application designed. This platform enables us
 
 | Feature                   | Description                                                | Status       | Est. Completion |
 |----------------------------|------------------------------------------------------------|--------------|-----------------|
-| AI (Enhance Post)          | AI-assisted post improvement.                              | ⏳ Planned    | 16 Nov 2025     |
-| No Affiliate Detector      | Detect affiliate links.                                    | ⏳ Planned    | 16 Nov 2025     |
-| Catalog                    | Categorization of posts (tag-based / AI-driven).           | ⏳ Planned    | 23 Nov 2025     |
-| Hoax & Phishing Detection  | Detect fake news & malicious links with AI.                | ⏳ Planned    | 23 Nov 2025     |
-| FoMEME                     | Trending meme recommendations.                            | ⏳ Planned    | 30 Nov 2025     |
-| Breaking News / PSA / BMKG | Real-time alerts for news and weather updates.             | ⏳ Planned    | 30 Nov 2025     |
+| AI (Enhance Post)          | AI-assisted post improvement.                              | ⏳ Planned    | 09 Nov 2025     |
+| No Affiliate Detector      | Detect affiliate links.                                    | ⏳ Planned    | 09 Nov 2025     |
+| Catalog                    | Categorization of posts (tag-based / AI-driven).           | ⏳ Planned    | 16 Nov 2025     |
+| Hoax & Phishing Detection  | Detect fake news & malicious links with AI.                | ⏳ Planned    | 16 Nov 2025     |
+| FoMEME                     | Trending meme recommendations.                            | ⏳ Planned    | 23 Nov 2025     |
+| Breaking News / PSA / BMKG | Real-time alerts for news and weather updates.             | ⏳ Planned    | 23 Nov 2025     |
 
 ---
 
 ## 📅 Timeline Estimation
 
-- ✅ Core Features: **21 Sep – 05 Oct 2025**  
-- 🔔 Social Features: **12 Oct – 02 Nov 2025**  
-- 🌐 Discovery: **09 Nov 2025**  
-- 🔥 Enhancements: **16 – 30 Nov 2025**
+- ✅ Core Features: **21 Sep – 26 Oct 2025**  
+- 🌐 Discovery: **02 Nov 2025**  
+- 🔥 Enhancements: **09 – 23 Nov 2025**
 
 📌 **Target Full Completion: End of November 2025**
 
