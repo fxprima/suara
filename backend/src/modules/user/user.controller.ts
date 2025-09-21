@@ -22,9 +22,17 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @Get('profile/:username')
+  async getPublicProfile(@Param('username') username: string) {
+    console.log("Masuk controller");
+    console.log(username);
+    return await this.userService.getPublicProfileByUsername(username);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+      console.log("Masuk controller update");
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')

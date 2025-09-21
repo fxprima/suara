@@ -4,18 +4,29 @@ export interface UserPublicProfile {
     lastname: string;
     username: string;
     avatar?: string;
+    biography?: string;
+    website?: string;
+    location?: string;
+    dob?: Date;
+    banner?: string;
+    createdAt: Date;
+    followersCount: number;
+    followingCount: number;
+    
 }
 export interface GemaType {
     id: string;
-    content: string;
-    createdAt: string;
     author: UserPublicProfile;
+    content: string;
+    parentId: string | null;
+    createdAt: string;
     media?: {
         type: 'image' | 'video';
         url: string;
     }[];
     viewsCount: number;
     likedBy : {user: UserPublicProfile}[];
+    likesCount?: number;
     repliesCount: number;
 }
 

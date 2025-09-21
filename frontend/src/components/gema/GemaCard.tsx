@@ -13,77 +13,28 @@ import {
 import { useRouter } from 'next/navigation';
 import MediaPreviewModal from '../common/media/MediaPreviewModal';
 import GemaMediaGrid from '../common/media/GemaMediaGrid';
-
-interface MediaFile {
-    type: 'image' | 'video';
-    url: string;
-}
+import isGemaLikedByUser from '@/utils/gema';
+import { GemaType } from '../../../types/gema';
+import useAuth from '@/hooks/auth/useAuth';
 
 interface GemaCardProps {
-    id: string;
-    authorName: string;
-    username: string;
-    avatar?: string;
-    content: string;
-    media?: MediaFile[];
-    createdAt?: string;
-    viewsCount?: number;
-    likesCount?: number;
-    repliesCount?: number;
+    key: string;
+    gema: GemaType;
     onReply?: () => void;
 }
 
-/**
- * GemaCard - Komponen UI untuk menampilkan 1 post Gema ala Twitter/X style.
- *
- * Props:
- * @param {string} id - ID Gema.
- * @param {string} authorName - Nama penulis Gema
- * @param {string} username - Username penulis (tanpa '@', akan ditampilkan otomatis)
- * @param {string} [avatar] - URL avatar user (default ke `/default-avatar.png` jika tidak ada)
- * @param {string} content - Konten teks Gema
- * @param {MediaFile[]} [media] - Optional array media (image/video), max 4 file
- * @param {string} [createdAt] - Tanggal pembuatan Gema (ISO string)
- * @param {number} [viewsCount=0] - Jumlah view
- * @param {number} [likesCount=0] - Jumlah like
- * @param {number} [repliesCount=0] - Jumlah reply
- *
- * 📦 Contoh penggunaan:
- * <GemaCard
- *   id = "uiiauiiai"
- *   authorName="Felix"
- *   username="felixdev"
- *   avatar="https://..."
- *   content="Halo dunia!"
- *   media=[{ type: 'image', url: 'https://...' }]
- *   createdAt="2025-04-02T10:00:00Z"
- *   viewsCount={100}
- *   likesCount={20}
- *   repliesCount={5}
- * />
- */
-export const GemaCard: React.FC<GemaCardProps> = ({
-    id,
-    authorName,
-    username,
-    avatar,
-    content,
-    media = [],
-    createdAt,
-    viewsCount = 0,
-    likesCount = 0,
-    repliesCount = 0,
-    onReply,
-}) => {
+export const GemaCard: React.FC<GemaCardProps> = ({ gema, onReply }) => {
     const router = useRouter();
-
+    const { user: loggedUser } = useAuth();
     const videoRefs = React.useRef<HTMLVideoElement[]>([]);
 
     const [preview, setPreview] = React.useState({ open: false, index: 0 });
 
+    console.log('Gema in Card:');
+    console.log(gema);
+
     React.useEffect(() => {
         const iosInline = (v: HTMLVideoElement) => {
-            // jaga-jaga iOS
             v.setAttribute('playsinline', 'true');
             v.setAttribute('webkit-playsinline', 'true');
         };
@@ -121,24 +72,26 @@ export const GemaCard: React.FC<GemaCardProps> = ({
         <div
             className="border-b border-base-300 pb-4 pt-2 px-1 transition duration-150 ease-in-out 
              hover:bg-base-100 hover:shadow-sm cursor-pointer rounded-xl"
-            onClick={() => router.push(`/${username}/gema/${id}`)}
+            onClick={() => router.push(`/${gema.author.username}/gema/${gema.id}`)}
         >
             {/* Header */}
             <div className="flex items-start space-x-3">
                 <div className="avatar">
                     <div className="w-10 rounded-full">
-                        <img src={avatar || '/default-avatar.png'} alt="avatar" />
+                        <img src={gema.author.avatar ?? '/default-avatar.svg'} alt="avatar" />
                     </div>
                 </div>
                 <div className="flex-1">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-semibold leading-none mb-2">{authorName}</p>
-                            <p className="text-sm text-gray-500 leading-none">@{username}</p>
+                            <p className="font-semibold leading-none mb-2">{`${gema.author.firstname} ${gema.author.lastname}`}</p>
+                            <p className="text-sm text-gray-500 leading-none">
+                                @{gema.author.username}
+                            </p>
                         </div>
-                        {createdAt && (
+                        {gema.createdAt && (
                             <span className="text-xs text-gray-400">
-                                {new Date(createdAt).toLocaleDateString('id-ID', {
+                                {new Date(gema.createdAt).toLocaleDateString('id-ID', {
                                     day: '2-digit',
                                     month: '2-digit',
                                     year: '2-digit',
@@ -147,18 +100,18 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                         )}
                     </div>
                     {/* Content */}
-                    <div className="mt-2 whitespace-pre-wrap text-base">{content}</div>
+                    <div className="mt-2 whitespace-pre-wrap text-base">{gema.content}</div>
 
                     {/* Media */}
                     <GemaMediaGrid
-                        media={media}
+                        media={gema.media}
                         className="mt-3"
                         onOpenPreview={(index) => setPreview({ open: true, index })}
                     />
 
                     <MediaPreviewModal
                         open={preview.open}
-                        items={media}
+                        items={gema.media || []}
                         initialIndex={preview.index}
                         onClose={() => setPreview((p) => ({ ...p, open: false }))}
                     />
@@ -173,19 +126,23 @@ export const GemaCard: React.FC<GemaCardProps> = ({
                             }}
                         >
                             <FontAwesomeIcon icon={faComment} className="w-4 h-4" />
-                            <span>{repliesCount}</span>
+                            <span>{gema.repliesCount}</span>
                         </div>
                         <div className="flex items-center space-x-1 hover:text-green-500 cursor-pointer">
                             <FontAwesomeIcon icon={faRetweet} className="w-4 h-4" />
                             <span>0</span>
                         </div>
-                        <div className="flex items-center space-x-1 hover:text-pink-500 cursor-pointer">
+                        <div
+                            className={`flex items-center space-x-1 hover:text-pink-500 cursor-pointer 
+                            ${isGemaLikedByUser(gema, loggedUser?.id ?? '') ? 'text-pink-500' : ''}
+                        `}
+                        >
                             <FontAwesomeIcon icon={faHeart} className="w-4 h-4" />
-                            <span>{likesCount}</span>
+                            <span>{gema.likedBy.length}</span>
                         </div>
                         <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
                             <FontAwesomeIcon icon={faChartLine} className="w-4 h-4" />
-                            <span>{viewsCount}</span>
+                            <span>{gema.viewsCount}</span>
                         </div>
                         <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
                             <FontAwesomeIcon icon={faBookmark} className="w-4 h-4" />

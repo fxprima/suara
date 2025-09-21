@@ -14,16 +14,26 @@ datasource db {
 }
 
 model Users {
-  id            String          @id @default(uuid())
-  username      String          @unique
-  firstname     String
-  lastname      String?
-  email         String          @unique
-  password      String
-  phone         String?         @unique
-  dob           DateTime
-  gemas         Gemas[]
-  lastLogin     DateTime?       @default(now())
+  id         String    @id @default(uuid())
+  username   String    @unique
+  firstname  String
+  lastname   String?
+  email      String    @unique
+  password   String
+  avatar     String?   @default("https://ui-avatars.com/api/?background=random&name=User")
+  biography  String?   @db.MediumText()
+  location   String?
+  website    String?
+  phone      String?   @unique
+  dob        DateTime
+  gemas      Gemas[]
+  lastLogin  DateTime? @default(now())
+  createdAt  DateTime  @default(now())
+  isVerified Boolean   @default(false)
+  isActive   Boolean   @default(true)
+  isAdmin    Boolean   @default(false)
+  banner     String?   @default("https://picsum.photos/1200/300")
+
   RefreshTokens RefreshTokens[]
   likedGemas    GemaLikes[]
 }

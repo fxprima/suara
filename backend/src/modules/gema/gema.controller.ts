@@ -37,6 +37,18 @@ export class GemaController {
     return this.gemaService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('author/:authorId')
+  findByAuthor(@Param('authorId') authorId: string) {
+    return this.gemaService.findGemasByAuthor(authorId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('likes/:userId')
+  async findLikedGemas(@Param('userId') userId: string) {
+    return await this.gemaService.findLikedGemasByUser(userId);
+  }
+
   @Patch(':id/views') 
   async incrementViews(@Param('id') id: string) {
     return await this.gemaService.incrementViews(id);

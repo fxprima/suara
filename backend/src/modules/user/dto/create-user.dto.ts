@@ -22,8 +22,20 @@ export class CreateUserDto {
     password!: string;
 
     @IsOptional()
+    @IsString({ message: 'Biography harus berupa string' })
+    biography?: string;
+
+    @IsOptional()
+    @IsString({ message: 'Website harus berupa string' })
+    website?: string;
+
+    @IsOptional()
+    @IsString({ message: 'Location harus berupa string' })
+    location?: string;
+
+    @IsOptional()
     @IsString({ message: 'Phone harus berupa string' })
-    @IsPhoneNumber()
+    // @IsPhoneNumber()
     phone?: string;
 
     @IsNotEmpty({ message: 'Date of birth harus diisi' })

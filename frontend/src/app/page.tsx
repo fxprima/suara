@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/services/api';
-import { faUser, faAt, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faAt, faKey, faCircleXmark, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { AxiosErrorResponse } from '../../types/errors';
@@ -183,6 +183,11 @@ export default function Home() {
                         <input type="checkbox" id="signup-modal" className="modal-toggle" />
                         <div className="modal">
                             <div className="modal-box shadow-md bg-base-300 p-6 rounded-2xl m-auto flex flex-col">
+                                <div className="modal-action flex justify-end mt-0">
+                                    <label htmlFor="signup-modal">
+                                        <FontAwesomeIcon icon={faCircleXmark} size='xl' className=" p-2 text-primary hover:text-red-500 hover:cursor-pointer" />
+                                    </label>
+                                </div>
                                 <h1 className="font-bold text-2xl mb-6">Create your account</h1>
 
                                 {/* Success Alert */}
@@ -413,27 +418,7 @@ export default function Home() {
 
                                     {/* Phone */}
                                     <label className="input  flex items-center gap-2 w-full bg-base-100 px-4 py-2 rounded-lg shadow-inner focus-within:ring-2 focus-within:ring-primary">
-                                        <svg
-                                            className="h-5 w-5 opacity-50"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <g
-                                                strokeLinejoin="round"
-                                                strokeLinecap="round"
-                                                strokeWidth="2.5"
-                                                fill="none"
-                                                stroke="currentColor"
-                                            >
-                                                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-                                                <circle
-                                                    cx="16.5"
-                                                    cy="7.5"
-                                                    r=".5"
-                                                    fill="currentColor"
-                                                ></circle>
-                                            </g>
-                                        </svg>
+                                        <FontAwesomeIcon icon={faPhone} className='opacity-50'/>
                                         <input
                                             type="tel"
                                             className="tabular-nums"
@@ -481,12 +466,6 @@ export default function Home() {
                                         )}
                                         {loading ? 'Signing up...' : 'Sign up'}
                                     </button>
-                                    <label
-                                        htmlFor="signup-modal"
-                                        className="btn bg-transparent ml-2"
-                                    >
-                                        Close
-                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -517,6 +496,9 @@ export default function Home() {
                         </p>
 
                         <div className="mt-6 text-center w-full">
+                            <div>
+                                
+                            </div>
                             <p className="text-neutral-content mb-2">Already have an account?</p>
                             {/* Tombol untuk buka modal */}
                             <label
@@ -553,6 +535,12 @@ export default function Home() {
                                             </ul>
                                         </div>
                                     )}
+
+                                    <div className="modal-action flex justify-end mt-0">
+                                        <label htmlFor="login-modal">
+                                            <FontAwesomeIcon icon={faCircleXmark} size='xl' className=" p-2 text-primary hover:text-red-500 hover:cursor-pointer" />
+                                        </label>
+                                    </div>
 
                                     <h2 className="text-2xl font-semibold text-center">Login</h2>
                                     <form className="flex flex-col gap-4 mt-4" method="dialog">

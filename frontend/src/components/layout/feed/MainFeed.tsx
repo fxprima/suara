@@ -138,18 +138,9 @@ export default function MainFeed() {
                 {!loadingFetchGema
                     ? gemas?.map((gema) => (
                           <GemaCard
-                              id={gema.id}
                               key={gema.id}
-                              authorName={`${gema.author.firstname} ${gema.author?.lastname}`}
-                              username={gema.author.username}
-                              avatar={gema.author.avatar ?? '/default-avatar.svg'}
-                              content={gema.content}
-                              media={gema.media}
-                              createdAt={gema.createdAt}
-                              viewsCount={gema.viewsCount}
-                              likesCount={gema.likedBy.length}
-                              repliesCount={gema.repliesCount}
-                              onReply={() => setReplyToGema(gema)} // trigger set gema.
+                              gema={gema}
+                              onReply={() => setReplyToGema(gema)}
                           />
                       ))
                     : null}
