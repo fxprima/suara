@@ -2,21 +2,68 @@
 
 Suara is a web-based social media application designed. This platform enables users to share thoughts, engage in discussions through threads, and interact using various engagement features.
 
-## ✨ Key Features
+# ✨ Suara – Feature Checklist
 
-1. **CRUD for Posts** - Create, read, update, and delete posts. ✅
-2. **Threads** - Create long discussions in a single thread. ✅
-3. **Authentication** - Uses JWT for login and session management. ✅
-4. **Profile Setup** - Users can personalize their profiles. ✅
-5. **Engagement** - Retweets, replies, and reactions on posts. ✅ (Retweet is on Progress)
+## 📌 Key Features
 
-### 🔥 Enhancements
-1. **AI (Enhance Post)** - Improve post quality with AI assistance.
-2. **No Affiliate Detector** - Automatically detects affiliate links in content.
-3. **Catalog** - Systematic categorization and organization of posts.
-4. **Hoax & Phishing Detection** - AI-powered system to detect fake news and malicious links.
-5. **FoMEME** - Trending meme recommendations to avoid FOMO.
-6. **Breaking News, PSA, BMKG** - Real-time notifications for breaking news, public service announcements, and weather updates from BMKG.
+| Feature                | Description                                                  | Status       | Est. Completion |
+|-------------------------|--------------------------------------------------------------|--------------|-----------------|
+| CRUD for Posts          | Create, read, update, and delete posts (Gema).               | ✅ Done       | 21 Sep 2025     |
+| Threads                 | Nested replies for long discussions.                        | ✅ Done       | 21 Sep 2025     |
+| Authentication          | JWT + Refresh Token + NextAuth integration.                 | ✅ Done       | 21 Sep 2025     |
+| Profile Setup           | Bio, avatar, banner, location, link.                        | ✅ Done       | 21 Sep 2025     |
+| Engagement – Likes      | Like/unlike posts with real-time count updates.             | ✅ Done       | 21 Sep 2025     |
+| Engagement – Replies    | Reply to posts with thread view.                            | ✅ Done       | 21 Sep 2025     |
+| Engagement – Retweets   | Share other user’s post (with/without quote).               | ⏳ In Progress| 28 Sep 2025     |
+
+---
+
+## 🔔 Social Features
+
+| Feature                 | Description                                                  | Status       | Est. Completion |
+|--------------------------|--------------------------------------------------------------|--------------|-----------------|
+| Notifications            | Real-time notifications (likes, replies, retweets, follows). | ⏳ Planned    | 12 Oct 2025     |
+| Following System         | Follow/unfollow users + followers/following list.            | ⏳ Planned    | 12 Oct 2025     |
+| Private Account          | Approve/reject follow requests.                              | ⏳ Planned    | 19 Oct 2025     |
+| Save Gema (Bookmarks)    | Save posts privately.                                        | ⏳ Planned    | 19 Oct 2025     |
+| Share Gema               | Share posts via link/social platforms.                      | ⏳ Planned    | 19 Oct 2025     |
+| Messages (DM)            | Direct messaging system.                                    | ⏳ Planned    | 26 Oct 2025     |
+| Who to Follow            | Suggested users to follow.                                  | ⏳ Planned    | 02 Nov 2025     |
+
+---
+
+## 🌐 Discovery
+
+| Feature                | Description                                                  | Status       | Est. Completion |
+|-------------------------|--------------------------------------------------------------|--------------|-----------------|
+| Explore Page            | Discover trending posts, users, and hashtags.                | ⏳ Planned    | 09 Nov 2025     |
+| Search                  | Search posts, users, and hashtags.                           | ⏳ Planned    | 09 Nov 2025     |
+| Hashtags                | Clickable hashtags with grouped feeds.                       | ⏳ Planned    | 09 Nov 2025     |
+
+---
+
+## 🔥 Enhancements
+
+| Feature                   | Description                                                | Status       | Est. Completion |
+|----------------------------|------------------------------------------------------------|--------------|-----------------|
+| AI (Enhance Post)          | AI-assisted post improvement.                              | ⏳ Planned    | 16 Nov 2025     |
+| No Affiliate Detector      | Detect affiliate links.                                    | ⏳ Planned    | 16 Nov 2025     |
+| Catalog                    | Categorization of posts (tag-based / AI-driven).           | ⏳ Planned    | 23 Nov 2025     |
+| Hoax & Phishing Detection  | Detect fake news & malicious links with AI.                | ⏳ Planned    | 23 Nov 2025     |
+| FoMEME                     | Trending meme recommendations.                            | ⏳ Planned    | 30 Nov 2025     |
+| Breaking News / PSA / BMKG | Real-time alerts for news and weather updates.             | ⏳ Planned    | 30 Nov 2025     |
+
+---
+
+## 📅 Timeline Estimation
+
+- ✅ Core Features: **21 Sep – 05 Oct 2025**  
+- 🔔 Social Features: **12 Oct – 02 Nov 2025**  
+- 🌐 Discovery: **09 Nov 2025**  
+- 🔥 Enhancements: **16 – 30 Nov 2025**
+
+📌 **Target Full Completion: End of November 2025**
+
 
 ## 🛠️ Technologies Used
 
