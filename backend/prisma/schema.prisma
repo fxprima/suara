@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,7 +21,7 @@ model Users {
   email      String    @unique
   password   String
   avatar     String?   @default("https://ui-avatars.com/api/?background=random&name=User")
-  biography  String?   @db.MediumText()
+  biography  String?   @db.Text
   location   String?
   website    String?
   phone      String?   @unique
@@ -49,7 +49,7 @@ model RefreshTokens {
 
 model Gemas {
   id        String   @id @default(uuid())
-  content   String   @db.MediumText()
+  content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
