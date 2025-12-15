@@ -1,0 +1,11 @@
+{
+  "name": "Attach NestJS (Docker)",
+  "type": "node",
+  "request": "attach",
+  "address": "localhost",
+  "port": 9229,
+  "localRoot": "${workspaceFolder}",
+  "remoteRoot": "/app",
+  "restart": true,
+  "skipFiles": ["<node_internals>/**"]
+}

@@ -27,8 +27,14 @@ export class GemaController {
     @CurrentUser() user: UserPayload,
     @UploadedFiles() media: Express.Multer.File[] | undefined,
   ) {
-  
     return this.gemaService.create(createGemaDto, user.id, media);
+  }
+
+  @Get('/helloworld')
+  getHello() {
+    return {
+      msg: "Hello World"
+    };
   }
 
   @UseGuards(JwtAuthGuard)
