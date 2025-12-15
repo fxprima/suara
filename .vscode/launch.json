@@ -1,11 +1,18 @@
 {
-  "name": "Attach NestJS (Docker)",
-  "type": "node",
-  "request": "attach",
-  "address": "localhost",
-  "port": 9229,
-  "localRoot": "${workspaceFolder}",
-  "remoteRoot": "/app",
-  "restart": true,
-  "skipFiles": ["<node_internals>/**"]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker: Attach to NestJS",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/backend",
+      "remoteRoot": "/app", 
+      "restart": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
 }
