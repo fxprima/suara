@@ -22,16 +22,16 @@ export type AuthUser = {
 *   isAuthenticated: boolean
 * }}
 *
-* 🔐 Fitur:
+*  Fitur:
 * - Fetch user dari `/auth/me` saat mount
 * - Simpan user ke state jika login berhasil
 * - Jika gagal, atur `error` dan `user = null`
 * - Fungsi `logout()` juga clear token + redirect ke `/`
 *
-* 📦 Contoh penggunaan:
+*  Contoh penggunaan:
 * const { user, loading, isAuthenticated, logout } = useAuth();
 *
-* 🧠 Tips:
+*  Tips:
 * - Gunakan `loading` untuk spinner saat data belum siap
 * - Gunakan `isAuthenticated` untuk guard halaman
 */

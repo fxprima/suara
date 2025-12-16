@@ -22,17 +22,17 @@ interface ToastMessageProps {
  *   - `type`: Jenis toast (`info`, `success`, `error`, `warning`)
  *   - `message`: Pesan teks yang ditampilkan
  *
- * 🧠 Fitur:
+ *  Fitur:
  * - Menggunakan Tailwind + DaisyUI class `toast` dan `alert`
  * - Posisi: `toast-center toast-bottom z-50`
  * - Hanya dirender jika ada toast (toasts.length > 0)
  * - Styling otomatis berdasarkan `type` (warna alert sesuai)
  *
- * 📦 Contoh penggunaan:
+ *  Contoh penggunaan:
  * const { toasts } = useToast();
  * <ToastMessage toasts={toasts} />
  *
- * 🔁 Biasanya dipakai bersamaan dengan hook: `useToast`
+ *  Biasanya dipakai bersamaan dengan hook: `useToast`
  */
 export const ToastMessage: React.FC<ToastMessageProps> = ({ toasts }) => {
     if (toasts.length === 0) return null;

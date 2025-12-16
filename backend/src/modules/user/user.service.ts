@@ -59,7 +59,6 @@ export class UserService {
           dob: true,
           banner: true,
           createdAt: true,
-
         }
       }
     )

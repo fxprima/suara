@@ -7,15 +7,10 @@ import { faImage, faTimes } from '@fortawesome/free-solid-svg-icons';
 type ToastFn = (msg: string, type?: 'success' | 'error' | 'info') => void;
 
 interface MediaPickerProps {
-    /** Controlled: daftar file terpilih */
     files: File[];
-    /** Setter dari parent (controlled) */
     onChange: (files: File[]) => void;
-    /** Maksimal file (default 4) */
     max?: number;
-    /** Opsional: showToast dari app */
     showToast?: ToastFn;
-    /** Kelas tambahan wrapper jika perlu */
     className?: string;
 }
 
@@ -37,7 +32,6 @@ export default function MediaPicker({
     );
 
     useEffect(() => {
-        // cleanup object URLs saat files berubah/unmount
         return () => {
             objectUrls.forEach(({ url }) => URL.revokeObjectURL(url));
         };
@@ -73,7 +67,6 @@ export default function MediaPicker({
 
     return (
         <div className={className}>
-            {/* Preview grid */}
             {files.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 mt-2">
                     {files.map((file, i) => {
@@ -111,7 +104,6 @@ export default function MediaPicker({
                 </div>
             )}
 
-            {/* Picker row */}
             <div className="flex items-center mt-3">
                 <FontAwesomeIcon
                     icon={faImage}

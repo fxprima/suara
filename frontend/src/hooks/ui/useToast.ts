@@ -11,16 +11,16 @@ import { useState, useCallback } from 'react';
 *   showToast: (message: string, type?: 'success' | 'error' | 'info', duration?: number) => void
 * }}
 *
-* 🧃 Fitur:
+*  Fitur:
 * - Kelola array `toasts` secara internal
 * - `showToast` akan menambahkan toast baru dan menghapus toast pertama setelah durasi tertentu
 * - Tipe toast default: `'info'`, bisa juga `'success'` atau `'error'`
 *
-* 📦 Contoh penggunaan:
+*  Contoh penggunaan:
 * const { toasts, showToast } = useToast();
 * showToast('Berhasil posting!', 'success', 2000);
 *
-* 💡 Untuk menampilkan UI toast, render komponen:
+*  Untuk menampilkan UI toast, render komponen:
 * <ToastMessage toasts={toasts} />
 */
 export const useToast = () => {

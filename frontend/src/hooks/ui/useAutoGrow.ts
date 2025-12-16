@@ -7,11 +7,11 @@ import { useEffect, useRef } from "react";
  * @param {string} value - Value dari textarea yang dipantau (biasanya dari state)
  * @returns {React.RefObject<HTMLTextAreaElement>} - Ref yang bisa langsung di-assign ke `<textarea ref={...}>`
  *
- * 📦 Contoh penggunaan:
+ *  Contoh penggunaan:
  * const ref = useAutoGrow(value);
  * <textarea ref={ref} value={value} onChange={...} />
  *
- * 🔥 Fitur:
+ *  Fitur:
  * - Saat `value` berubah, tinggi textarea akan menyesuaikan dengan isi (`scrollHeight`)
  * - Cocok untuk UX yang smooth seperti Twitter, WhatsApp, dsb.
  */

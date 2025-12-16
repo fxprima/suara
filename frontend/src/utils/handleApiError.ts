@@ -7,12 +7,12 @@ import { ApiErrorResponse } from '../../types/errors';
  * @param {unknown} error - Error object yang dilempar dari try/catch (umumnya dari Axios)
  * @returns {string} - Pesan error yang bisa ditampilkan ke user
  *
- * 🔹 Prioritas urutan pesan:
+ *  Prioritas urutan pesan:
  *  1. Jika message string → langsung return
  *  2. Jika message array → ambil elemen pertama
  *  3. Jika bukan AxiosError → return fallback "Terjadi kesalahan tak terduga"
  *
- * 📦 Contoh penggunaan:
+ *  Contoh penggunaan:
  * try {
  *   await api.get('/something');
  * } catch (err) {

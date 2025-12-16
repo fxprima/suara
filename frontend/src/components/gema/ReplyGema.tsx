@@ -126,11 +126,11 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                 </div>
             </div>
 
-            {/* Sub-replies (rekursif), dikasih garis + indentation */}
+            {/* Sub-replies (rekursif)*/}
             {reply.replies && reply.replies.length > 0 && (
                 <div className="ml-7 border-l border-gray-600 pl-4 mt-2">
                     {canShowReplies ? (
-                        // Kita tampilkan subreplies bila level masih < MAX_LEVEL
+                        // tampilkan subreplies bila level masih < MAX_LEVEL
                         reply.replies.map((childReply) => (
                             <ReplyGema key={childReply.id} reply={childReply} level={level + 1} />
                         ))

@@ -104,14 +104,14 @@ const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
             >
                 {item.type === 'image' ? (
                     <img
-                        key={item.url} // force remount saat pindah item
+                        key={item.url} 
                         src={item.url}
                         alt=""
                         className="max-h-[90vh] w-auto object-contain rounded-xl"
                     />
                 ) : (
                     <video
-                        key={item.url} // force remount
+                        key={item.url} 
                         ref={(el) => {
                             videoRef.current = el;
                         }}

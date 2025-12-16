@@ -52,7 +52,7 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     </button>
                 </form>
 
-                {/* Gema yang di-reply */}
+                {/* replied gema */}
                 <div className="flex items-start space-x-3 mb-4">
                     <div className="avatar">
                         <div className="w-10 rounded-full">
@@ -73,12 +73,10 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     </div>
                 </div>
 
-                {/* Baris penanda reply */}
                 <div className="pl-12 text-sm text-gray-500 mb-3">
                     Echoing <span className="text-primary">@{gema.author.username}</span>
                 </div>
 
-                {/* Area untuk reply */}
                 <div className="flex items-start space-x-3">
                     <div className="avatar">
                         <div className="w-10 rounded-full">
@@ -97,7 +95,6 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                             onChange={(e) => setText(e.target.value)}
                         />
 
-                        {/* Media picker untuk reply */}
                         <MediaPicker
                             files={files}
                             onChange={setFiles}
@@ -108,7 +105,6 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     </div>
                 </div>
 
-                {/* Tombol aksi */}
                 <div className="text-right mt-4">
                     <button
                         className="btn btn-primary"

@@ -85,7 +85,6 @@ export default function GemaDetail() {
         });
     };
 
-    // ===== ShowMedia setup (autoplay muted + pause saat out of view) =====
     const videoRefs = useRef<HTMLVideoElement[]>([]);
 
     useEffect(() => {
@@ -164,7 +163,6 @@ export default function GemaDetail() {
             )}
         </div>
     );
-    // ====================================================================
 
     if (loadingFetchGema) {
         return (
@@ -226,7 +224,6 @@ export default function GemaDetail() {
                 </div>
             </div>
 
-            {/* Reaction Bar */}
             <div className="flex justify-around items-center text-sm text-gray-600 border-y py-3">
                 <div
                     className="flex items-center gap-2 hover:text-primary cursor-pointer"

@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/ui/useToast';
 import { ToastMessage } from '@/components/common/toast/ToastMessage';
 import { extractErrorMessage } from '@/utils/handleApiError';
 
-/* ---------- Field with Icon ---------- */
+
 type FieldProps = {
     label: string;
     name: string;
@@ -91,7 +91,6 @@ function Field({
     );
 }
 
-/* ---------- Skeleton ---------- */
 function FormSkeleton() {
     return (
         <div className="rounded-2xl bg-base-200 border border-base-content/10 shadow-md">
@@ -114,7 +113,7 @@ function FormSkeleton() {
     );
 }
 
-/* ---------- Page (content-only; layout handled by /profile/layout.tsx) ---------- */
+
 export default function ProfileEditPage() {
     const { user } = useAuth();
     const username = user?.username || '';
@@ -161,7 +160,6 @@ export default function ProfileEditPage() {
     }, [formData, initialData]);
 
     const setProfilePicture = () => {
-        // TODO: buka modal media picker reusable kamu di sini
         console.log('Upload profile picture clicked');
     };
 
@@ -182,12 +180,10 @@ export default function ProfileEditPage() {
 
     return (
         <>
-            {/* Toast container once, let layout provide the scrollable area */}
+
             <ToastMessage toasts={toasts} />
 
-            {/* Main content: layout sudah kasih <main className="flex-1 p-4 bg-base-200 overflow-y-scroll"> */}
             <div className="mx-auto max-w-2xl">
-                {/* Header avatar + title */}
                 <div className="flex items-center gap-4 mb-4">
                     <div className="relative group">
                         <img
@@ -213,7 +209,6 @@ export default function ProfileEditPage() {
                     </div>
                 </div>
 
-                {/* Panel form */}
                 {loadingFetchProfile ? (
                     <FormSkeleton />
                 ) : (

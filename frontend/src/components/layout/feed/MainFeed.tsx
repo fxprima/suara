@@ -17,16 +17,15 @@ import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import MediaPicker from '@/components/common/media/MediaPicker';
 
 export default function MainFeed() {
-    /* ──────────────── state ──────────────── */
+
     const [createGemaField, setCreateGemaField] = useState('');
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]); // ≤ 4 file
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]); 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const [loading, setLoading] = useState({ createGema: false });
 
     const textareaRef = useAutoGrow(createGemaField);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    /* ──────────────── data fetch ──────────────── */
     const {
         data: gemas,
         loading: loadingFetchGema,
@@ -34,13 +33,10 @@ export default function MainFeed() {
         silentRefetch: silentRefetchGema,
     } = useFetchData<GemaType[]>('/gema');
 
-    console.log(gemas);
 
     const { toasts, showToast } = useToast();
 
     useSilentRefetch(silentRefetchGema);
-
-    /* ──────────────── helpers ──────────────── */
 
     const clearMedia = () => setSelectedFiles([]);
 
@@ -79,12 +75,10 @@ export default function MainFeed() {
         });
     };
 
-    /* ──────────────── UI ──────────────── */
     return (
         <>
             <ToastMessage toasts={toasts} />
 
-            {/* composer */}
             <div className="border-b border-base-300 pb-4">
                 <div className="flex items-start space-x-2 mb-4">
                     <FontAwesomeIcon

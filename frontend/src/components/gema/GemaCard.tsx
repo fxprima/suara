@@ -44,12 +44,10 @@ export const GemaCard: React.FC<GemaCardProps> = ({ gema, onReply }) => {
                 entries.forEach((e) => {
                     const v = e.target as HTMLVideoElement;
                     if (e.isIntersecting) {
-                        // pause semua video lain
                         videoRefs.current.forEach((o) => {
                             if (o && o !== v) o.pause();
                         });
                         v.play().catch(() => {
-                            /* ignore */
                         });
                     } else {
                         v.pause();
