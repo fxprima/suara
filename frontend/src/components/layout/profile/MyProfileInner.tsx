@@ -124,6 +124,12 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                                 Edit Profile
                             </Link>
                         }
+
+                        {!isMyProfile &&
+                            <Link href="/profile/follow" className="btn btn-sm bg-white text-black rounded-full">
+                                Follow
+                            </Link>
+                        }
                         
                     </div>
 
