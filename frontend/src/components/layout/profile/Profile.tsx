@@ -13,6 +13,18 @@ type TabKey = 'posts' | 'replies' | 'media' | 'likes';
 
 export default function MyProfilePage() {
     const { user } = useAuth();
+    if (!user) {
+        return (
+            <div className="max-w-2xl mx-auto p-8 text-center text-base-content/60">
+                Loading...
+            </div>
+        );
+    }
+
+    return <MyProfileInner userId={user.id} username={user.username} />;
+}
+
+function MyProfileInner({ userId, username }: { userId: string; username: string }) {
     const [activeTab, setActiveTab] = useState<TabKey>('posts');
 
     const tabs = [
@@ -22,61 +34,74 @@ export default function MyProfilePage() {
         { key: 'likes', label: 'Likes' },
     ] as const;
 
-    const { data: userPublicData, loading: userProfile } = useFetchData<UserPublicProfile>(
-        `user/profile/${user?.username}`
+    // ===== Fetch profile =====
+    const { data: userPublicData, loading: userProfileLoading } = useFetchData<UserPublicProfile>(
+        `user/profile/${username}`
     );
 
-    // --- safe fallbacks ---
-    const displayName =
-        `${userPublicData?.firstname ?? ''} ${userPublicData?.lastname ?? ''}`.trim() || 'User';
-    const username = userPublicData?.username ?? 'felixdev';
-
-    const avatarUrl =
-        userPublicData?.avatar ||
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s';
-
-    const bannerUrl =
-        userPublicData?.banner ||
-        'https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200';
-
-    const joinedText = userPublicData?.createdAt
-        ? new Date(String(userPublicData.createdAt)).toLocaleDateString('id-ID', {
-              month: 'long',
-              year: 'numeric',
-          })
-        : 'January 2025';
-
+    // ===== Fetch gemas =====
     const { data: userGemas, loading: userGemasLoading } = useFetchData<GemaType[]>(
-        user ? `gema/author/${user.id}` : ''
+        `gema/author/${userId}`
     );
 
-    const allPosts = userGemas || [];
-
-    console.log(allPosts);
-
-    const posts = allPosts.filter((p) => p.parentId === null);
-    const mediaOnly = allPosts.filter((p) => (p.media?.length ?? 0) > 0);
-    const replies = allPosts.filter((p) => p.parentId !== null);
-
+    // ===== Fetch likes =====
     const { data: likedGemas, loading: likedGemasLoading } = useFetchData<GemaType[]>(
-        user ? `gema/likes/${user.id}` : ''
+        `gema/likes/${userId}`
     );
 
-    console.log(replies);
+    // ===== Computed view model for header =====
+    const profileView = useMemo(() => {
+        const displayName =
+            `${userPublicData?.firstname ?? ''} ${userPublicData?.lastname ?? ''}`.trim() || 'User';
 
-    console.log(`likedGemas: `);
-    console.log(likedGemas);
+        const uname = userPublicData?.username ?? username;
 
-    const likes = likedGemas || [];
+        const avatarUrl =
+            userPublicData?.avatar ||
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTBA57d__PXonmFyFDla6f2WRtfPvP9an3YA&s';
 
-    const tabMap: Record<TabKey, GemaType[]> = {
-        posts,
-        replies,
-        media: mediaOnly,
-        likes,
-    };
+        const bannerUrl =
+            userPublicData?.banner ||
+            'https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200';
 
-    const activeFeed = tabMap[activeTab];
+        const joinedText = userPublicData?.createdAt
+            ? new Date(String(userPublicData.createdAt)).toLocaleDateString('id-ID', {
+                  month: 'long',
+                  year: 'numeric',
+              })
+            : null;
+
+        return {
+            displayName,
+            username: uname,
+            avatarUrl,
+            bannerUrl,
+            joinedText,
+            biography: userPublicData?.biography ?? '',
+            location: userPublicData?.location ?? '',
+            website: userPublicData?.website ?? '',
+        };
+    }, [userPublicData, username]);
+
+    // ===== Derived feeds (memoized) =====
+    const feeds = useMemo(() => {
+        const allPosts = userGemas ?? [];
+        const likes = likedGemas ?? [];
+
+        const posts = allPosts.filter((p) => p.parentId === null);
+        const replies = allPosts.filter((p) => p.parentId !== null);
+        const media = allPosts.filter((p) => (p.media?.length ?? 0) > 0);
+
+        return {
+            posts,
+            replies,
+            media,
+            likes,
+        } satisfies Record<TabKey, GemaType[]>;
+    }, [userGemas, likedGemas]);
+
+    const activeFeed = feeds[activeTab];
+    const isLoading = userProfileLoading || userGemasLoading || likedGemasLoading;
 
     return (
         <>
@@ -85,12 +110,17 @@ export default function MyProfilePage() {
                 {/* Banner */}
                 <div className="relative">
                     <div className="h-48 rounded-b-xl overflow-hidden">
-                        <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover" />
+                        <img
+                            src={profileView.bannerUrl}
+                            alt="Banner"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
+
                     <div className="absolute left-6 -bottom-12 z-10">
                         <div className="avatar">
                             <div className="w-24 h-24 rounded-full ring ring-base-200 ring-offset-2 ring-offset-base-100">
-                                <img src={avatarUrl} alt="Profile" />
+                                <img src={profileView.avatarUrl} alt="Profile" />
                             </div>
                         </div>
                     </div>
@@ -100,39 +130,45 @@ export default function MyProfilePage() {
                 <div className="mt-16 px-4">
                     <div className="flex justify-between items-center">
                         <div>
-                            <h1 className="text-xl font-bold">{displayName}</h1>
-                            <p className="text-sm opacity-70">@{username}</p>
+                            <h1 className="text-xl font-bold">
+                                {userProfileLoading ? 'Loading...' : profileView.displayName}
+                            </h1>
+                            <p className="text-sm opacity-70">@{profileView.username}</p>
                         </div>
+
                         <Link href="/profile/edit" className="btn btn-sm btn-outline rounded-full">
                             Edit Profile
                         </Link>
                     </div>
 
-                    {userPublicData?.biography && (
-                        <p className="mt-3 text-sm">{userPublicData.biography}</p>
+                    {!!profileView.biography && (
+                        <p className="mt-3 text-sm">{profileView.biography}</p>
                     )}
 
                     <div className="flex flex-wrap gap-4 mt-3 text-sm opacity-80">
-                        {userPublicData?.location && (
+                        {!!profileView.location && (
                             <span className="flex items-center gap-1">
-                                <FontAwesomeIcon icon={faLocationDot} /> {userPublicData.location}
+                                <FontAwesomeIcon icon={faLocationDot} /> {profileView.location}
                             </span>
                         )}
-                        {userPublicData?.website && (
+
+                        {!!profileView.website && (
                             <span className="flex items-center gap-1">
                                 <FontAwesomeIcon icon={faLink} />
                                 <Link
-                                    href={userPublicData.website}
+                                    href={profileView.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-primary hover:underline"
                                 >
-                                    {userPublicData.website.replace(/^https?:\/\//, '')}
+                                    {profileView.website.replace(/^https?:\/\//, '')}
                                 </Link>
                             </span>
                         )}
+
                         <span className="flex items-center gap-1">
-                            <FontAwesomeIcon icon={faCalendar} /> Joined {joinedText}
+                            <FontAwesomeIcon icon={faCalendar} /> Joined{' '}
+                            {profileView.joinedText ?? '—'}
                         </span>
                     </div>
 
@@ -147,11 +183,9 @@ export default function MyProfilePage() {
                 </div>
             </div>
 
-            {/* ===== Tabs (sticky, full-bleed di dalam <main>) ===== */}
-            <div className="">
-                {/* bar yang nge-bleed sampai tepi <main> dengan kompensasi padding p-4 */}
+            {/* ===== Tabs ===== */}
+            <div>
                 <div className="-mx-4 px-4 bg-base-200/90 supports-[backdrop-filter]:bg-base-200/60 backdrop-blur border-b border-base-300">
-                    {/* konten tetap center mengikuti max-w-2xl */}
                     <div className="max-w-2xl mx-auto">
                         <div className="flex w-full">
                             {tabs.map((tab) => (
@@ -163,6 +197,7 @@ export default function MyProfilePage() {
                                             ? 'border-b-2 border-primary font-semibold'
                                             : 'opacity-70 hover:opacity-100'
                                     }`}
+                                    disabled={isLoading}
                                 >
                                     {tab.label}
                                 </button>
@@ -172,21 +207,19 @@ export default function MyProfilePage() {
                 </div>
             </div>
 
-            {/* ===== Feed (container) ===== */}
+            {/* ===== Feed ===== */}
             <div className="max-w-2xl mx-auto">
                 <div className="mt-4">
-                    {activeFeed.length === 0 ? (
+                    {isLoading ? (
+                        <div className="p-8 text-center text-base-content/60">Loading...</div>
+                    ) : activeFeed.length === 0 ? (
                         <div className="p-8 text-center text-base-content/60">
                             Belum ada konten di tab ini.
                         </div>
                     ) : (
                         <div className="divide-y divide-base-300">
                             {activeFeed.map((p) => (
-                                <GemaCard 
-                                    key={p.id} 
-                                    gema={p} 
-                                    onReply={() => {}} 
-                                />
+                                <GemaCard key={p.id} gema={p} onReply={() => {}} />
                             ))}
                         </div>
                     )}

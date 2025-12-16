@@ -75,7 +75,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    console.log("Masuk service update");
+
     if (updateUserDto.password) {
       updateUserDto.password = await argon2.hash(updateUserDto.password);
     }

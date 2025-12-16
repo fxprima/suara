@@ -32,7 +32,7 @@ export class AuthController {
     const token = req.cookies?.refreshToken;
     if (!token)
       throw new UnauthorizedException("No refresh token provided");
-    console.log("Call /refresh authcontroller - Refresh Token: ", token);
+
 
     return this.authService.refresh(token, res);
   }

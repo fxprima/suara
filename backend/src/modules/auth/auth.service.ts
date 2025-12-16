@@ -108,7 +108,6 @@ export class AuthService {
     }
 
     async refresh(refreshToken: string, res: Response) {
-        console.log('Refresh token received:', refreshToken);
         const token = await this.prisma.refreshTokens.findUnique({
             where : { token: refreshToken },
             include: { user: true }
@@ -122,11 +121,6 @@ export class AuthService {
             });
             throw new UnauthorizedException('Invalid refresh token')
         }
-        
-        console.log('Token expired?', new Date(token?.expiredAt) < new Date());
-        console.log('User found:', token?.user);
-
-        console.log('Token found in DB:', token);
         
         const payload = {
             sub: token.user.id,
@@ -151,7 +145,6 @@ export class AuthService {
             },
         });
         
-        console.log("Prev: ", refreshToken)
         res.cookie('refreshToken', newRefreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -159,7 +152,7 @@ export class AuthService {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
         });
 
-        console.log("Refresh token changed: ", newRefreshToken);
+
 
         return res.status(200).json({
             accessToken: accessToken

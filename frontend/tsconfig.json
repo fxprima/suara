@@ -23,5 +23,10 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts", "../backend/src/request-with-user.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+    "watchOptions": {
+    "watchFile": "dynamicPriorityPolling",
+    "watchDirectory": "dynamicPriorityPolling",
+    "excludeDirectories": ["**/node_modules", "dist"]
+  }
 }

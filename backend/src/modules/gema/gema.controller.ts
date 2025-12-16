@@ -27,8 +27,6 @@ export class GemaController {
     @CurrentUser() user: UserPayload,
     @UploadedFiles() media: Express.Multer.File[] | undefined,
   ) {
-    let x = 10
-    console.log(x++);
     return this.gemaService.create(createGemaDto, user.id, media);
   }
 
