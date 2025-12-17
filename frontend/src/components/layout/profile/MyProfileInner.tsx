@@ -1,12 +1,16 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLink, faLocationDot, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faLink, faLocationDot, faCalendar, faL } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { GemaCard } from '@/components/gema/GemaCard';
 import { useFetchData } from '@/hooks/data/useFetchData';
 import { GemaType, UserPublicProfile } from '../../../../types/gema';
-import { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useAuth from '@/hooks/auth/useAuth';
+import api from '@/services/api';
+import { ToastMessage } from '@/components/common/toast/ToastMessage';
+import { useToast } from '@/hooks/ui/useToast';
+import { extractErrorMessage } from '@/utils/handleApiError';
 
 type TabKey = 'posts' | 'replies' | 'media' | 'likes';
 
@@ -32,6 +36,8 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
         `gema/likes/${userId}`
     );
 
+    const { toasts, showToast } = useToast();
+
     const profileView = useMemo(() => {
         const displayName =
             `${userPublicData?.firstname ?? ''} ${userPublicData?.lastname ?? ''}`.trim() || 'User';
@@ -54,6 +60,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
             : null;
 
         return {
+            id: userPublicData?.id ?? '',
             displayName,
             username: uname,
             avatarUrl,
@@ -67,6 +74,42 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
     
     const { user: authProfile } = useAuth();
     const isMyProfile = authProfile?.username === profileView.username;
+    const [isFollowing, setIsFollowing] = useState(false);
+    
+    const isFollowingEnabled = !!authProfile?.id && !!profileView.id && !isMyProfile;
+
+    const { data: isFollowingRawData, loading: isFollowingLoading } =
+        useFetchData<boolean>(
+            isFollowingEnabled
+            ? `/user/isfollowing/${authProfile!.id}/${profileView.id}`
+            : undefined,
+            { enabled: isFollowingEnabled }
+        );
+
+    useEffect(() => {
+    if (!isFollowingLoading && isFollowingRawData !== null) {
+        setIsFollowing(!!isFollowingRawData);
+    }
+    }, [isFollowingLoading, isFollowingRawData]);
+
+
+    const handleFollow = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        await api.post(`/user/follow/${profileView.id}`, {} , { withCredentials: true })
+        .then(() => {
+            setIsFollowing(prev => {
+                const next = !prev;
+                return next;
+            });
+
+            showToast(`You have successfully ${isFollowing ? `followed` : `unfollowed`} this user.`);
+        })
+        .catch((err) => {
+            console.log(`Failed to follow user: ${err}`);
+            showToast(extractErrorMessage(err), 'error');
+        })
+    }
 
     const feeds = useMemo(() => {
         const allPosts = userGemas ?? [];
@@ -90,6 +133,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
 
     return (
         <>
+            <ToastMessage toasts={toasts} />
             <div className="max-w-2xl mx-auto">
                 <div className="relative">
                     <div className="h-48 rounded-b-xl overflow-hidden">
@@ -126,9 +170,9 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                         }
 
                         {!isMyProfile &&
-                            <Link href="/profile/follow" className="btn btn-sm bg-white text-black rounded-full">
-                                Follow
-                            </Link>
+                            <button onClick={(e) => handleFollow (e)} type='button' className="btn btn-sm bg-white text-black rounded-full">
+                                {isFollowing ? "Unfollow" : "Follow"}
+                            </button>
                         }
                         
                     </div>
@@ -159,7 +203,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                         )}
 
                         <span className="flex items-center gap-1">
-                            <FontAwesomeIcon icon={faCalendar} /> Joined{' '}
+                        <FontAwesomeIcon icon={faCalendar} /> Joined{' '}
                             {profileView.joinedText ?? '—'}
                         </span>
                     </div>

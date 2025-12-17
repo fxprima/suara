@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `gemas` ADD COLUMN `likesCount` INTEGER NOT NULL DEFAULT 0;

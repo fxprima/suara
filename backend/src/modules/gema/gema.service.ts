@@ -8,7 +8,6 @@ import { MediaService } from '../media/media.service';
 export class GemaService {
   constructor(private prisma: PrismaService, private media: MediaService) {}
 
-  // ===== DRY: Reusable include =====
   private static readonly GEMAS_INCLUDE = {
     author: {
       select: {
@@ -34,7 +33,6 @@ export class GemaService {
     },
   } as const;
 
-  // ===============================================================
 
   async create(
     createGemaDto: CreateGemaDto,

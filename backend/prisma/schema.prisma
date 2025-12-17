@@ -34,6 +34,9 @@ model Users {
   isAdmin    Boolean   @default(false)
   banner     String?   @default("https://picsum.photos/1200/300")
 
+  following   Followers[] @relation("UserFollowing")
+  followers   Followers[] @relation("UserFollowers")
+
   RefreshTokens RefreshTokens[]
   likedGemas    GemaLikes[]
 }
@@ -53,19 +56,15 @@ model Gemas {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Author
   authorId String
   author   Users  @relation(fields: [authorId], references: [id])
 
-  // Repost / Thread
   parentId String?
   parent   Gemas?  @relation("ThreadParent", fields: [parentId], references: [id])
   replies  Gemas[] @relation("ThreadParent")
 
-  // Media
-  media Json? @default("[]") // ← array objek {type,url}
+  media Json? @default("[]") 
 
-  // Engagement
   viewsCount   Int         @default(0)
   repliesCount Int         @default(0)
   repostCount  Int         @default(0)
@@ -82,3 +81,15 @@ model GemaLikes {
 
   @@unique([userId, gemaId])
 }
+
+model Followers {
+  userId      String
+  followId    String  
+
+  user        Users   @relation("UserFollowing", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  follow      Users   @relation("UserFollowers", fields: [followId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, followId])
+  @@index([followId])
+}
+
