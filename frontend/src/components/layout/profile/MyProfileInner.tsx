@@ -81,7 +81,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
     const { data: isFollowingRawData, loading: isFollowingLoading } =
         useFetchData<boolean>(
             isFollowingEnabled
-            ? `/user/isfollowing/${authProfile!.id}/${profileView.id}`
+            ? `/follow/isfollowing/${authProfile!.id}/${profileView.id}`
             : undefined,
             { enabled: isFollowingEnabled }
         );
@@ -96,7 +96,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
     const handleFollow = async (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        await api.post(`/user/follow/${profileView.id}`, {} , { withCredentials: true })
+        await api.post(`/follow/${profileView.id}`, {} , { withCredentials: true })
         .then(() => {
             setIsFollowing(prev => {
                 const next = !prev;
