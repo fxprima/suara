@@ -69,6 +69,8 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
             biography: userPublicData?.biography ?? '',
             location: userPublicData?.location ?? '',
             website: userPublicData?.website ?? '',
+            followingCount: userPublicData?.followingCount,
+            followersCount: userPublicData?.followersCount
         };
     }, [userPublicData, username]);
     
@@ -210,10 +212,10 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
 
                     <div className="flex gap-6 mt-3 text-sm">
                         <span>
-                            <strong>123</strong> Following
+                            <strong>{profileView.followingCount}</strong> Following
                         </span>
                         <span>
-                            <strong>456</strong> Followers
+                            <strong>{profileView.followersCount}</strong> Followers
                         </span>
                     </div>
                 </div>

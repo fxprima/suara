@@ -20,13 +20,23 @@ export class FollowController {
     }
 
     @Get('/followings/:userId')
-    async findFollowings(userId: string) {
+    async findFollowings(@Param("userId") userId: string) {
         return await this.followService.findFollowings(userId);
     }
 
     @Get('/followers/:userId')
-    async findFollowers(userId: string) {
+    async findFollowers(@Param("userId") userId: string) {
         return await this.followService.findFollowers(userId);
+    } 
+
+    @Get('/followings/:userId/count')
+    async getFollowingCountById(@Param("userId") userId: string) {
+        return await this.followService.getFollowingCountById(userId);
+    }
+
+    @Get('/followers/:userId')
+    async getFollowersCountById(@Param("userId") userId: string) {
+        return await this.getFollowersCountById(userId);
     } 
 
 }

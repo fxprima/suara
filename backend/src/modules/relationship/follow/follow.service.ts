@@ -53,19 +53,54 @@ export class FollowService {
   }
 
   async findFollowings(userId: string) {
-    return this.prisma.followers.findMany({
-      where: {
-        userId: userId
-      }
-    })
+    if (!userId) throw new BadRequestException('userId is required');
+
+    const rows = await this.prisma.followers.findMany({
+      where: { userId: userId },
+      select: {
+        user: { 
+          select: {
+            id: true,
+            username: true,
+            firstname: true,
+            lastname: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+    const users = rows.map(r => r.user);
+    return users;
   }
 
   async findFollowers(userId: string) {
-    return this.prisma.followers.findMany({
-      where: {
-        followId: userId
-      }
-    })
+    if (!userId) throw new BadRequestException('userId is required');
+
+    const rows = await this.prisma.followers.findMany({
+      where: { followId: userId },
+      select: {
+        user: { 
+          select: {
+            id: true,
+            username: true,
+            firstname: true,
+            lastname: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+    const users = rows.map(r => r.user);
+    return users;
   }
+
+  async getFollowingCountById(userId: string) {
+    return (await this.findFollowings(userId)).length;
+  }
+
+  async getFollowersCountById(userId: string) {
+    return (await this.findFollowers(userId)).length;
+  }
+
 
 }

@@ -3,10 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import * as argon2 from 'argon2'
+import { FollowService } from '../relationship/follow/follow.service';
 
 @Injectable()
 export class UserService {
-  constructor (private prisma: PrismaService) {}
+  constructor (private prisma: PrismaService, private followService: FollowService) {}
 
   async create(createUserDto: CreateUserDto) {
     return await this.prisma.users.create({
@@ -45,7 +46,7 @@ export class UserService {
   }
 
   async getPublicProfileByUsername(username: string) {
-    const res = await this.prisma.users.findUnique(
+    let res = await this.prisma.users.findUnique(
       {
         where: { username: username },
         select: {
@@ -63,6 +64,12 @@ export class UserService {
         }
       }
     )
+
+    if (res !== null) {
+      res["followingCount"] = await this.followService.getFollowingCountById(res.id);
+      res["followersCount"] = await this.followService.getFollowersCountById(res.id);
+    }
+
     return res;
   }
 
