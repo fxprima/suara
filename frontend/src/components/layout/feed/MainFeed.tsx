@@ -15,6 +15,7 @@ import { ReplyGemaModal } from '../../gema/ReplyGemaModal';
 import { handleReply } from '@/utils/handleReply';
 import { useSilentRefetch } from '@/hooks/data/useSilentRefetch';
 import MediaPicker from '@/components/common/media/MediaPicker';
+import useAuth from '@/hooks/auth/useAuth';
 
 export default function MainFeed() {
 
@@ -26,12 +27,14 @@ export default function MainFeed() {
     const textareaRef = useAutoGrow(createGemaField);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+    const {user} = useAuth();
+
     const {
         data: gemas,
         loading: loadingFetchGema,
         refetch: refetchGema,
         silentRefetch: silentRefetchGema,
-    } = useFetchData<GemaType[]>('/gema');
+    } = useFetchData<GemaType[]>(`/gema/${user?.id}/feed`);
 
 
     const { toasts, showToast } = useToast();

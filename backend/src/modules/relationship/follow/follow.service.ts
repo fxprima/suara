@@ -58,7 +58,7 @@ export class FollowService {
     const rows = await this.prisma.followers.findMany({
       where: { userId: userId },
       select: {
-        user: { 
+        follow: { 
           select: {
             id: true,
             username: true,
@@ -69,7 +69,7 @@ export class FollowService {
         },
       },
     });
-    const users = rows.map(r => r.user);
+    const users = rows.map(r => r.follow);
     return users;
   }
 

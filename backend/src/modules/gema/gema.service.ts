@@ -3,10 +3,15 @@ import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { MediaService } from '../media/media.service';
+import { FollowService } from '../relationship/follow/follow.service';
 
 @Injectable()
 export class GemaService {
-  constructor(private prisma: PrismaService, private media: MediaService) {}
+  constructor(
+    private prisma: PrismaService, 
+    private media: MediaService, 
+    private follow: FollowService
+  ) {}
 
   private static readonly GEMAS_INCLUDE = {
     author: {
@@ -148,11 +153,27 @@ export class GemaService {
     return data;
   }
 
-  update(id: number, updateGemaDto: UpdateGemaDto) {
-    return `This action updates a #${id} gema`;
+  async getUserFeed(userId: string) {
+    const userFollowings = await this.follow.findFollowings(userId);
+
+    const perUserGemas = await Promise.all(
+      userFollowings.map((user) =>
+        this.prisma.gemas.findMany({
+          where: { authorId: user.id },
+          include: GemaService.GEMAS_INCLUDE,
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        })
+      )
+    );
+
+    const gemas = perUserGemas.flat();
+
+    gemas.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+
+    return gemas;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} gema`;
-  }
 }

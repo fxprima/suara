@@ -49,6 +49,11 @@ export class GemaController {
     return this.gemaService.findGemasByAuthor(authorId);
   }
 
+  @Get(':userId/feed')
+  async getUserFeed(@Param("userId") userId: string) {
+    return this.gemaService.getUserFeed(userId);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('likes/:userId')
   async findLikedGemas(@Param('userId') userId: string) {
@@ -71,13 +76,4 @@ export class GemaController {
     return await this.gemaService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateGemaDto: UpdateGemaDto) {
-    return this.gemaService.update(+id, updateGemaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gemaService.remove(+id);
-  }
 }
