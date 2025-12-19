@@ -153,27 +153,55 @@ export class GemaService {
     return data;
   }
 
-  async getUserFeed(userId: string) {
-    const userFollowings = await this.follow.findFollowings(userId);
 
-    const perUserGemas = await Promise.all(
-      userFollowings.map((user) =>
-        this.prisma.gemas.findMany({
-          where: { authorId: user.id },
-          include: GemaService.GEMAS_INCLUDE,
-          orderBy: { createdAt: 'desc' },
-          take: 10
-        })
-      )
-    );
+  // Cursor Pagination
+  async getUserFeed(userId: string, opts: {cursor?: string, limit: number}) {
+    const { cursor, limit } = opts;
 
-    const gemas = perUserGemas.flat();
+    // Get users followings
+    let userFollowingIds = (await this.follow.findFollowings(userId)).map(u => u.id);
 
-    gemas.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    userFollowingIds = [...userFollowingIds, userId];
 
-    return gemas;
+    let cursorWhere = {};
+    if (cursor) {
+      const [createdAtIso, id] = cursor.split('|');
+      const createdAt = new Date(createdAtIso);
+
+      // Get all posts where in interval date -> createAt gemas 
+      cursorWhere = {
+        OR: [
+          { createdAt: { lt: createdAt } },
+          { createdAt, id: { lt: id } },
+        ],
+      };
+    }
+
+    // Query based on cursor if cursor exists -> include cursor constraint else dont include
+    const gemas = await this.prisma.gemas.findMany({
+      where : {
+        authorId: {in: userFollowingIds},
+        ...cursorWhere
+      },
+      include: GemaService.GEMAS_INCLUDE,
+      orderBy: [{ createdAt: 'desc' }, {id: 'desc'}],
+      take: limit + 1 // +1 to see if there are more gemas after limit
+    })
+
+    const hasMore = gemas.length > limit;
+    const data = hasMore? gemas.slice(0, limit) : gemas;
+    const last = data[data.length - 1];
+
+    // set the next cursor on last data,  cursor format: `${createdAtIso}|${id}`
+    const nextCursor = last ? `${last.createdAt.toISOString()}|${last.id}` : null;
+    
+    const response = {
+      data,
+      nextCursor,
+      hasMore
+    };
+
+    return response;
   }
 
 }

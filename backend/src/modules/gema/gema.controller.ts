@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFiles} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UseInterceptors, UploadedFiles, Query} from '@nestjs/common';
 import { GemaService } from './gema.service';
 import { CreateGemaDto } from './dto/create-gema.dto';
 import { UpdateGemaDto } from './dto/update-gema.dto';
@@ -50,8 +50,12 @@ export class GemaController {
   }
 
   @Get(':userId/feed')
-  async getUserFeed(@Param("userId") userId: string) {
-    return this.gemaService.getUserFeed(userId);
+  async getUserFeed(
+    @Param("userId") userId: string, 
+    @Query('cursor') cursor?: string,
+    @Query('limit') limit = 10
+  ) {
+    return this.gemaService.getUserFeed(userId, {cursor, limit: Number(limit)});
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,5 +79,6 @@ export class GemaController {
   async findOne(@Param('id') id: string) {
     return await this.gemaService.findOne(id);
   }
+
 
 }

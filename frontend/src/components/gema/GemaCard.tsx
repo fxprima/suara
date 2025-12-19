@@ -30,9 +30,6 @@ export const GemaCard: React.FC<GemaCardProps> = ({ gema, onReply }) => {
 
     const [preview, setPreview] = React.useState({ open: false, index: 0 });
 
-    console.log('Gema in Card:');
-    console.log(gema);
-
     React.useEffect(() => {
         const iosInline = (v: HTMLVideoElement) => {
             v.setAttribute('playsinline', 'true');
