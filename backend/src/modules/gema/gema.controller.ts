@@ -30,13 +30,7 @@ export class GemaController {
     return this.gemaService.create(createGemaDto, user.id, media);
   }
 
-  @Get('/helloworld')
-  getHello() {
-    return {
-      msg: "Hello World"
-    };
-  }
-
+  
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {

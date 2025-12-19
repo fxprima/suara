@@ -211,12 +211,13 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                     </div>
 
                     <div className="flex gap-6 mt-3 text-sm">
-                        <span>
-                            <strong>{profileView.followingCount}</strong> Following
-                        </span>
-                        <span>
-                            <strong>{profileView.followersCount}</strong> Followers
-                        </span>
+                        <Link href={`/profile/${username}/followers`} className="hover:underline">
+                        <span className="font-bold">{profileView.followersCount}</span> Followers
+                        </Link>
+
+                        <Link href={`/profile/${username}/followings`} className="hover:underline ml-4">
+                        <span className="font-bold">{profileView.followingCount}</span> Following
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -39,6 +39,25 @@ export class GemaService {
   } as const;
 
 
+  /**
+   * Create a new Gema (post or reply) for a given author.
+   *
+   * Optionally uploads attached media files and stores their metadata
+   * (url + type) into the `media` field. If `parentId` is provided, the new Gema
+   * will be treated as a reply and the parent Gema's `repliesCount` will be
+   * incremented by 1.
+   *
+   * @param createGemaDto - Payload for creating a Gema (content and optional parentId)
+   * @param authorId - ID of the user creating the Gema
+   * @param media - Optional list of uploaded files (images/videos) from Multer
+   *
+   * @returns The newly created Gema record
+   *
+   * @remarks
+   * - Media is uploaded in parallel using `Promise.all`.
+   * - Stored media type is normalized to `'image' | 'video'` based on upload response.
+   * - If `parentId` is provided but invalid, Prisma will throw on the parent update.
+   */
   async create(
     createGemaDto: CreateGemaDto,
     authorId: string,
@@ -46,6 +65,7 @@ export class GemaService {
   ) {
     let mediaData: { url: string; type: string }[] = [];
 
+    // if has media uploaded files then upload the media.
     if (media && media.length > 0) {
       const uploaded = await Promise.all(media.map((file) => this.media.upload(file)));
 
@@ -154,7 +174,14 @@ export class GemaService {
   }
 
 
-  // Cursor Pagination
+  /**
+   * A service to fetch the user feed based on their followings by using Cursor pagination method.
+   * 
+   * 
+   * @param userId 
+   * @param opts 
+   * @returns 
+   */
   async getUserFeed(userId: string, opts: {cursor?: string, limit: number}) {
     const { cursor, limit } = opts;
 
