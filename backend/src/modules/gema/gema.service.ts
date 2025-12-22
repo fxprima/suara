@@ -215,8 +215,8 @@ export class GemaService {
       take: limit + 1 // +1 to see if there are more gemas after limit
     })
 
-    const hasMore = gemas.length > limit;
-    const data = hasMore? gemas.slice(0, limit) : gemas;
+    const hasNext = gemas.length > limit;
+    const data = hasNext? gemas.slice(0, limit) : gemas;
     const last = data[data.length - 1];
 
     // set the next cursor on last data,  cursor format: `${createdAtIso}|${id}`
@@ -225,7 +225,7 @@ export class GemaService {
     const response = {
       data,
       nextCursor,
-      hasMore
+      hasNext
     };
 
     return response;

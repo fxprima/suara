@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, Query, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { FollowService } from "./follow.service";
 import { JwtAuthGuard } from "src/modules/auth/guards/jwt.auth.guard";
 import { CurrentUser } from "src/modules/auth/decorators/current-user.decorator";
@@ -19,9 +19,28 @@ export class FollowController {
         return await this.followService.isFollowingId(userId, followId);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('/followings/:userId')
-    async findFollowings(@Param("userId") userId: string) {
-        return await this.followService.findFollowings(userId);
+    async findFollowings(
+        @Param("userId") userId: string,
+        @Query('viewer') viewer?: string,
+        @Query('cursor') cursor?: string,
+        @Query('limit') limit?: string,
+        @CurrentUser() currentUser?: UserPayload
+    ) {
+    const take = Math.min(Math.max(Number(limit) || 5, 1), 10);
+
+    const opts = {
+        limit: take,
+        cursorFollowId: cursor,
+    };
+
+    if (viewer === 'me') {
+        if (!currentUser) throw new UnauthorizedException();
+        return this.followService.findFollowingsWithStatus(currentUser.id, userId, opts);
+    }
+
+    return this.followService.findFollowings(userId, opts);
     }
 
     @Get('/followers/:userId')
@@ -34,9 +53,9 @@ export class FollowController {
         return await this.followService.getFollowingCountById(userId);
     }
 
-    @Get('/followers/:userId')
+    @Get('/followers/:userId/count')
     async getFollowersCountById(@Param("userId") userId: string) {
-        return await this.getFollowersCountById(userId);
+        return await this.followService.getFollowersCountById(userId);
     } 
 
 }

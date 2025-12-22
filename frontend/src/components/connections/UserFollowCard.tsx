@@ -4,8 +4,9 @@ import Link from "next/link";
 
 type UserFollowCardProps = {
     id: string;
-    name: string;
     username: string;
+    firstname: string;
+    lastname?: string;
     bio?: string;
     avatar?: string;
     isFollowing?: boolean;
@@ -14,8 +15,9 @@ type UserFollowCardProps = {
 
 export default function UserFollowCard({
     id,
-    name,
     username,
+    firstname,
+    lastname,
     bio,
     avatar,
     onPage = 'following',
@@ -29,7 +31,7 @@ export default function UserFollowCard({
             <Link href={`/profile/${username}`} className="shrink-0">
                 <img
                     src={avatar ?? '/default-avatar.svg'}
-                    alt={name}
+                    alt={firstname}
                     width={48}
                     height={48}
                     className="rounded-full"
@@ -42,7 +44,7 @@ export default function UserFollowCard({
                         href={`/profile/${username}`}
                         className="font-semibold hover:underline truncate"
                     >
-                        {name}
+                        {`${firstname} ${lastname}`}
                     </Link>
                     <span className="text-sm opacity-60 truncate">
                         @{username}

@@ -144,7 +144,102 @@ export class FollowService {
     return users;
   }
 
-  
+  /**
+   * Get followings of a user with viewer follow status.
+   *
+   * Returns a paginated list of users that `userId` follows.
+   * Each item includes `isFollowing` based on `currentUserId`.
+   *
+   * Uses cursor-based pagination with `followId`.
+   *
+   * Result item format:
+   * {
+   *   id: string;
+   *   username: string;
+   *   firstname: string;
+   *   lastname: string;
+   *   avatar: string | null;
+   *   isFollowing: boolean; 
+   * }
+   * 
+   * @param currentUserId Viewer (logged-in user)
+   * @param userId Target user
+   * @param opts Pagination options
+   * @param opts.limit Max items (1–10)
+   * @param opts.cursorFollowId Pagination cursor
+   * 
+   * @returns result, nextCursorFollowId 
+   */
+  async findFollowingsWithStatus(
+    currentUserId: string,
+    userId: string,
+    opts?: { limit?: number; cursorFollowId?: string }
+  ) {
+    if (!userId) throw new BadRequestException('userId is required');
+    if (!currentUserId) throw new BadRequestException('currentUserId is required');
+
+    const take = Math.min(Math.max(opts?.limit ?? 5, 1), 10);
+    const cursorFollowId = opts?.cursorFollowId;
+
+    // take all followings of userId then paginate based on followId ascendingly
+    const rows = await this.prisma.followers.findMany({
+      where: { userId },
+      orderBy: [{ followId: 'asc' }], 
+      take: take + 1,
+
+      // if has cursorFollowId then start to take data from that positio., otherwise skip this constraint.
+      ...(cursorFollowId
+        ? {
+            cursor: {
+              userId_followId: { userId, followId: cursorFollowId },
+            },
+            skip: 1, // skip the 'cursor' data as it already been shown at the previous cursor.
+          }
+        : {}),
+      select: {
+        followId: true, 
+        follow: {
+          select: {
+            id: true,
+            username: true,
+            firstname: true,
+            lastname: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    const hasNext = rows.length > take; 
+    const pageRows = hasNext ? rows.slice(0, take) : rows;
+
+    const users = pageRows.map(r => r.follow);  
+    const targetIds = users.map(u => u.id);
+
+    // take all users that is followed by currentUser from the following candidates list that will be shown.
+    const followedByViewerRows =
+      targetIds.length === 0
+        ? []
+        : await this.prisma.followers.findMany({
+            where: {
+              userId: currentUserId,
+              followId: { in: targetIds },
+            },
+            select: { followId: true },
+          });
+
+    const followedByViewerSet = new Set(followedByViewerRows.map(r => r.followId));
+
+    const data = pageRows.map(r => ({
+      ...r.follow,
+      isFollowing: followedByViewerSet.has(r.follow.id),
+    }));
+
+    const nextCursor= hasNext ? pageRows[pageRows.length - 1].followId : null;
+
+    return { data, nextCursor, hasNext };
+  }
+
   /**
    * Get users following count.
    *

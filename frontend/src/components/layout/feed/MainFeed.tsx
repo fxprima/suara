@@ -18,7 +18,7 @@ import useAuth from '@/hooks/auth/useAuth';
 type GemaFeedResponse = {
     data: GemaType[];
     nextCursor?: string | null;
-    hasMore?: boolean;
+    hasNext?: boolean;
 };
 
 const FEED_LIMIT = 5;
@@ -37,7 +37,7 @@ export default function MainFeed() {
 
     const [gemas, setGemas] = useState<GemaType[]>([]);
     const [nextCursor, setNextCursor] = useState<string | null>(null);
-    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [hasNext, setHasNext] = useState<boolean>(true);
 
     const [loadingInitial, setLoadingInitial] = useState<boolean>(false);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
@@ -87,7 +87,7 @@ export default function MainFeed() {
                 const payload = res.data;
                 const newItems = payload?.data ?? [];
 
-                setHasMore(Boolean(payload?.hasMore));
+                setHasNext(Boolean(payload?.hasNext));
                 setNextCursor(payload?.nextCursor ?? null);
 
                 setGemas((prev) => {
@@ -118,7 +118,7 @@ export default function MainFeed() {
         // reset feed to first page
         setGemas([]);
         setNextCursor(null);
-        setHasMore(true);
+        setHasNext(true);
         await fetchFeed({ cursor: null, append: false });
     }, [fetchFeed]);
 
@@ -169,7 +169,7 @@ export default function MainFeed() {
     };
 
     const handleLoadMore = async () => {
-        if (!hasMore || !nextCursor) return;
+        if (!hasNext || !nextCursor) return;
         
         await fetchFeed({ cursor: nextCursor, append: true });
     };
@@ -250,7 +250,7 @@ export default function MainFeed() {
 
                 {/* Load more */}
                 <div className="flex justify-center py-4">
-                    {hasMore ? (
+                    {hasNext ? (
                         <button
                             type="button"
                             onClick={handleLoadMore}
