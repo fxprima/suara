@@ -11,6 +11,8 @@ import api from '@/services/api';
 import { ToastMessage } from '@/components/common/toast/ToastMessage';
 import { useToast } from '@/hooks/ui/useToast';
 import { extractErrorMessage } from '@/utils/handleApiError';
+import { handleReply } from '@/utils/handleReply';
+import { ReplyGemaModal } from '@/components/gema/ReplyGemaModal';
 
 type TabKey = 'posts' | 'replies' | 'media' | 'likes';
 
@@ -54,9 +56,9 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
 
         const joinedText = userPublicData?.createdAt
             ? new Date(String(userPublicData.createdAt)).toLocaleDateString('id-ID', {
-                  month: 'long',
-                  year: 'numeric',
-              })
+                month: 'long',
+                year: 'numeric',
+            })
             : null;
 
         return {
@@ -73,45 +75,60 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
             followersCount: userPublicData?.followersCount
         };
     }, [userPublicData, username]);
-    
+
     const { user: authProfile } = useAuth();
     const isMyProfile = authProfile?.username === profileView.username;
     const [isFollowing, setIsFollowing] = useState(false);
-    
+
+    const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
+
     const isFollowingEnabled = !!authProfile?.id && !!profileView.id && !isMyProfile;
 
     const { data: isFollowingRawData, loading: isFollowingLoading } =
         useFetchData<boolean>(
             isFollowingEnabled
-            ? `/follow/isfollowing/${authProfile!.id}/${profileView.id}`
-            : undefined,
+                ? `/follow/isfollowing/${authProfile!.id}/${profileView.id}`
+                : undefined,
             { enabled: isFollowingEnabled }
         );
 
     useEffect(() => {
-    if (!isFollowingLoading && isFollowingRawData !== null) {
-        setIsFollowing(!!isFollowingRawData);
-    }
+        if (!isFollowingLoading && isFollowingRawData !== null) {
+            setIsFollowing(!!isFollowingRawData);
+        }
     }, [isFollowingLoading, isFollowingRawData]);
 
 
     const handleFollow = async (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        await api.post(`/follow/${profileView.id}`, {} , { withCredentials: true })
-        .then(() => {
-            setIsFollowing(prev => {
-                const next = !prev;
-                return next;
-            });
+        await api.post(`/follow/${profileView.id}`, {}, { withCredentials: true })
+            .then(() => {
+                setIsFollowing(prev => {
+                    const next = !prev;
+                    return next;
+                });
 
-            showToast(`You have successfully ${isFollowing ? `followed` : `unfollowed`} this user.`);
-        })
-        .catch((err) => {
-            console.log(`Failed to follow user: ${err}`);
-            showToast(extractErrorMessage(err), 'error');
-        })
+                showToast(`You have successfully ${isFollowing ? `followed` : `unfollowed`} this user.`);
+            })
+            .catch((err) => {
+                console.log(`Failed to follow user: ${err}`);
+                showToast(extractErrorMessage(err), 'error');
+            })
     }
+
+
+    const handleSubmitReply = async (formData: FormData) => {
+        await handleReply({
+            formData,
+            parentId: replyToGema?.id,
+            refetchFn: async () => { },
+            showToast,
+            onSuccess: () => {
+                setReplyToGema(null);
+            },
+        });
+    };
 
     const feeds = useMemo(() => {
         const allPosts = userGemas ?? [];
@@ -172,11 +189,11 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                         }
 
                         {!isMyProfile &&
-                            <button onClick={(e) => handleFollow (e)} type='button' className="btn btn-sm bg-white text-black rounded-full">
+                            <button onClick={(e) => handleFollow(e)} type='button' className="btn btn-sm bg-white text-black rounded-full">
                                 {isFollowing ? "Unfollow" : "Follow"}
                             </button>
                         }
-                        
+
                     </div>
 
                     {!!profileView.biography && (
@@ -205,18 +222,18 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                         )}
 
                         <span className="flex items-center gap-1">
-                        <FontAwesomeIcon icon={faCalendar} /> Joined{' '}
+                            <FontAwesomeIcon icon={faCalendar} /> Joined{' '}
                             {profileView.joinedText ?? '—'}
                         </span>
                     </div>
 
                     <div className="flex gap-6 mt-3 text-sm">
                         <Link href={`/profile/${username}/followers`} className="hover:underline">
-                        <span className="font-bold">{profileView.followersCount}</span> Followers
+                            <span className="font-bold">{profileView.followersCount}</span> Followers
                         </Link>
 
                         <Link href={`/profile/${username}/followings`} className="hover:underline ml-4">
-                        <span className="font-bold">{profileView.followingCount}</span> Following
+                            <span className="font-bold">{profileView.followingCount}</span> Following
                         </Link>
                     </div>
                 </div>
@@ -230,11 +247,10 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                                 <button
                                     key={tab.key}
                                     onClick={() => setActiveTab(tab.key)}
-                                    className={`flex-1 py-3 text-center ${
-                                        activeTab === tab.key
+                                    className={`flex-1 py-3 text-center ${activeTab === tab.key
                                             ? 'border-b-2 border-primary font-semibold'
                                             : 'opacity-70 hover:opacity-100'
-                                    }`}
+                                        }`}
                                     disabled={isLoading}
                                 >
                                     {tab.label}
@@ -256,8 +272,18 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
                     ) : (
                         <div className="divide-y divide-base-300">
                             {activeFeed.map((p) => (
-                                <GemaCard key={p.id} gema={p} onReply={() => {}} />
+                                <GemaCard key={p.id} gema={p} onReply={() => setReplyToGema(p)} />
                             ))}
+
+                            {replyToGema && (
+                                <ReplyGemaModal
+                                    isOpen={true}
+                                    gema={replyToGema}
+                                    onClose={() => setReplyToGema(null)}
+                                    onSubmitReply={handleSubmitReply}
+                                />
+                            )}
+
                         </div>
                     )}
                 </div>
