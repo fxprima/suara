@@ -14,9 +14,6 @@ export default function LoadingScreen() {
             fill="#FFD000"
           />
         </svg>
-
-        <span className="loading loading-spinner loading-lg text-primary animate-spin"></span>
-        <h2 className="text-lg font-semibold text-base-content animate-pulse">Loading your experience...</h2>
       </div>
     </div>
   );

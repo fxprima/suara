@@ -5,6 +5,7 @@ import MyProfileInner from './MyProfileInner';
 import { useParams } from 'next/navigation';
 import { useFetchData } from '@/hooks/data/useFetchData';
 import { UserPublicProfile } from '../../../../types/gema';
+import LoadingScreen from '@/components/common/loader/LoadingScreen';
 
 export default function ProfilePage() {
   const params = useParams() as { username?: string };
@@ -20,9 +21,7 @@ export default function ProfilePage() {
   if (username) {
     if (userProfileLoading) {
       return (
-        <div className="max-w-2xl mx-auto p-8 text-center text-base-content/60">
-          Loading...
-        </div>
+        <LoadingScreen />
       );
     }
 
@@ -41,9 +40,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="max-w-2xl mx-auto p-8 text-center text-base-content/60">
-        Loading...
-      </div>
+      <LoadingScreen />
     );
   }
 
