@@ -34,7 +34,7 @@ export default function FollowingsPage() {
 
   const fetchConnections = useCallback(
     async (opts? : { cursor?: string | null; append?: boolean }) => {
-      if (!user?.id || !targetPublicData?.id || inFlightRef.current) return;
+      if ( !targetPublicData?.id || inFlightRef.current) return;
 
       inFlightRef.current = true;
 
@@ -51,13 +51,16 @@ export default function FollowingsPage() {
           `/follow/followings/${targetPublicData?.id}`,
           {
             params: {
-              viewer: 'me',
+              viewer: user?.username === targetUsername ? 'me' : 'notme',
               limit: 10,
               ...(cursor ? { cursor } : {}),
             },
             withCredentials: true,
           }
         );
+
+        console.log(`Masuk RES`)
+        console.log(res)
 
         const payload = res.data;
         const newItems = payload?.data ?? [];
@@ -99,10 +102,9 @@ export default function FollowingsPage() {
     }, [fetchConnections]);
 
     useEffect(() => {
-        if (!user?.id) return;
         resetAndReload();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user?.id, targetPublicData?.id]);
+    }, [targetPublicData?.id]);
 
 
     const handleLoadMore = async () => {

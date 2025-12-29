@@ -7,6 +7,7 @@ import { UserPayload } from '../auth/interfaces/user-payload.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MediaService } from '../media/media.service';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional.jwt.auth.guard';
 
 @Controller('gema')
 export class GemaController {
@@ -31,13 +32,12 @@ export class GemaController {
   }
 
   
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Get()
   findAll() {
     return this.gemaService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('author/:authorId')
   findByAuthor(@Param('authorId') authorId: string) {
     return this.gemaService.findGemasByAuthor(authorId);
@@ -52,7 +52,7 @@ export class GemaController {
     return this.gemaService.getUserFeed(userId, {cursor, limit: Number(limit)});
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('likes/:userId')
   async findLikedGemas(@Param('userId') userId: string) {
     return await this.gemaService.findLikedGemasByUser(userId);

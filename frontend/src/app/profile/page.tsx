@@ -3,5 +3,7 @@
 import ProfilePage from '@/components/layout/profile/Profile';
 
 export default function MyProfile() {
-    return <ProfilePage />;
+    return (
+        <ProfilePage></ProfilePage>
+    )
 }

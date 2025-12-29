@@ -1,8 +1,16 @@
 import axios from 'axios';
 
+const getBaseUrl = () => {
+    if (typeof window === 'undefined') 
+        return process.env.INTERNAL_API_URL || 'http://backend:8000';
+    
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+};
+
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: getBaseUrl(), 
     withCredentials: true,
+    timeout: 10000, 
 });
 
 let isRefreshing = false;

@@ -42,6 +42,14 @@ export default function useAuth() {
     const router = useRouter();
 
     const fetchUser = async () => {
+
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            setLoading(false);
+            console.log("No token")
+            return;
+        }
+
         try {
             const res = await api.get('/auth/me', { withCredentials: true });
             setUser(res.data);

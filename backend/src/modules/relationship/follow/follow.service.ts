@@ -171,12 +171,11 @@ export class FollowService {
    * @returns result, nextCursorFollowId 
    */
   async findFollowingsWithStatus(
-    currentUserId: string,
     userId: string,
-    opts?: { limit?: number; cursorFollowId?: string }
+    opts?: { limit?: number; cursorFollowId?: string },
+    currentUserId?: string,
   ) {
     if (!userId) throw new BadRequestException('userId is required');
-    if (!currentUserId) throw new BadRequestException('currentUserId is required');
 
     const take = Math.min(Math.max(opts?.limit ?? 5, 1), 10);
     const cursorFollowId = opts?.cursorFollowId;
@@ -232,10 +231,10 @@ export class FollowService {
 
     const data = pageRows.map(r => ({
       ...r.follow,
-      isFollowing: followedByViewerSet.has(r.follow.id),
+      isFollowing: currentUserId ? followedByViewerSet.has(r.follow.id) : false,
     }));
 
-    const nextCursor= hasNext ? pageRows[pageRows.length - 1].followId : null;
+    const nextCursor = hasNext ? pageRows[pageRows.length - 1].followId : null;
 
     return { data, nextCursor, hasNext };
   }
