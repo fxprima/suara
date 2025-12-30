@@ -1,42 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGemaDto } from './dto/create-gema.dto';
-import { UpdateGemaDto } from './dto/update-gema.dto';
 import { PrismaService } from 'prisma/prisma.service';
-import { MediaService } from '../media/media.service';
 import { FollowService } from '../relationship/follow/follow.service';
+import { MediaService } from '../media/media.service';
+import { GEMAS_INCLUDE } from './gema.include';
+import { GemaThreadService } from './thread/gema-thread.service';
 
 @Injectable()
 export class GemaService {
   constructor(
-    private prisma: PrismaService, 
-    private media: MediaService, 
-    private follow: FollowService
-  ) {}
-
-  private static readonly GEMAS_INCLUDE = {
-    author: {
-      select: {
-        id: true,
-        firstname: true,
-        lastname: true,
-        username: true,
-        avatar: true,
-      },
-    },
-    likedBy: {
-      select: {
-        user: {
-          select: {
-            id: true,
-            avatar: true,
-            firstname: true,
-            lastname: true,
-            username: true,
-          },
-        },
-      },
-    },
-  } as const;
+    private prisma: PrismaService,
+    private media: MediaService,
+    private follow: FollowService,
+    private thread: GemaThreadService
+  ) { }
 
 
   /**
@@ -51,7 +28,7 @@ export class GemaService {
    * @param authorId - ID of the user creating the Gema
    * @param media - Optional list of uploaded files (images/videos) from Multer
    *
-   * @returns The newly created Gema record
+   * @returns The newly created Gema record 
    *
    * @remarks
    * - Media is uploaded in parallel using `Promise.all`.
@@ -94,81 +71,9 @@ export class GemaService {
     return newGema;
   }
 
-  async findLikedGemasByUser(userId: string) {
-    return await this.prisma.gemas.findMany({
-      where: { likedBy: { some: { userId } } },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  async findGemasByAuthor(authorId: string) {
-    return await this.prisma.gemas.findMany({
-      where: { authorId },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  // async findAll() {
-  //   return await this.prisma.gemas.findMany({
-  //     where: { parentId: null },
-  //     include: GemaService.GEMAS_INCLUDE,
-  //     orderBy: { createdAt: 'desc' },
-  //   });
-  // }
-
-  async getRepliesRecursive(id: string) {
-    const replies = await this.prisma.gemas.findMany({
-      where: { parentId: id },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: { createdAt: 'asc' },
-    });
-
-    for (const reply of replies) {
-      (reply as any)['replies'] = await this.getRepliesRecursive(reply.id);
-    }
-
-    return replies;
-  }
-
-  async getGemaDetailRecursive(id: string) {
-    const gema = await this.prisma.gemas.findUnique({
-      where: { id },
-      include: GemaService.GEMAS_INCLUDE,
-    });
-
-    if (!gema) return null;
-
-    const replies = await this.getRepliesRecursive(id);
-    return { ...gema, replies };
-  }
-
-  async incrementViews(id: string) {
-    return this.prisma.gemas.update({
-      where: { id },
-      data: { viewsCount: { increment: 1 } },
-    });
-  }
-
-  async likeGema(uid: string, gid: string) {
-    const isGemaLiked = await this.prisma.gemaLikes.findFirst({
-      where: { userId: uid, gemaId: gid },
-    });
-
-    if (isGemaLiked) {
-      return this.prisma.gemaLikes.delete({
-        where: { userId_gemaId: { userId: uid, gemaId: gid } },
-      });
-    }
-
-    return this.prisma.gemaLikes.create({
-      data: { gemaId: gid, userId: uid },
-    });
-  }
 
   async findOne(id: string) {
-    const data = await this.getGemaDetailRecursive(id);
+    const data = await this.thread.getGemaDetailRecursive(id);
     if (!data) throw new NotFoundException('Gema not found');
     return data;
   }
@@ -182,7 +87,7 @@ export class GemaService {
    * @param opts 
    * @returns 
    */
-  async getUserFeed(userId: string, opts: {cursor?: string, limit: number}) {
+  async getUserFeed(userId: string, opts: { cursor?: string, limit: number }) {
     const { cursor, limit } = opts;
 
     // Get users followings
@@ -206,22 +111,22 @@ export class GemaService {
 
     // Query based on cursor if cursor exists -> include cursor constraint else dont include
     const gemas = await this.prisma.gemas.findMany({
-      where : {
-        authorId: {in: userFollowingIds},
+      where: {
+        authorId: { in: userFollowingIds },
         ...cursorWhere
       },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: [{ createdAt: 'desc' }, {id: 'desc'}],
+      include: GEMAS_INCLUDE,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: limit + 1 // +1 to see if there are more gemas after limit
     })
 
     const hasNext = gemas.length > limit;
-    const data = hasNext? gemas.slice(0, limit) : gemas;
+    const data = hasNext ? gemas.slice(0, limit) : gemas;
     const last = data[data.length - 1];
 
     // set the next cursor on last data,  cursor format: `${createdAtIso}|${id}`
     const nextCursor = last ? `${last.createdAt.toISOString()}|${last.id}` : null;
-    
+
     const response = {
       data,
       nextCursor,
@@ -242,7 +147,7 @@ export class GemaService {
 
     if (cursor) {
       const [createdAtIso, id] = cursor.split('|');
-      const createdAt = new Date (createdAtIso);
+      const createdAt = new Date(createdAtIso);
 
       cursorWhere = {
         OR: [
@@ -263,13 +168,13 @@ export class GemaService {
 
       if (tab === 'likes') {
         tabWhere = {
-          likedBy: { some: { userId } } 
+          likedBy: { some: { userId } }
         }
       }
 
       if (tab === 'replies') {
         tabWhere = {
-          AND : [
+          AND: [
             {
               authorId: userId,
               parentId: { not: null }
@@ -280,31 +185,31 @@ export class GemaService {
 
       if (tab === 'media') {
         tabWhere = {
-  AND: [
-    { authorId: userId },
-    { NOT: { media: { equals: [] } } },
-  ],
-};
+          AND: [
+            { authorId: userId },
+            { NOT: { media: { equals: [] } } },
+          ],
+        };
       }
 
     }
 
     const gemas = await this.prisma.gemas.findMany({
-      where : {
+      where: {
         ...tabWhere,
         ...cursorWhere,
       },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: [{ createdAt: 'desc' }, {id: 'desc'}],
+      include: GEMAS_INCLUDE,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: limit + 1
     })
 
     const hasNext = gemas.length > limit;
-    const data = hasNext? gemas.slice(0, limit) : gemas;
+    const data = hasNext ? gemas.slice(0, limit) : gemas;
     const last = data[data.length - 1];
 
     const nextCursor = last ? `${last.createdAt.toISOString()}|${last.id}` : null;
-        
+
     const response = {
       data,
       nextCursor,

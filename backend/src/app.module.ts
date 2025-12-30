@@ -5,8 +5,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { GemaModule } from './modules/gema/gema.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
-import { MediaModule } from './modules/media/media.module';
 import { FollowModule } from './modules/relationship/follow/follow.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { FollowModule } from './modules/relationship/follow/follow.module';
     GemaModule,
     CloudinaryModule,
     MediaModule,
-    FollowModule
+    FollowModule,
   ],
   controllers: [],
   providers: [],
