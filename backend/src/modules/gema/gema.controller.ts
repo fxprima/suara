@@ -31,17 +31,6 @@ export class GemaController {
     return this.gemaService.create(createGemaDto, user.id, media);
   }
 
-  
-  @UseGuards(OptionalJwtAuthGuard)
-  @Get()
-  findAll() {
-    return this.gemaService.findAll();
-  }
-
-  @Get('author/:authorId')
-  findByAuthor(@Param('authorId') authorId: string) {
-    return this.gemaService.findGemasByAuthor(authorId);
-  }
 
   @Get(':userId/feed')
   async getUserFeed(
@@ -72,6 +61,16 @@ export class GemaController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.gemaService.findOne(id);
+  }
+
+  @Get('author/:userId')
+  async getAuthorGemas(
+    @Param('userId') userId: string,
+    @Query('tab') tab: 'gemas' | 'replies' | 'media' | 'likes',
+    @Query('cursor') cursor?: string,
+    @Query('limit') limit = 10,
+  ) {
+    return await this.gemaService.getAuthorGemas(userId, { tab, cursor, limit: Number(limit) });
   }
 
 

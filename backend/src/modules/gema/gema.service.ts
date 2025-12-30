@@ -8,10 +8,10 @@ import { FollowService } from '../relationship/follow/follow.service';
 @Injectable()
 export class GemaService {
   constructor(
-    private prisma: PrismaService, 
-    private media: MediaService, 
+    private prisma: PrismaService,
+    private media: MediaService,
     private follow: FollowService
-  ) {}
+  ) { }
 
   private static readonly GEMAS_INCLUDE = {
     author: {
@@ -110,13 +110,13 @@ export class GemaService {
     });
   }
 
-  async findAll() {
-    return await this.prisma.gemas.findMany({
-      where: { parentId: null },
-      include: GemaService.GEMAS_INCLUDE,
-      orderBy: { createdAt: 'desc' },
-    });
-  }
+  // async findAll() {
+  //   return await this.prisma.gemas.findMany({
+  //     where: { parentId: null },
+  //     include: GemaService.GEMAS_INCLUDE,
+  //     orderBy: { createdAt: 'desc' },
+  //   });
+  // }
 
   async getRepliesRecursive(id: string) {
     const replies = await this.prisma.gemas.findMany({
@@ -182,7 +182,7 @@ export class GemaService {
    * @param opts 
    * @returns 
    */
-  async getUserFeed(userId: string, opts: {cursor?: string, limit: number}) {
+  async getUserFeed(userId: string, opts: { cursor?: string, limit: number }) {
     const { cursor, limit } = opts;
 
     // Get users followings
@@ -206,22 +206,105 @@ export class GemaService {
 
     // Query based on cursor if cursor exists -> include cursor constraint else dont include
     const gemas = await this.prisma.gemas.findMany({
-      where : {
-        authorId: {in: userFollowingIds},
+      where: {
+        authorId: { in: userFollowingIds },
         ...cursorWhere
       },
       include: GemaService.GEMAS_INCLUDE,
-      orderBy: [{ createdAt: 'desc' }, {id: 'desc'}],
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: limit + 1 // +1 to see if there are more gemas after limit
     })
 
     const hasNext = gemas.length > limit;
-    const data = hasNext? gemas.slice(0, limit) : gemas;
+    const data = hasNext ? gemas.slice(0, limit) : gemas;
     const last = data[data.length - 1];
 
     // set the next cursor on last data,  cursor format: `${createdAtIso}|${id}`
     const nextCursor = last ? `${last.createdAt.toISOString()}|${last.id}` : null;
-    
+
+    const response = {
+      data,
+      nextCursor,
+      hasNext
+    };
+
+    return response;
+  }
+
+  async getAuthorGemas(userId: string, opts: {
+    tab: 'gemas' | 'replies' | 'media' | 'likes',
+    limit: number
+    cursor?: string,
+  }) {
+    const { tab, cursor, limit } = opts;
+
+    let cursorWhere = {};
+
+    if (cursor) {
+      const [createdAtIso, id] = cursor.split('|');
+      const createdAt = new Date(createdAtIso);
+
+      cursorWhere = {
+        OR: [
+          { createdAt: { lt: createdAt } },
+          { createdAt, id: { lt: id } },
+        ],
+      };
+    }
+
+    let tabWhere = {};
+
+    if (tab) {
+      if (tab === 'gemas') {
+        tabWhere = {
+          authorId: userId
+        }
+      }
+
+      if (tab === 'likes') {
+        tabWhere = {
+          likedBy: { some: { userId } }
+        }
+      }
+
+      if (tab === 'replies') {
+        tabWhere = {
+          AND: [
+            {
+              authorId: userId,
+              parentId: { not: null }
+            }
+          ]
+        }
+      }
+
+      if (tab === 'media') {
+        tabWhere = {
+          AND: [
+            { authorId: userId },
+            { NOT: { media: { equals: [] } } },
+          ],
+        };
+      }
+
+    }
+
+    const gemas = await this.prisma.gemas.findMany({
+      where: {
+        ...tabWhere,
+        ...cursorWhere,
+      },
+      include: GemaService.GEMAS_INCLUDE,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: limit + 1
+    })
+
+    const hasNext = gemas.length > limit;
+    const data = hasNext ? gemas.slice(0, limit) : gemas;
+    const last = data[data.length - 1];
+
+    const nextCursor = last ? `${last.createdAt.toISOString()}|${last.id}` : null;
+
     const response = {
       data,
       nextCursor,
