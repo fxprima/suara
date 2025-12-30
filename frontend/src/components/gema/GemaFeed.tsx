@@ -9,6 +9,7 @@ import { ToastMessage } from '@/components/common/toast/ToastMessage';
 import { extractErrorMessage } from '@/utils/handleApiError';
 import { GemaType } from '../../../types/gema';
 import { useCursorGemaFeed } from '@/hooks/data/useCursorGemaFeed';
+import useAuth from '@/hooks/auth/useAuth';
 
 export default function GemaFeed(props: {
   endpoint: string | ((ctx: { cursor: string | null; limit: number }) => string);
@@ -19,6 +20,8 @@ export default function GemaFeed(props: {
   emptyText?: string;
   header?: React.ReactNode;
 }) {
+
+  const { user } = useAuth();
   const { toasts, showToast } = useToast();
   const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
 
@@ -98,6 +101,7 @@ export default function GemaFeed(props: {
           <ReplyGemaModal
             isOpen={true}
             gema={replyToGema}
+            avatar={user?.avatar ?? '/default-avatar.svg'}
             onClose={() => setReplyToGema(null)}
             onSubmitReply={handleSubmitReply}
           />

@@ -9,6 +9,7 @@ export type AuthUser = {
     username: string;
     firstname: string;
     lastname: string;
+    avatar: string;
 };
 
 /**

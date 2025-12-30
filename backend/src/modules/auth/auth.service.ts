@@ -183,9 +183,10 @@ export class AuthService {
     }
 
     async me(user: UserPayload) {
-        return this.prisma.users.findUnique({
+        const res = this.prisma.users.findUnique({
             where: {id : user.id },
             select: publicUserSelect
         });
+        return res;
     }
 }

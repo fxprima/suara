@@ -2,7 +2,7 @@ import { User } from './user.interface';
 
 export type PublicUserFields = Pick<
     User,
-    'id' | 'username' | 'email' | 'firstname' | 'lastname'
+    'id' | 'username' | 'email' | 'firstname' | 'lastname' | 'avatar'
 >;
 
 export const publicUserSelect: { [K in keyof PublicUserFields]: true } = {
@@ -11,4 +11,5 @@ export const publicUserSelect: { [K in keyof PublicUserFields]: true } = {
     email: true,
     firstname: true,
     lastname: true,
+    avatar: true
 };

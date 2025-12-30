@@ -7,12 +7,14 @@ interface ReplyModalProps {
     isOpen: boolean;
     onClose: () => void;
     gema: GemaType;
+    avatar: string;
     onSubmitReply: (formData: FormData) => void;
     showToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
 }
 
 export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
     isOpen,
+    avatar,
     onClose,
     gema,
     onSubmitReply,
@@ -81,7 +83,7 @@ export const ReplyGemaModal: React.FC<ReplyModalProps> = ({
                     <div className="avatar">
                         <div className="w-10 rounded-full">
                             <img
-                                src={gema.author.avatar ?? '/default-avatar.svg'}
+                                src={ avatar ?? '/default-avatar.svg'}
                                 alt="Your avatar"
                             />
                         </div>

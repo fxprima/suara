@@ -21,7 +21,6 @@ import GemaMediaGrid from '@/components/common/media/GemaMediaGrid';
 import MediaPreviewModal from '@/components/common/media/MediaPreviewModal';
 
 export default function GemaDetail() {
-    const router = useRouter();
     const { username, id } = useParams() as { username: string; id: string };
     const {
         data: gema,
@@ -32,8 +31,6 @@ export default function GemaDetail() {
     } = useFetchData<GemaTypeDetail>(`/gema/${id}`);
 
     const { user: loggedUser } = useAuth();
-
-    console.log(gema);
 
     const [likesCount, setLikesCount] = useState(0);
 
@@ -52,12 +49,15 @@ export default function GemaDetail() {
     const [isLiked, setIsLiked] = useState(false);
 
     useEffect(() => {
-        if (gema && !hasInitLikes.current) {
-            setLikesCount(gema.likedBy.length);
-            setIsLiked(gema.likedBy.some((u) => u.user.id === loggedUser!.id));
-            hasInitLikes.current = true;
+        setLikesCount(gema?.likedBy?.length ?? 0);
+        if (!loggedUser?.id) {
+            setIsLiked(false);
+            return;
         }
-    }, [gema, loggedUser]);
+
+        const liked = (gema?.likedBy ?? []).some((u) => u.user.id === loggedUser.id);
+        setIsLiked(liked);
+    }, [gema, loggedUser?.id]);
 
     const [replyToGema, setReplyToGema] = useState<GemaType | null>(null);
     const { toasts, showToast } = useToast();
@@ -267,6 +267,7 @@ export default function GemaDetail() {
             {replyToGema && (
                 <ReplyGemaModal
                     isOpen={true}
+                    avatar={loggedUser?.avatar ?? '/default-avatar.svg'}
                     gema={replyToGema}
                     onClose={() => setReplyToGema(null)}
                     onSubmitReply={handleSubmitReply}

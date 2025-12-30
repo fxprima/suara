@@ -1,7 +1,7 @@
 import { faComment, faHeart, faRetweet } from '@fortawesome/free-solid-svg-icons';
 import { GemaType, ReplyType } from '../../../types/gema';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/ui/useToast';
 import { handleReply } from '@/utils/handleReply';
 import { ToastMessage } from '../common/toast/ToastMessage';
@@ -30,6 +30,20 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
 
     const [preview, setPreview] = useState({ open: false, index: 0 });
 
+    const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(0);
+
+    useEffect(() => {
+        setLikesCount(reply?.likedBy?.length ?? 0);
+        if (!loggedUser?.id) {
+            setIsLiked(false);
+            return;
+        }
+
+        const liked = (reply?.likedBy ?? []).some((u) => u.user.id === loggedUser.id);
+        setIsLiked(liked);
+    }, [reply, loggedUser?.id]);
+
     const handleSubmitReply = async (formData: FormData) => {
         await handleReply({
             formData: formData,
@@ -41,10 +55,18 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
     };
 
     const handleLikeReply = async (e: React.MouseEvent, replyId: string) => {
-        e.stopPropagation();
-        api.patch(`/gema/${replyId}/likes`).catch((err) => {
-            console.error('Failed to like reply:', err);
-        });
+        if (!loggedUser?.id)
+            return;
+
+        setIsLiked((prev) => !prev);
+        setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+        
+        try {
+            await api.patch(`/gema/${replyId}/likes`, {}, { withCredentials: true });
+        } catch (err) {
+            setIsLiked((prev) => !prev);
+            setLikesCount((prev) => (isLiked ? prev + 1 : prev - 1));
+        }
     };
 
     return (
@@ -113,14 +135,18 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
                             <FontAwesomeIcon icon={faRetweet} />
                             <span>{0}</span>
                         </div>
-                        <div
-                            className={`flex items-center gap-2 group hover:text-red-400 cursor-pointer ${
-                                isGemaLikedByUser(reply, loggedUser?.id ?? '') ? 'text-red-500' : ''
-                            }`}
-                            onClick={(e) => handleLikeReply(e, reply.id)}
-                        >
-                            <FontAwesomeIcon icon={faHeart} />
-                            <span>{reply.likedBy.length}</span>
+
+                        <div className="flex items-center gap-2 group">
+                            <FontAwesomeIcon
+                                icon={faHeart}
+                                className={`text-lg cursor-pointer transition-colors ${isLiked ? 'text-red-500' : 'group-hover:text-red-500'
+                                    }`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleLikeReply(e, reply.id);
+                                }}
+                            />
+                            <span>{likesCount}</span>
                         </div>
                     </div>
                 </div>
@@ -159,6 +185,7 @@ export default function ReplyGema({ reply, level = 0, refetchGema }: ReplyGemaPr
             {replyToGema && (
                 <ReplyGemaModal
                     isOpen={true}
+                    avatar={loggedUser?.avatar ?? '/default-avatar.svg'}
                     gema={replyToGema as GemaType}
                     onClose={() => setReplyToGema(null)}
                     onSubmitReply={handleSubmitReply}
