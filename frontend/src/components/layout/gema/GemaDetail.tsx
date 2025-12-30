@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import isGemaLikedByUser from '@/utils/gema';
 import GemaMediaGrid from '@/components/common/media/GemaMediaGrid';
 import MediaPreviewModal from '@/components/common/media/MediaPreviewModal';
+import LoadingScreen from '@/components/common/loader/LoadingScreen';
 
 export default function GemaDetail() {
     const { username, id } = useParams() as { username: string; id: string };
@@ -166,9 +167,7 @@ export default function GemaDetail() {
 
     if (loadingFetchGema) {
         return (
-            <div className="w-full h-full flex items-center justify-center py-20">
-                <span className="loading loading-spinner text-primary w-12 h-12"></span>
-            </div>
+            <LoadingScreen />
         );
     }
 
