@@ -4,17 +4,20 @@ import { seedSuperUser, seedUsers } from './users.seed';
 import { seedFollowers } from './followers.seed';
 import { seedGemas } from './gemas.seed';
 import { seedGemaLikes } from './gemalikes.seed';
+import { seedNotifications } from './notifications.seed';
 
 const prisma = new PrismaClient();
 
 async function clearDatabase() {
   await prisma.$transaction([
+    prisma.notifications.deleteMany({}),
     prisma.gemaLikes.deleteMany({}),
     prisma.followers.deleteMany({}),
     prisma.refreshTokens.deleteMany({}),
     prisma.gemas.deleteMany({}),
     prisma.users.deleteMany({}),
   ]);
+
 }
 
 async function main() {
@@ -25,31 +28,38 @@ async function main() {
   await seedSuperUser();
 
   console.log('[reset] seeding users...');
-  await seedUsers({ count: 50, password: 'password123', cleanFirst: false });
+  await seedUsers({ count: 100, password: 'password123', cleanFirst: false });
 
   console.log('[reset] seeding followers...');
   await seedFollowers({
     minFollowingPerUser: 2,
-    maxFollowingPerUser: 10,
+    maxFollowingPerUser: 50,
     makeOnePopularUser: true,
     cleanFirst: false,
   });
 
   console.log('[reset] seeding gemas...');
   await seedGemas({
-    maxPostsPerUser: 10,
-    maxRepliesPerPost: 5,
+    maxPostsPerUser: 12,
+    maxRepliesPerPost: 7,
     cleanFirst: false,
   });
 
   console.log('[reset] seeding gemalikes...');
   await seedGemaLikes({
-    maxLikesPerGema: 10,
+    maxLikesPerGema: 30,
     cleanFirst: false,
   });
 
+  console.log('[reset] seeding notifications...');
+  await seedNotifications({
+    readRatePercent: 35,
+    cleanFirst: false,
+  });
   console.log('[reset] DONE ✅');
 }
+
+
 
 if (require.main === module) {
   main()
