@@ -42,7 +42,6 @@ model Users {
 
   notifications         Notifications[]
   actedNotifications    Notifications[] @relation("NotificationActor")
-  targetedNotifications Notifications[] @relation("NotificationTargetUser")
 }
 
 model RefreshTokens {
@@ -121,9 +120,6 @@ model Notifications {
 
   gemaId String?
   gema   Gemas?  @relation("NotificationGema", fields: [gemaId], references: [id], onDelete: Cascade)
-
-  targetUserId String?
-  targetUser   Users?  @relation("NotificationTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
 
   message String?
 

@@ -7,6 +7,7 @@ import { GemaModule } from './modules/gema/gema.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { FollowModule } from './modules/relationship/follow/follow.module';
 import { MediaModule } from './modules/media/media.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MediaModule } from './modules/media/media.module';
     CloudinaryModule,
     MediaModule,
     FollowModule,
+    NotificationModule
   ],
   controllers: [],
   providers: [],
