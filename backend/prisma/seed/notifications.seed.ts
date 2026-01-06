@@ -40,7 +40,10 @@ export async function seedNotifications(opts: SeedNotificationsOptions = {}) {
         message: 'started following you',
         readAt: isRead ? faker.date.recent({ days: 30 }) : null,
         createdAt: faker.date.recent({ days: 60 }),
-        metadata: { kind: 'follow' },
+        metadata: { 
+          kind: 'follow', 
+          subMessage: 'Follow Request' 
+        },
       },
     });
 
@@ -53,7 +56,7 @@ export async function seedNotifications(opts: SeedNotificationsOptions = {}) {
       userId: true,
       gemaId: true,
       createdAt: true,
-      gema: { select: { authorId: true, parentId: true } },
+      gema: { select: { authorId: true, parentId: true, content: true } },
     },
   });
 
@@ -80,7 +83,9 @@ export async function seedNotifications(opts: SeedNotificationsOptions = {}) {
         message: 'liked your post',
         readAt: isRead ? faker.date.recent({ days: 30 }) : null,
         createdAt: like.createdAt,
-        metadata: { kind: 'like' },
+        metadata: { 
+          kind: 'like',
+          postSnippet: like.gema.content.slice(0,120) },
       },
     });
 
@@ -125,7 +130,7 @@ export async function seedNotifications(opts: SeedNotificationsOptions = {}) {
         metadata: {
           kind: 'reply',
           replyId: reply.id,
-          snippet: reply.content.slice(0, 120),
+          postSnippet: reply.content.slice(0, 120),
         },
       },
     });

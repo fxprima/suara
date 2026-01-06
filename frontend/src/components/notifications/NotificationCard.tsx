@@ -6,19 +6,19 @@ import { NotificationItem, NotificationType } from '../../../types/notifications
 
 function typeBadge(type: NotificationType) {
     switch (type) {
-        case 'follow_request':
+        case 'FOLLOW_REQUEST':
             return { label: 'FR', className: 'badge badge-warning' };
-        case 'follow':
+        case 'FOLLOW':
             return { label: 'F', className: 'badge badge-success' };
-        case 'mention':
+        case 'MENTION':
             return { label: '@', className: 'badge badge-info' };
-        case 'reply':
+        case 'REPLY':
             return { label: '↩', className: 'badge badge-info' };
-        case 'repost':
+        case 'REPOST':
             return { label: 'RT', className: 'badge badge-primary' };
-        case 'like':
+        case 'LIKE':
             return { label: '♥', className: 'badge badge-error' };
-        case 'system':
+        case 'SYSTEM':
         default:
             return { label: '!', className: 'badge badge-neutral' };
     }
@@ -37,7 +37,7 @@ export default function NotificationCard({
 }) {
     const badge = typeBadge(item.type);
 
-    const showActions = item.type === 'follow_request';
+    const showActions = item.type === 'FOLLOW_REQUEST';
 
     return (
         <div
@@ -84,15 +84,15 @@ export default function NotificationCard({
                             </span>
                         </div>
 
-                        <p className="text-sm mt-1">{item.title}</p>
+                        <p className="text-sm mt-1">{item.message}</p>
 
-                        {item.subtitle ? (
-                            <p className="text-xs opacity-70 mt-1">{item.subtitle}</p>
+                        {item.meta?.subMessage ? (
+                            <p className="text-xs opacity-70 mt-1">{item.meta?.subMessage}</p>
                         ) : null}
 
                         {item.meta?.postSnippet ? (
                             <div className="mt-2 text-xs opacity-70 bg-base-200/50 p-2 rounded-lg">
-                                {item.meta.postSnippet}
+                                {`“${item.meta.postSnippet}“`}
                             </div>
                         ) : null}
 

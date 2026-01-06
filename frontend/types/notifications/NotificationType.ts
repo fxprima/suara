@@ -1,11 +1,11 @@
 export type NotificationType =
-    | 'follow_request'
-    | 'follow'
-    | 'mention'
-    | 'reply'
-    | 'repost'
-    | 'like'
-    | 'system';
+    | 'FOLLOW'
+    | 'MENTION'
+    | 'REPLY'
+    | 'REPOST'
+    | 'LIKE'
+    | 'FOLLOW_REQUEST'
+    | 'SYSTEM';
 
 export type NotificationItem = {
     id: string;
@@ -17,10 +17,16 @@ export type NotificationItem = {
     };
     createdAtText: string; 
     isRead?: boolean;
-    title: string; 
-    subtitle?: string; 
+    message: string; 
     meta?: {
         postSnippet?: string;
         fileName?: string;
+        subMessage?: string; 
     };
 };
+
+export type NotificationResponse = {
+  data: NotificationItem[],
+  nextCursor: string,
+  hasNext: string
+}

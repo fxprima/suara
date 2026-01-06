@@ -1,57 +1,61 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { NotificationItem } from '../../../types/notifications/NotificationType';
+import { NotificationItem, NotificationResponse, NotificationType } from '../../../types/notifications/NotificationType';
 import NotificationCard from './NotificationCard';
+import api from '@/services/api';
+import useAuth from '@/hooks/auth/useAuth';
+import { extractErrorMessage } from '@/utils/handleApiError';
+import { useToast } from '@/hooks/ui/useToast';
 
 type TabKey = 'all' | 'following' | 'archived';
 
 const MOCK_NOTIFS: NotificationItem[] = [
     {
         id: '1',
-        type: 'follow_request',
+        type: 'FOLLOW_REQUEST',
         actor: { name: 'Sandra Marx', username: 'sandra', avatar: null },
         createdAtText: '12h',
         isRead: false,
-        title: 'requested to follow you',
-        subtitle: 'Follow request',
+        message: 'requested to follow you',
+        meta: { subMessage: 'Follow request' },
     },
     {
         id: '2',
-        type: 'mention',
+        type: 'MENTION',
         actor: { name: 'Jess Radlon', username: 'jess', avatar: null },
         createdAtText: '1d',
         isRead: false,
-        title: 'mentioned you in a post',
+        message: 'mentioned you in a post',
         meta: { postSnippet: '“Fel, ini beneran lucu sih 😭 cek deh…”' },
     },
     {
         id: '3',
-        type: 'repost',
+        type: 'REPOST',
         actor: { name: 'Ralpg Turner', username: 'ralpg', avatar: null },
         createdAtText: '2d',
         isRead: true,
-        title: 'reposted your Gema',
+        message: 'reposted your Gema',
         meta: { postSnippet: '“Suara itu Twitter lokal yang beneran niat.”' },
     },
     {
         id: '4',
-        type: 'reply',
+        type: 'REPLY',
         actor: { name: 'Adam Smith', username: 'adam', avatar: null },
         createdAtText: '3d',
         isRead: true,
-        title: 'replied to your post',
+        message: 'replied to your post',
         meta: { postSnippet: '“Boleh share arsitekturnya? Next + Nest + Prisma?”' },
     },
     {
         id: '5',
-        type: 'system',
+        type: 'SYSTEM',
         createdAtText: '5d',
         isRead: true,
-        title: 'Security alert: New login detected',
-        subtitle: 'If this wasn’t you, change your password.',
+        message: 'Security alert: New login detected',
+        meta: { subMessage: 'If this wasn’t you, change your password.' },
     },
 ];
 
@@ -62,15 +66,111 @@ export default function NotificationsPanel({
     open: boolean;
     onClose: () => void;
 }) {
+
+    const { user } = useAuth();
+    const { toasts, showToast } = useToast();
     const [tab, setTab] = useState<TabKey>('all');
 
+    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+    const [nextCursor, setNextCursor] = useState<string | null>(null);
+    const [hasNext, setHasNext] = useState<boolean>(true);
+    const [loading, setLoading] = useState({
+        initialFetch: false,
+        loadingNext: false
+    })
+
+    const inFlightRef = useRef(false);
+
+    const fetchConnections = useCallback(
+        async (opts?: { cursor?: string | null; append?: boolean }) => {
+            if (!user?.id || inFlightRef.current) return;
+
+            inFlightRef.current = true;
+
+            const append = opts?.append ?? false;
+            const cursor = opts?.cursor ?? null;
+
+            try {
+                if (!append)
+                    setLoading((p) => ({ ...p, initialFetch: true }));
+                else
+                    setLoading((p) => ({ ...p, loadingNext: true }))
+
+                const res = await api.get<NotificationResponse>(
+                    `/notification/${user?.id}`,
+                    {
+                        params: {
+                            limit: 10,
+                            ...(cursor ? { cursor } : {}),
+                        },
+                        withCredentials: true,
+                    }
+                );
+
+
+                const payload = res.data;
+                const newItems = payload?.data ?? [];
+
+                setHasNext(Boolean(payload?.hasNext));
+                setNextCursor(payload?.nextCursor ?? null);
+
+                setNotifications((prev) => {
+                    if (!append) return newItems;
+
+                    const merged = [...prev, ...newItems];
+                    const map = new Map<string, NotificationItem>();
+
+                    for (const g of merged) map.set(g.id, g);
+
+                    return Array.from(map.values());
+                })
+
+            } catch (err) {
+                console.error('[fetchFeed]', err);
+                showToast(extractErrorMessage(err), 'error');
+            } finally {
+                if (!append)
+                    setLoading((p) => ({ ...p, initialFetch: false }));
+                else
+                    setLoading((p) => ({ ...p, loadingNext: false }))
+
+                inFlightRef.current = false;
+            }
+        },
+        [user?.id, showToast]
+    )
+
+    const resetAndReload = useCallback(async () => {
+        setNotifications([]);
+        setNextCursor(null);
+        setHasNext(true);
+        await fetchConnections({ cursor: null, append: false });
+    }, [fetchConnections]);
+
+    useEffect(() => {
+        resetAndReload();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id]);
+
+
+    const handleLoadMore = async () => {
+        if (!hasNext || !nextCursor) return;
+
+        await fetchConnections({ cursor: nextCursor, append: true });
+    };
+
     const filtered = useMemo(() => {
-        if (tab === 'all') return MOCK_NOTIFS;
+        if (tab === 'all') return notifications;
+
         if (tab === 'following') {
-            return MOCK_NOTIFS.filter((n) => n.type === 'follow' || n.type === 'follow_request');
+            return notifications.filter(
+                (n) => n.type === 'FOLLOW' || n.type === 'FOLLOW_REQUEST'
+            );
         }
-        return MOCK_NOTIFS.filter((n) => n.isRead);
-    }, [tab]);
+
+        return notifications.filter((n) => n.isRead);
+    }, [tab, notifications]);
+
 
     if (!open) return null;
 
@@ -134,7 +234,7 @@ export default function NotificationsPanel({
                                 type="button"
                             >
                                 All
-                                <span className="badge badge-sm ml-2">{MOCK_NOTIFS.length}</span>
+                                <span className="badge badge-sm ml-2">{notifications.length}</span>
                             </button>
                             <button
                                 className={`tab ${tab === 'following' ? 'tab-active' : ''}`}
@@ -175,13 +275,29 @@ export default function NotificationsPanel({
                             />
                         ))}
 
-                        {filtered.length === 0 ? (
-                            <div className="text-center opacity-60 text-sm py-8">
-                                No notifications here.
+                        {hasNext ? (
+                            <div className="flex justify-center pt-2">
+                                <button
+                                    type="button"
+                                    onClick={handleLoadMore}
+                                    className="btn btn-primary flex items-center"
+                                    disabled={loading.loadingNext || loading.initialFetch}
+                                >
+                                    {(loading.loadingNext || loading.initialFetch) && (
+                                        <span className="loading loading-spinner loading-sm" />
+                                    )}
+                                    {loading.loadingNext ? 'Loading...' : 'Load More'}
+                                </button>
                             </div>
-                        ) : null}
+                        ) : (
+                            filtered.length > 0 && (
+                                <p className="text-center text-sm opacity-60">End of feed 🙂</p>
+                            )
+                        )}
                     </div>
                 </div>
+
+
             </aside>
         </>
     );
