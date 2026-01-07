@@ -100,7 +100,7 @@ export default function NotificationsPanel({
                     `/notification/${user?.id}`,
                     {
                         params: {
-                            limit: 10,
+                            limit: 5,
                             ...(cursor ? { cursor } : {}),
                         },
                         withCredentials: true,

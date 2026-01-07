@@ -126,4 +126,13 @@ export class NotificationService {
         return response;
     }
 
+    async getUserNotificationsCount(userId: string) {
+        return this.prisma.notifications.count({
+            where: {
+                userId: userId,
+                readAt: null
+            }
+        })
+    }
+
 }

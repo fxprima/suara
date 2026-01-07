@@ -42,7 +42,7 @@ export default function NotificationCard({
     return (
         <div
             className={[
-                'card bg-base-100 border border-base-300 rounded-xl',
+                'card bg-base-100 border border-base-300 rounded-xl relative',
                 item.isRead ? 'opacity-80' : '',
             ].join(' ')}
         >
@@ -51,6 +51,7 @@ export default function NotificationCard({
                 onClick={() => onOpen?.(item.id)}
                 className="card-body p-3 text-left hover:bg-base-200/40 transition rounded-xl"
             >
+
                 <div className="flex items-start gap-3">
                     <div className="flex flex-col items-center gap-2">
                         <div className={badge.className}>{badge.label}</div>
@@ -79,6 +80,13 @@ export default function NotificationCard({
                                     </span>
                                 ) : null}
                             </p>
+
+                            {!item.isRead && (
+                                <span
+                                    className="w-2.5 h-2.5 rounded-full bg-primary"
+                                    title="Unread"
+                                />
+                            )}
                             <span className="text-xs opacity-60 whitespace-nowrap">
                                 {item.createdAtText}
                             </span>

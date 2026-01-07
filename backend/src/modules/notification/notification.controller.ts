@@ -19,4 +19,10 @@ export class NotificationController {
             limit: Number(limit)
         })
     }
-}
+    
+    @UseGuards(JwtAuthGuard)
+    @Get(':userId/count')
+    async getUserNotificationsCount(@Param("userId") userId: string) {
+        return this.notificationService.getUserNotificationsCount(userId);
+    }
+}   

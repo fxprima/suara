@@ -20,7 +20,9 @@ import Link from 'next/link';
 import { useFetchData } from '@/hooks/data/useFetchData';
 import { UserPublicProfile } from '../../../../types/gema';
 import NotificationsPanel from '@/components/notifications/NotificationPanel';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import api from '@/services/api';
+
 
 export default function LeftSidebar() {
     const { user, logout, isAuthenticated } = useAuth();
@@ -28,6 +30,26 @@ export default function LeftSidebar() {
     const { data: userPublicData, loading: userProfile } = useFetchData<UserPublicProfile>(
         `user/profile/${user?.username}`
     );
+
+    const [unreadCount, setUnreadCount] = useState(3);
+    useEffect( () => {
+        if (!userPublicData?.id) return;
+
+        (async () => {
+            try {
+            const res = await api.get(
+                `notification/${userPublicData.id}/count`,
+                { withCredentials: true }
+            );
+
+            setUnreadCount(res.data ?? 0);
+
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+    }, [userPublicData])
+
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -51,18 +73,29 @@ export default function LeftSidebar() {
                                 onClick={() => {
                                     if (item.label === 'Notifications') {
                                         setNotificationsOpen(true);
+                                        setUnreadCount(0); // optional: reset pas dibuka
                                         return;
                                     }
                                     window.location.href = item.link || '/';
                                 }}
-                                className="btn btn-ghost w-full flex justify-center lg:justify-start"
+                                className="btn btn-ghost w-full flex justify-center lg:justify-start relative"
                             >
-                                <FontAwesomeIcon
-                                    icon={item.icon}
-                                    className="h-5 w-5 opacity-50 mr-0 lg:mr-2"
-                                />
+                                <div className="relative">
+                                    <FontAwesomeIcon
+                                        icon={item.icon}
+                                        className="h-5 w-5 opacity-50 mr-0 lg:mr-2"
+                                    />
+
+                                    {item.label === 'Notifications' && unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </div>
+
                                 <span className="hidden lg:inline">{item.label}</span>
                             </button>
+
                         ))}
                     </nav>
                     <button className="btn btn-primary w-full flex justify-center lg:justify-center">
