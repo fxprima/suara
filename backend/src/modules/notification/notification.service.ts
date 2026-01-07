@@ -1,6 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
-import { CreateNotifDto } from "./dto/create-notification.dto";
+import { CreateNotifDto, NotificationType } from "./dto/create-notification.dto";
+import { NotifyDto } from "./dto/notify.dto";
+import { Users } from "@prisma/client";
+
 
 @Injectable()
 
@@ -25,6 +28,77 @@ export class NotificationService {
         return res;
     }
 
+    async notify(dto: NotifyDto) {
+        if (dto.actorId === dto.userId) return null;
+
+        const createDto: CreateNotifDto = {
+            type: dto.type as NotificationType,
+            userId: dto.userId,
+            actorId: dto.actorId,
+            gemaId: dto.gemaId,
+        };
+
+        if (dto.type === NotificationType.LIKE) {
+            const actorUsername =
+            dto.ctx?.actorUsername ??
+            (dto.actorId
+                ? (await this.prisma.users.findUnique({
+                    where: { id: dto.actorId },
+                    select: { username: true },
+                }))?.username
+                : null);
+
+            const postSnippet =
+            dto.ctx?.postSnippet ??
+            (dto.gemaId
+                ? (await this.prisma.gemas.findUnique({
+                    where: { id: dto.gemaId },
+                    select: { content: true },
+                }))?.content?.slice(0, 120)
+                : null);
+
+            if (!actorUsername || !postSnippet) return null;
+
+            createDto.message = `${actorUsername} liked your gema.`;
+            createDto.metadata = { postSnippet: postSnippet };
+        }
+
+        return this.create(createDto);
+    }
+
+    async notifyLike(actorId: string, gemaId: string) {
+
+        const [gema, actor] = await Promise.all([
+
+            this.prisma.gemas.findUnique({
+            where: { id: gemaId },
+            select: { authorId: true, content: true },
+            }),
+
+            this.prisma.users.findUnique({
+            where: { id: actorId },
+            select: { username: true },
+            }),
+            
+        ]);
+
+        if (!gema || !actor) return null;
+        if (actorId === gema.authorId) return null;
+
+        const createDto: CreateNotifDto = {
+            type: NotificationType.LIKE,
+            userId: gema?.authorId,
+            gemaId: gemaId,
+            actorId: actorId,
+            message: `${actor?.username} liked your gema.`,
+            metadata: {
+                postSnippet: gema.content.slice(0, 120)
+            }
+        }
+
+        return await this.create(createDto);
+    }
+
     timeAgoShort(date: Date) {
         const now = Date.now();
         const diff = Math.max(0, now - date.getTime());
@@ -39,7 +113,7 @@ export class NotificationService {
         if (min > 0) return `${min}m`;
         return `${sec}s`;
     }
-    
+
     mapDBToItem(item: any) {
         return {
             id: item.id,
@@ -53,7 +127,7 @@ export class NotificationService {
             createdAtText: this.timeAgoShort(new Date(item.createdAt)),
             isRead: Boolean(item.readAt),
             message: item.message,
-            meta : item.metadata,
+            meta: item.metadata,
             createdAt: item.createdAt
         }
     }
@@ -104,7 +178,7 @@ export class NotificationService {
                     }
                 }
             },
-            orderBy: [{readAt: 'desc'},  { createdAt: 'desc' }, { id: 'desc' }],
+            orderBy: [{ readAt: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
             take: limit + 1
         })
 
@@ -134,5 +208,7 @@ export class NotificationService {
             }
         })
     }
+
+
 
 }
