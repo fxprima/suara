@@ -105,7 +105,7 @@ export default function MyProfileInner({ userId, username }: { userId: string; u
 
   const endpointByTab = useMemo<Record<TabKey, string>>(() => {
     return {
-      posts: `/gema/author/${userId}?tab=posts`,
+      posts: `/gema/author/${userId}?tab=gemas`,
       replies: `/gema/author/${userId}?tab=replies`,
       media: `/gema/author/${userId}?tab=media`,
       likes: `/gema/author/${userId}?tab=likes`,
