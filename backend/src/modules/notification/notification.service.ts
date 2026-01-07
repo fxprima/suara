@@ -27,57 +27,19 @@ export class NotificationService {
 
         return res;
     }
-
-    async notify(dto: NotifyDto) {
-        if (dto.actorId === dto.userId) return null;
-
-        const createDto: CreateNotifDto = {
-            type: dto.type as NotificationType,
-            userId: dto.userId,
-            actorId: dto.actorId,
-            gemaId: dto.gemaId,
-        };
-
-        if (dto.type === NotificationType.LIKE) {
-            const actorUsername =
-            dto.ctx?.actorUsername ??
-            (dto.actorId
-                ? (await this.prisma.users.findUnique({
-                    where: { id: dto.actorId },
-                    select: { username: true },
-                }))?.username
-                : null);
-
-            const postSnippet =
-            dto.ctx?.postSnippet ??
-            (dto.gemaId
-                ? (await this.prisma.gemas.findUnique({
-                    where: { id: dto.gemaId },
-                    select: { content: true },
-                }))?.content?.slice(0, 120)
-                : null);
-
-            if (!actorUsername || !postSnippet) return null;
-
-            createDto.message = `${actorUsername} liked your gema.`;
-            createDto.metadata = { postSnippet: postSnippet };
-        }
-
-        return this.create(createDto);
-    }
-
+    
     async notifyLike(actorId: string, gemaId: string) {
-
+        
         const [gema, actor] = await Promise.all([
-
+            
             this.prisma.gemas.findUnique({
-            where: { id: gemaId },
-            select: { authorId: true, content: true },
+                where: { id: gemaId },
+                select: { authorId: true, content: true },
             }),
-
+            
             this.prisma.users.findUnique({
-            where: { id: actorId },
-            select: { username: true },
+                where: { id: actorId },
+                select: { username: true },
             }),
             
         ]);
@@ -85,6 +47,22 @@ export class NotificationService {
         if (!gema || !actor) return null;
         if (actorId === gema.authorId) return null;
 
+        const existing = await this.prisma.notifications.findFirst({
+            where : {
+                type: NotificationType.LIKE,
+                userId: gema?.authorId,
+                gemaId: gemaId,
+                actorId: actorId
+            },
+            select: {id: true}
+        });
+
+        if (existing) {
+            return await this.prisma.notifications.delete({
+                where: {id: existing.id}
+            })
+        }
+        
         const createDto: CreateNotifDto = {
             type: NotificationType.LIKE,
             userId: gema?.authorId,

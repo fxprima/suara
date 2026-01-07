@@ -19,22 +19,25 @@ export class GemaEngagementService {
   }
 
   async likeGema(userId: string, gemaId: string) {
-    
-
-    const existing = await this.prisma.gemaLikes.findFirst({
-      where: { userId, gemaId },
-    });
-
-    if (existing) {
-      return this.prisma.gemaLikes.delete({
-        where: { userId_gemaId: { userId, gemaId } },
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.gemaLikes.findFirst({
+        where: { userId, gemaId },
       });
-    }
 
-    await this.notification.notifyLike(userId, gemaId);
+      await this.notification.notifyLike(userId, gemaId);
 
-    return this.prisma.gemaLikes.create({
-      data: { userId, gemaId },
+      if (existing) {
+        return tx.gemaLikes.delete({
+          where: { userId_gemaId: { userId, gemaId } },
+        });
+      }
+
+      const like = await tx.gemaLikes.create({
+        data: { userId, gemaId },
+      });
+
+      return like;
     });
   }
+
 }
