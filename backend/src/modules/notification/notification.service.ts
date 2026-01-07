@@ -104,7 +104,7 @@ export class NotificationService {
                     }
                 }
             },
-            orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+            orderBy: [{readAt: 'desc'},  { createdAt: 'desc' }, { id: 'desc' }],
             take: limit + 1
         })
 
