@@ -27,7 +27,7 @@ export class NotificationService {
 
         return res;
     }
-    
+
     async notifyLike(actorId: string, gemaId: string) {
         
         const [gema, actor] = await Promise.all([
@@ -71,6 +71,36 @@ export class NotificationService {
             message: `${actor?.username} liked your gema.`,
             metadata: {
                 postSnippet: gema.content.slice(0, 120)
+            }
+        }
+
+        return await this.create(createDto);
+    }
+
+    async notifyReply(actorId: string, gemaId: string, gemaParentId: string, snippet: {content?: string, media?: string}) {
+        const { content, media } = snippet;
+
+        const parentGema = await this.prisma.gemas.findUnique({
+            where: {id: gemaParentId},
+            include: {author: true}
+        })
+
+        const actor = await this.prisma.users.findUnique({
+            where: {id: actorId},
+            select: {username: true}
+        })
+        
+        if (!parentGema) return null;
+
+        const createDto: CreateNotifDto = {
+            type: NotificationType.REPLY,
+            userId: parentGema?.author.id,
+            gemaId: gemaId,
+            actorId: actorId,
+            message: `${actor?.username} replied to your gema.`,
+            metadata: {
+                postSnippet: content?.slice(0,120),
+                media: media
             }
         }
 

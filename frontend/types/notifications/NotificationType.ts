@@ -20,6 +20,7 @@ export type NotificationItem = {
     message: string; 
     meta?: {
         postSnippet?: string;
+        media?: string;
         fileName?: string;
         subMessage?: string; 
     };

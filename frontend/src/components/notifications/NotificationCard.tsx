@@ -104,6 +104,18 @@ export default function NotificationCard({
                             </div>
                         ) : null}
 
+                        {item.meta?.media ? (
+                            <div className="mt-2">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={item.meta.media}
+                                    alt="notification media"
+                                    className="w-full max-h-72 object-cover rounded-lg border border-base-300"
+                                    loading="lazy"
+                                />
+                            </div>
+                        ) : null}
+
                         {item.meta?.fileName ? (
                             <div className="mt-2 text-xs opacity-70">
                                 📎 {item.meta.fileName}

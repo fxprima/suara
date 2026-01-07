@@ -5,6 +5,7 @@ import { FollowService } from '../relationship/follow/follow.service';
 import { MediaService } from '../media/media.service';
 import { GEMAS_INCLUDE } from './gema.include';
 import { GemaThreadService } from './thread/gema-thread.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class GemaService {
@@ -12,7 +13,8 @@ export class GemaService {
     private prisma: PrismaService,
     private media: MediaService,
     private follow: FollowService,
-    private thread: GemaThreadService
+    private thread: GemaThreadService,
+    private notification: NotificationService
   ) { }
 
 
@@ -52,6 +54,7 @@ export class GemaService {
       }));
     }
 
+
     const newGema = await this.prisma.gemas.create({
       data: {
         content: createGemaDto.content,
@@ -62,6 +65,12 @@ export class GemaService {
     });
 
     if (createGemaDto.parentId) {
+    
+      await this.notification.notifyReply(authorId, newGema.id, createGemaDto.parentId, {
+        content: createGemaDto.content,
+        media: mediaData.length > 0 ? mediaData[0].url : undefined
+      })
+
       await this.prisma.gemas.update({
         where: { id: createGemaDto.parentId },
         data: { repliesCount: { increment: 1 } },
