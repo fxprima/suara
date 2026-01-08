@@ -60,13 +60,14 @@ const MOCK_NOTIFS: NotificationItem[] = [
 ];
 
 export default function NotificationsPanel({
-    open,
-    onClose,
+  open,
+  onClose,
+  liveItem,
 }: {
-    open: boolean;
-    onClose: () => void;
+  open: boolean;
+  onClose: () => void;
+  liveItem?: NotificationItem | null;
 }) {
-
     const { user } = useAuth();
     const { toasts, showToast } = useToast();
     const [tab, setTab] = useState<TabKey>('all');
@@ -151,6 +152,15 @@ export default function NotificationsPanel({
         resetAndReload();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.id]);
+
+    useEffect(() => {
+    if (!liveItem) return;
+
+    setNotifications((prev) => {
+        if (prev.some((x) => x.id === liveItem.id)) return prev;
+        return [liveItem, ...prev];
+    });
+    }, [liveItem]);
 
 
     const handleLoadMore = async () => {

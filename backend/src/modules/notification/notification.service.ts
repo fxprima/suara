@@ -3,6 +3,7 @@ import { PrismaService } from "prisma/prisma.service";
 import { CreateNotifDto, NotificationType } from "./dto/create-notification.dto";
 import { NotifyDto } from "./dto/notify.dto";
 import { Users } from "@prisma/client";
+import { NotificationGateway } from "./notification.gateway";
 
 
 @Injectable()
@@ -10,7 +11,8 @@ import { Users } from "@prisma/client";
 export class NotificationService {
 
     constructor(
-        private prisma: PrismaService
+        private prisma: PrismaService,
+        private notifGateway: NotificationGateway,
     ) { }
 
     async create(dto: CreateNotifDto) {
@@ -25,7 +27,21 @@ export class NotificationService {
             }
         });
 
-        return res;
+        const full = await this.prisma.notifications.findUnique({
+        where: { id: res.id },
+        include: {
+            actor: { select: { username: true, avatar: true, firstname: true, lastname: true } },
+            gema: { select: { id: true, content: true } },
+        },
+        });
+
+        if (full) {
+        const item = this.mapDBToItem(full);
+
+        // 🔥 push ke client
+        this.notifGateway.emitToUser(dto.userId, 'notification:new', item);
+        }
+
     }
 
     async notifyLike(actorId: string, gemaId: string) {

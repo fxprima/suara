@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { FollowService } from '../relationship/follow/follow.service';
 import { NotificationService } from '../notification/notification.service';
+import { FollowModule } from '../relationship/follow/follow.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -19,8 +21,10 @@ import { NotificationService } from '../notification/notification.service';
       }),
       inject: [ConfigService],
     }),
+    FollowModule,
+    NotificationModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy, FollowService, NotificationService],
+  providers: [AuthService, UserService, JwtStrategy],
 })
 export class AuthModule {}

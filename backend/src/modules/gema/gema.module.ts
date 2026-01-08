@@ -7,16 +7,16 @@ import { GemaEngagementController } from './engagement/gema-engagement.controlle
 import { GemaEngagementService } from './engagement/gema-engagement.service';
 import { GemaThreadService } from './thread/gema-thread.service';
 import { NotificationService } from '../notification/notification.service';
+import { FollowModule } from '../relationship/follow/follow.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [MediaModule],
+  imports: [MediaModule, FollowModule, NotificationModule],
   controllers: [GemaController, GemaEngagementController],
   providers: [
     GemaService, 
     GemaEngagementService, 
     GemaThreadService,
-    FollowService,
-    NotificationService
   ] 
 })
 export class GemaModule {}

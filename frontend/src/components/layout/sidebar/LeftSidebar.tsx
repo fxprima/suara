@@ -22,6 +22,8 @@ import { UserPublicProfile } from '../../../../types/gema';
 import NotificationsPanel from '@/components/notifications/NotificationPanel';
 import { useEffect, useState } from 'react';
 import api from '@/services/api';
+import { NotificationItem } from '../../../../types/notifications/NotificationType';
+import { getNotifSocket } from '@/services/notifSocket';
 
 
 export default function LeftSidebar() {
@@ -49,6 +51,28 @@ export default function LeftSidebar() {
             }
         })();
     }, [userPublicData])
+
+    const [liveNotif, setLiveNotif] = useState<NotificationItem | null>(null);
+
+    useEffect(() => {
+        if (!user?.id) return;
+
+        const s = getNotifSocket();
+
+        s.auth = { token: localStorage.getItem('accessToken') };
+        if (!s.connected) s.connect();
+
+        const onNew = (item: NotificationItem) => {
+            setUnreadCount((c) => c + 1);
+            setLiveNotif(item);
+        };
+
+        s.on('notification:new', onNew);
+
+        return () => {
+            s.off('notification:new', onNew);
+        };
+    }, [user?.id]);
 
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -156,8 +180,9 @@ export default function LeftSidebar() {
             </aside>
 
             <NotificationsPanel
-                open={notificationsOpen}
-                onClose={() => setNotificationsOpen(false)}
+            open={notificationsOpen}
+            onClose={() => setNotificationsOpen(false)}
+            liveItem={liveNotif}
             />
         </>
 
