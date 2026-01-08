@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { FollowService } from '../relationship/follow/follow.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { FollowService } from '../relationship/follow/follow.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy, FollowService],
+  providers: [AuthService, UserService, JwtStrategy, FollowService, NotificationService],
 })
 export class AuthModule {}

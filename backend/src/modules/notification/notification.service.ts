@@ -91,6 +91,7 @@ export class NotificationService {
         })
         
         if (!parentGema) return null;
+        if (parentGema.authorId === actorId) return null;
 
         const createDto: CreateNotifDto = {
             type: NotificationType.REPLY,
@@ -101,6 +102,33 @@ export class NotificationService {
             metadata: {
                 postSnippet: content?.slice(0,120),
                 media: media
+            }
+        }
+
+        return await this.create(createDto);
+    }
+
+    async notifyFollow(actorId: string, userId: string) {
+
+        const existing = await this.prisma.notifications.count({
+            where: {actorId: actorId, userId: userId, type: NotificationType.FOLLOW}
+        })
+
+        if (existing)
+            return;
+
+        const actor = await this.prisma.users.findUnique({
+                    where: {id: actorId},
+                    select: {username: true, id: true}
+                })
+
+        const createDto: CreateNotifDto = {
+            type: NotificationType.FOLLOW,
+            userId: userId,
+            actorId: actorId,
+            message: 'Follow',
+            metadata: {
+                subMessage: `${actor?.username} started following you.`
             }
         }
 

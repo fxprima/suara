@@ -2,10 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { PrismaService } from "prisma/prisma.service";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 import { UserPayload } from "../../auth/interfaces/user-payload.interface";
+import { NotificationService } from "src/modules/notification/notification.service";
 
 @Injectable()
 export class FollowService {
-    constructor (private prisma: PrismaService) {}
+    constructor (private prisma: PrismaService, private notification: NotificationService) {}
 
 
   /**
@@ -74,6 +75,9 @@ export class FollowService {
         }, 
         select: {userId: true},
       })
+
+      
+    this.notification.notifyFollow(currentUser.id, id);
 
     return await this.prisma.followers.create({
       data: {
