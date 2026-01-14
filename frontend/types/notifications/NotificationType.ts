@@ -15,7 +15,7 @@ export type NotificationItem = {
         username: string;
         avatar?: string | null;
     };
-    createdAtText: string; 
+    createdAt: Date; 
     isRead?: boolean;
     message: string; 
     meta?: {

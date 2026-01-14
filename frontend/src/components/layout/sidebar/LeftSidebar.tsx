@@ -75,6 +75,7 @@ export default function LeftSidebar() {
     }, [user?.id]);
 
 
+
     const [notificationsOpen, setNotificationsOpen] = useState(false);
 
     return (
@@ -180,9 +181,12 @@ export default function LeftSidebar() {
             </aside>
 
             <NotificationsPanel
-            open={notificationsOpen}
-            onClose={() => setNotificationsOpen(false)}
-            liveItem={liveNotif}
+                open={notificationsOpen}
+                onClose={() => setNotificationsOpen(false)}
+                liveItem={liveNotif}
+                onMarkedRead={(countMarked) => {
+                    setUnreadCount((c) => Math.max(0, c - countMarked));
+                }}
             />
         </>
 

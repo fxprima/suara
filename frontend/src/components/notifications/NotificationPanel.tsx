@@ -12,61 +12,18 @@ import { useToast } from '@/hooks/ui/useToast';
 
 type TabKey = 'all' | 'following' | 'archived';
 
-const MOCK_NOTIFS: NotificationItem[] = [
-    {
-        id: '1',
-        type: 'FOLLOW_REQUEST',
-        actor: { name: 'Sandra Marx', username: 'sandra', avatar: null },
-        createdAtText: '12h',
-        isRead: false,
-        message: 'requested to follow you',
-        meta: { subMessage: 'Follow request' },
-    },
-    {
-        id: '2',
-        type: 'MENTION',
-        actor: { name: 'Jess Radlon', username: 'jess', avatar: null },
-        createdAtText: '1d',
-        isRead: false,
-        message: 'mentioned you in a post',
-        meta: { postSnippet: '“Fel, ini beneran lucu sih 😭 cek deh…”' },
-    },
-    {
-        id: '3',
-        type: 'REPOST',
-        actor: { name: 'Ralpg Turner', username: 'ralpg', avatar: null },
-        createdAtText: '2d',
-        isRead: true,
-        message: 'reposted your Gema',
-        meta: { postSnippet: '“Suara itu Twitter lokal yang beneran niat.”' },
-    },
-    {
-        id: '4',
-        type: 'REPLY',
-        actor: { name: 'Adam Smith', username: 'adam', avatar: null },
-        createdAtText: '3d',
-        isRead: true,
-        message: 'replied to your post',
-        meta: { postSnippet: '“Boleh share arsitekturnya? Next + Nest + Prisma?”' },
-    },
-    {
-        id: '5',
-        type: 'SYSTEM',
-        createdAtText: '5d',
-        isRead: true,
-        message: 'Security alert: New login detected',
-        meta: { subMessage: 'If this wasn’t you, change your password.' },
-    },
-];
 
 export default function NotificationsPanel({
-  open,
-  onClose,
-  liveItem,
+    open,
+    onClose,
+    liveItem,
+    onMarkedRead,
+    
 }: {
-  open: boolean;
-  onClose: () => void;
-  liveItem?: NotificationItem | null;
+    open: boolean;
+    onClose: () => void;
+    liveItem?: NotificationItem | null;
+    onMarkedRead?: (countMarked: number) => void;
 }) {
     const { user } = useAuth();
     const { toasts, showToast } = useToast();
@@ -126,6 +83,8 @@ export default function NotificationsPanel({
                     return Array.from(map.values());
                 })
 
+
+
             } catch (err) {
                 console.error('[fetchFeed]', err);
                 showToast(extractErrorMessage(err), 'error');
@@ -141,6 +100,7 @@ export default function NotificationsPanel({
         [user?.id, showToast]
     )
 
+
     const resetAndReload = useCallback(async () => {
         setNotifications([]);
         setNextCursor(null);
@@ -154,15 +114,16 @@ export default function NotificationsPanel({
     }, [user?.id]);
 
     useEffect(() => {
-    if (!liveItem) return;
+        if (!liveItem) return;
 
-    setNotifications((prev) => {
-        if (prev.some((x) => x.id === liveItem.id)) return prev;
-        return [liveItem, ...prev];
-    });
+        setNotifications((prev) => {
+            if (prev.some((x) => x.id === liveItem.id)) return prev;
+            return [liveItem, ...prev];
+        });
     }, [liveItem]);
 
 
+    
     const handleLoadMore = async () => {
         if (!hasNext || !nextCursor) return;
 
@@ -180,6 +141,33 @@ export default function NotificationsPanel({
 
         return notifications.filter((n) => n.isRead);
     }, [tab, notifications]);
+
+    const markFetchedAsRead = useCallback(async () => {
+        if (!notifications.length) return;
+
+        const ids = notifications.filter((n) => !n.isRead).map((n) => n.id);
+        if (ids.length === 0) return;
+        setNotifications((prev) => prev.map((n) => (ids.includes(n.id) ? { ...n, isRead: true } : n)));
+        onMarkedRead?.(ids.length);
+
+
+        try {
+            await api.post(
+                `/notification/read`,
+                { notificationIds: ids },
+                { withCredentials: true }
+            );
+        } catch (err) {
+            setNotifications((prev) => prev.map((n) => (ids.includes(n.id) ? { ...n, isRead: false } : n)));
+            showToast(extractErrorMessage(err), 'error');
+        }
+    }, [notifications, showToast]);
+
+    useEffect(() => {
+    if (!open) return;
+
+    markFetchedAsRead();
+    }, [open, markFetchedAsRead]);
 
 
     if (!open) return null;
@@ -218,8 +206,9 @@ export default function NotificationsPanel({
                                 className="btn btn-sm btn-ghost"
                                 title="Mark all as read"
                                 onClick={() => {
-                                    alert('Mock: mark all as read');
+                                    markFetchedAsRead();
                                 }}
+
                             >
                                 <FontAwesomeIcon icon={faCheck} className="h-4 w-4" />
                             </button>

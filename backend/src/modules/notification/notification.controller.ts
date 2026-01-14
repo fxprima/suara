@@ -2,6 +2,9 @@ import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/co
 import { NotificationService } from "./notification.service";
 import { CreateNotifDto } from "./dto/create-notification.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { userInfo } from "os";
+import { UserPayload } from "../auth/interfaces/user-payload.interface";
 
 @Controller('notification')
 export class NotificationController {
@@ -24,5 +27,11 @@ export class NotificationController {
     @Get(':userId/count')
     async getUserNotificationsCount(@Param("userId") userId: string) {
         return this.notificationService.getUserNotificationsCount(userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('read')
+    async setUserNotificationsRead(@CurrentUser() currentUser: UserPayload, @Body("notificationIds") notifications: string[]) {
+        return await this.notificationService.setUserNotificationsRead(notifications,currentUser.id);
     }
 }   

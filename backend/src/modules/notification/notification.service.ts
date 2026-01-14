@@ -36,10 +36,8 @@ export class NotificationService {
         });
 
         if (full) {
-        const item = this.mapDBToItem(full);
-
-        // 🔥 push ke client
-        this.notifGateway.emitToUser(dto.userId, 'notification:new', item);
+          const item = this.mapDBToItem(full);
+          this.notifGateway.emitToUser(dto.userId, 'notification:new', item);
         }
 
     }
@@ -151,21 +149,6 @@ export class NotificationService {
         return await this.create(createDto);
     }
 
-    timeAgoShort(date: Date) {
-        const now = Date.now();
-        const diff = Math.max(0, now - date.getTime());
-
-        const sec = Math.floor(diff / 1000);
-        const min = Math.floor(sec / 60);
-        const hr = Math.floor(min / 60);
-        const day = Math.floor(hr / 24);
-
-        if (day > 0) return `${day}d`;
-        if (hr > 0) return `${hr}h`;
-        if (min > 0) return `${min}m`;
-        return `${sec}s`;
-    }
-
     mapDBToItem(item: any) {
         return {
             id: item.id,
@@ -176,11 +159,10 @@ export class NotificationService {
                 username: item.actor.username
             },
             avatar: item.avatar,
-            createdAtText: this.timeAgoShort(new Date(item.createdAt)),
+            createdAt: new Date(item.createdAt),
             isRead: Boolean(item.readAt),
             message: item.message,
             meta: item.metadata,
-            createdAt: item.createdAt
         }
     }
 
@@ -236,7 +218,6 @@ export class NotificationService {
 
         const notifications = notificationsRaw.map((x) => this.mapDBToItem(x));
 
-
         const hasNext = notifications.length > limit;
         const data = hasNext ? notifications.slice(0, limit) : notifications;
         const last = data[data.length - 1];
@@ -261,6 +242,16 @@ export class NotificationService {
         })
     }
 
-
+    async setUserNotificationsRead(notifications: string[], currentUserId: string) {
+        return await this.prisma.notifications.updateMany({
+            where: {
+                id: {in: notifications},
+                userId: currentUserId
+            }, 
+            data: {
+                readAt: new Date()
+            }
+        })
+    }
 
 }

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { NotificationItem, NotificationType } from '../../../types/notifications/NotificationType';
+import { timeAgoShort } from '@/utils/time';
 
 
 function typeBadge(type: NotificationType) {
@@ -88,7 +89,7 @@ export default function NotificationCard({
                                 />
                             )}
                             <span className="text-xs opacity-60 whitespace-nowrap">
-                                {item.createdAtText}
+                                {timeAgoShort(item.createdAt)}
                             </span>
                         </div>
 
