@@ -1,18 +1,21 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+
 COPY package.json yarn.lock ./
 RUN yarn config set network-timeout 600000 -g && yarn install --frozen-lockfile
 
 COPY . .
 
-RUN yarn prisma generate
+RUN npx prisma generate
 RUN yarn build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
