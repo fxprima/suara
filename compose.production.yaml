@@ -1,56 +1,70 @@
 services:
-  db:
-    image: postgres:16-alpine
-    container_name: suara-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: suara
-    volumes:
-      - suara_pg:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d suara"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    networks:
-      - suara-net
+    db:
+        image: postgres:16-alpine
+        container_name: suara-db
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: suara
+        volumes:
+            - suara_pg:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres -d suara']
+            interval: 5s
+            timeout: 3s
+            retries: 20
+        networks:
+            - suara-net
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: suara-backend
-    restart: unless-stopped
-    env_file:
-      - ./backend/.env.production
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8000:8000"
-    networks:
-      - suara-net
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        container_name: suara-backend
+        restart: unless-stopped
+        env_file:
+            - ./backend/.env.production
+        depends_on:
+            db:
+                condition: service_healthy
+        expose:
+            - '8000'
+        networks:
+            - suara-net
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: suara-frontend
-    restart: unless-stopped
-    env_file:
-      - ./frontend/.env.production
-    depends_on:
-      - backend
-    ports:
-      - "3001:3000"
-    networks:
-      - suara-net
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: suara-frontend
+        restart: unless-stopped
+        env_file:
+            - ./frontend/.env.production
+        depends_on:
+            - backend
+        expose:
+            - '3000'
+        networks:
+            - suara-net
+
+    nginx:
+        image: nginx:1.27-alpine
+        container_name: suara-nginx
+        restart: unless-stopped
+        depends_on:
+            - frontend
+            - backend
+        ports:
+            - '80:80'
+        volumes:
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+        networks:
+            - suara-net
 
 volumes:
-  suara_pg:
+    suara_pg:
 
 networks:
-  suara-net:
-    driver: bridge
+    suara-net:
+        driver: bridge
