@@ -18,9 +18,7 @@ services:
             - suara-net
 
     backend:
-        build:
-            context: ./backend
-            dockerfile: Dockerfile
+        image: ghcr.io/USERNAME/suara-backend:latest
         container_name: suara-backend
         restart: unless-stopped
         env_file:
@@ -34,9 +32,7 @@ services:
             - suara-net
 
     frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile
+        image: ghcr.io/USERNAME/suara-frontend:latest
         container_name: suara-frontend
         restart: unless-stopped
         env_file:
