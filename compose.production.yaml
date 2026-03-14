@@ -5,7 +5,7 @@ services:
         restart: unless-stopped
         environment:
             POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: your_strong_password
+            POSTGRES_PASSWORD: postgres
             POSTGRES_DB: suara
         volumes:
             - suara_pg:/var/lib/postgresql/data
@@ -28,6 +28,7 @@ services:
         depends_on:
             db:
                 condition: service_healthy
+        command: sh -c "npx prisma migrate deploy && yarn start:prod"
         ports:
             - '8000:8000'
         networks:
