@@ -12,14 +12,11 @@ RUN yarn config set registry https://registry.npmjs.org \
     && yarn config set network-timeout 600000 \
     && yarn install --frozen-lockfile --production=false --network-timeout 600000
 
-COPY prisma ./prisma
-
-RUN npx prisma generate
-
 COPY . .
 
+RUN npx prisma generate
 RUN yarn build
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "npx prisma generate && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma generate && node dist/src/main.js"]
